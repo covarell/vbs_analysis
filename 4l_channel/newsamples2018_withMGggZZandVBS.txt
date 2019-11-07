@@ -3,4 +3,5 @@
 ~/work/vbs2017/CMSSW_10_2_15_slc7/src/ZZAnalysis/AnalysisStep/test/prod/PROD_samples_2018_MC_VBSpriv_c2cdbf5a/AAAOK/ggZZnew_1jet_2018/ZZ4lAnalysis.root
 ../../../../CMSSW_10_2_15_slc7/src/ZZAnalysis/AnalysisStep/test/prod/PROD_samples_2018_MC_VBS_c2cdbf5a/AAAOK/VBFTo4lJJ_0PMH125Contin_madgraph_2018/ZZ4lAnalysis.root
 /eos/home-h/hroskes/CJLST/190821_fixjetid/Data_2018/AllData/ZZ4lAnalysis.root
-
+/eos/home-h/hroskes/CJLST/190821_fixjetid/MC_2016/TTZToLLNuNu_M10/ZZ4lAnalysis.root
+/eos/home-h/hroskes/CJLST/190821_fixjetid/MC_2018/WWZ/ZZ4lAnalysis.root

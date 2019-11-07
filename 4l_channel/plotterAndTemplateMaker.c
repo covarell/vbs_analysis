@@ -94,8 +94,8 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
 	TH1F *h0_ee[vars];//vbs e
 	TH1F *h0_mm[vars];//vbs mu
 	TH1F *h0_em[vars];//vbs e mu
-	TH1F *hnum[vars];//for 2018 rescale
-	TH1F *hden[vars];//for 2018 rescale
+	TH1F *h2bis[vars];//for 2018 rescale
+	TH1F *h3bis[vars];//for 2018 rescale
 
 	for(int iv = 0; iv < vars; iv++){
 	  sprintf(filename,"hcd%d",iv);   h_complete_data[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]); //all data
@@ -120,8 +120,8 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
 	  sprintf(filename,"h0ee_%d",iv); h0_ee[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);//vbs e
 	  sprintf(filename,"h0mm_%d",iv); h0_mm[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);//vbs mu
 	  sprintf(filename,"h0em_%d",iv); h0_em[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);//vbs e mu
-	  sprintf(filename,"hnum_%d",iv); hnum[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);//for 2018 rescale
-	  sprintf(filename,"hden_%d",iv); hden[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);//for 2018 rescale
+	  sprintf(filename,"h2bis_%d",iv); h2bis[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);//for 2018 rescale
+	  sprintf(filename,"h3bis_%d",iv); h3bis[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);//for 2018 rescale
 	}   
 	gStyle->SetPalette(1);
 	TFile *input_file;
@@ -141,7 +141,7 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
         // find available samples  
 	int nSamp = 0;  
 	TString rootname[40];
- 	sprintf(filename,"newsamples%d_withMGggZZ.txt",year);
+ 	sprintf(filename,"newsamples%d_withMGggZZandVBS.txt",year);
 
 	ifstream parInput(filename);
         
@@ -155,8 +155,8 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
 	} 
 
 	//original variable declarations
-	float ZZPt,ZZMass,DiJetMass,DiJetDEta;
-	float xsec,KFactorEWKqqZZ,overallEventWeight,L1prefiringWeight,KFactorQCDqqZZ_M;
+	float ZZPt,ZZMass,Z1Mass,Z2Mass,DiJetMass,DiJetDEta;
+	float xsec,KFactorEWKqqZZ,overallEventWeight,L1prefiringWeight,genHEPMCweight,KFactorQCDqqZZ_M;
 	vector<float> *LepPt=new vector<float>;
 	vector<float> *JetPt=new vector<float>;
 	vector<float> *JetEta=new vector<float>;
@@ -186,6 +186,10 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
 	//output branches
 	TTree *tnew[4]; 
 	TFile *fnew[4];
+	//template declarations (1D) 
+	TH1F *temp_1d_4e[4];
+	TH1F *temp_1d_4mu[4];
+	TH1F *temp_1d_2e2mu[4];
 	//template declarations (2D) 
 	TH2F *temp_zz_4e[4];
 	TH2F *temp_zz_4mu[4];
@@ -208,6 +212,9 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
 	  temp_zz_4e[it] = new TH2F("temp_zz_4e","",nbins,xbin,40,0.,1.);
 	  temp_zz_4mu[it] = new TH2F("temp_zz_4mu","",nbins,xbin,40,0.,1.);
 	  temp_zz_2e2mu[it] = new TH2F("temp_zz_2e2mu","",nbins,xbin,40,0.,1.);
+	  temp_1d_4e[it] = new TH1F("temp_1d_4e","",50,0.,1.);
+	  temp_1d_4mu[it] = new TH1F("temp_1d_4mu","",50,0.,1.);
+	  temp_1d_2e2mu[it] = new TH1F("temp_1d_2e2mu","",50,0.,1.);
 	}
 	
 	//for loop for different samples
@@ -231,7 +238,7 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
 	  if (rootname[is].Contains("ggTo") || rootname[is].Contains("ggZZnew")) j = 1;      
           if (rootname[is].Contains("VBFTo")) j = 2;
 	  if (rootname[is].Contains("amcatnlo")) j = 4;
-	
+	  if (rootname[is].Contains("WWZ") || rootname[is].Contains("TTZ")) j = 5;   
 	  //histogram declaration
 	  //TH1F *kin_zz = new TH1F("kin_zz","",bins,xmin,xmax); //was 100 bins
 	  
@@ -251,6 +258,8 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
 	  tqqzz->SetBranchAddress("ZZMass",&ZZMass);
 	  tqqzz->SetBranchAddress("Z1Flav",&Z1Flav);
 	  tqqzz->SetBranchAddress("Z2Flav",&Z2Flav);
+	  tqqzz->SetBranchAddress("Z1Mass",&Z1Mass);
+	  tqqzz->SetBranchAddress("Z2Mass",&Z2Mass);
 	  tqqzz->SetBranchAddress("KFactor_EW_qqZZ",&KFactorEWKqqZZ);
 	  tqqzz->SetBranchAddress("xsec",&xsec);
 	  tqqzz->SetBranchAddress("ZZsel",&ZZsel);
@@ -258,7 +267,8 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
 	  tqqzz->SetBranchAddress("LepPt",&LepPt);
           tqqzz->SetBranchAddress("JetPt",&JetPt);
           tqqzz->SetBranchAddress("JetEta",&JetEta);
-	  tqqzz->SetBranchAddress("overallEventWeight",&overallEventWeight);	
+	  tqqzz->SetBranchAddress("overallEventWeight",&overallEventWeight);
+	  tqqzz->SetBranchAddress("genHEPMCweight",&genHEPMCweight);
 	  tqqzz->SetBranchAddress("L1prefiringWeight",&L1prefiringWeight);
 	  tqqzz->SetBranchAddress("KFactor_QCD_qqZZ_M",&KFactorQCDqqZZ_M);
 	  tqqzz->SetBranchAddress("nCleanedJetsPt30",&nCleanedJetsPt30);
@@ -270,19 +280,23 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
 	  tqqzz->SetBranchAddress("DiJetMass",&DiJetMass);
           tqqzz->SetBranchAddress("DiJetDEta",&DiJetDEta);
 	  tqqzz->SetBranchAddress("KFactor_QCD_ggZZ_Nominal",&KFactorQCDggzz_Nominal);
-	 
 
 	  //loop on entries
 	  int enne = tqqzz->GetEntries();
+
+	  // preliminary loop to fix MG wrong weights (only VBS 2017-18)
+	  float resum = gen_sum_weights;
+          if (j==2 && year>2016) resum = hCounters->GetBinContent(1);
   
 	  for(int i=0;i<enne;i++){
 	    tqqzz->GetEntry(i);
 	    
-	    //unique selection condition (see paper page 8) & DiJetMass condition
-	    if(DiJetMass>100 && nExtraLep==0 && ZZMass > 160 && (((nCleanedJetsPt30==2||nCleanedJetsPt30==3)&&nCleanedJetsPt30BTagged_bTagSF<=1)||(nCleanedJetsPt30>=4&&nCleanedJetsPt30BTagged_bTagSF==0))){
-	      
-	      //unique selection
-	      //	if(nExtraLep==0 && (((nCleanedJetsPt30==2||nCleanedJetsPt30==3)&&nCleanedJetsPt30BTagged_bTagSF<=1)||(nCleanedJetsPt30>=4&&nCleanedJetsPt30BTagged_bTagSF==0))){
+	   	    //unique selection condition (see paper page 8) & DiJetMass condition
+	    // if(DiJetMass>100 && nExtraLep==0 && ZZMass > 160 &&(((nCleanedJetsPt30==2||nCleanedJetsPt30==3)&&nCleanedJetsPt30BTagged_bTagSF<=1)||(nCleanedJetsPt30>=4&&nCleanedJetsPt30BTagged_bTagSF==0))){
+	    
+	    if(DiJetMass>100 && ZZMass > 180 && nCleanedJetsPt30>1 && Z1Mass < 120 && Z1Mass > 60 && Z2Mass < 120 && Z2Mass > 60){
+	    
+	      // if(DiJetMass>100 && ZZMass > 180 && nCleanedJetsPt30>1 && Z1Mass < 120 && Z1Mass > 60 && Z2Mass < 120 && Z2Mass > 60 && JetPt->at(0) > 50 && JetPt->at(1) > 50){
 	      
 	      //set vbf_category
 	      vbfcate=1;
@@ -290,17 +304,19 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
 	      //KFactorEWKqqZZ = 1;
 	      //KFactorQCDqqZZ_M = 1;
 	      //weight=1;
-	      weight= (xsec*KFactorEWKqqZZ*overallEventWeight*KFactorQCDqqZZ_M*L1prefiringWeight*lumi)/(gen_sum_weights);
+
+	      
+	      weight= (xsec*KFactorEWKqqZZ*overallEventWeight*KFactorQCDqqZZ_M*L1prefiringWeight*lumi)/(resum);
 	      // correct k-factor for NNLO/NLO?
-	      if (j==1) weight= (xsec*overallEventWeight*KFactorQCDggzz_Nominal*L1prefiringWeight*lumi)/(gen_sum_weights);
+	      if (j==1) weight= (xsec*overallEventWeight*KFactorQCDggzz_Nominal*L1prefiringWeight*lumi)/(resum);
 	      if (j==1 && useMCatNLO==1) weight /=1.7;
-              if (j==2) weight= (xsec*overallEventWeight*L1prefiringWeight*lumi)/(gen_sum_weights);
-	      // TEMPORARY: MISSING KFACTORS FOR ZZamcatnlo
-              //if (j==4 && year ==2017) weight= (xsec*overallEventWeight*L1prefiringWeight*lumi)/(gen_sum_weights);
+              if (j==2 && year==2016) weight= (xsec*overallEventWeight*L1prefiringWeight*lumi)/(resum);
+              if (j==2 && year>2016) weight= (xsec*overallEventWeight*L1prefiringWeight*lumi)/(genHEPMCweight*resum);             
+	      if (j==5) weight= (xsec*overallEventWeight*L1prefiringWeight*lumi)/(resum);
 	      if (j==3) weight=1.; 
 
 	      //TEMPORARY FOR MISSING 2e2mu SAMPLE
-	      if (j==2 && year==2017) weight *= 2.;
+	      //if (j==2 && year==2017) weight *= 2.;
 
 	      //division in channels
 	      if(abs(Z1Flav)==abs(Z2Flav) && abs(Z1Flav)==121) chan=2;
@@ -312,23 +328,30 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
 	      dbkg_kin = p_JJVBF_BKG_MCFM_JECNominal/(p_JJVBF_BKG_MCFM_JECNominal+ p_JJQCD_BKG_MCFM_JECNominal*c_mzz);
 	      if (dbkg_kin < 0.00 || dbkg_kin > 1.00) continue;
 
-	      if (useMCatNLO > 0 && j==4) {
+	      // fill templates
+	      if ((useMCatNLO > 0 && j==4) || j==5) {
 		tnew[0]->Fill();
-		if(chan==1) temp_zz_4mu[0]->Fill(ZZMass,dbkg_kin,weight);
-		else if(chan==2) temp_zz_4e[0]->Fill(ZZMass,dbkg_kin,weight);
-	        else temp_zz_2e2mu[0]->Fill(ZZMass,dbkg_kin,weight);
-	      } else if (useMCatNLO == 0 && j==0) {
+		if(chan==1) { temp_zz_4mu[0]->Fill(ZZMass,dbkg_kin,weight); temp_1d_4mu[0]->Fill(dbkg_kin,weight); } 
+		else if(chan==2) { temp_zz_4e[0]->Fill(ZZMass,dbkg_kin,weight); temp_1d_4e[0]->Fill(dbkg_kin,weight); }
+	        else { temp_zz_2e2mu[0]->Fill(ZZMass,dbkg_kin,weight); temp_1d_2e2mu[0]->Fill(dbkg_kin,weight); }
+	      } else if ((useMCatNLO == 0 && j==0) || j==5) {
 		tnew[0]->Fill();
-		if(chan==1) temp_zz_4mu[0]->Fill(ZZMass,dbkg_kin,weight);
-		else if(chan==2) temp_zz_4e[0]->Fill(ZZMass,dbkg_kin,weight);
-	        else temp_zz_2e2mu[0]->Fill(ZZMass,dbkg_kin,weight);
+		if(chan==1) { temp_zz_4mu[0]->Fill(ZZMass,dbkg_kin,weight); temp_1d_4mu[0]->Fill(dbkg_kin,weight); }
+		else if(chan==2) { temp_zz_4e[0]->Fill(ZZMass,dbkg_kin,weight);  temp_1d_4e[0]->Fill(dbkg_kin,weight); }
+	        else { temp_zz_2e2mu[0]->Fill(ZZMass,dbkg_kin,weight); temp_1d_2e2mu[0]->Fill(dbkg_kin,weight); }
+	      } else if (j==1) {
+		tnew[1]->Fill();
+		temp_zz_4mu[1]->Fill(ZZMass,dbkg_kin,weight);  temp_1d_4mu[1]->Fill(dbkg_kin,weight);
+		temp_zz_4e[1]->Fill(ZZMass,dbkg_kin,weight);  temp_1d_4e[1]->Fill(dbkg_kin,weight);
+	        temp_zz_2e2mu[1]->Fill(ZZMass,dbkg_kin,weight);  temp_1d_2e2mu[1]->Fill(dbkg_kin,weight);
 	      } else {
 		tnew[j]->Fill();
-		if(chan==1) temp_zz_4mu[j]->Fill(ZZMass,dbkg_kin,weight);
-		else if(chan==2) temp_zz_4e[j]->Fill(ZZMass,dbkg_kin,weight);
-	        else temp_zz_2e2mu[j]->Fill(ZZMass,dbkg_kin,weight);
+		if(chan==1) { temp_zz_4mu[j]->Fill(ZZMass,dbkg_kin,weight);  temp_1d_4mu[j]->Fill(dbkg_kin,weight); }
+		else if(chan==2) { temp_zz_4e[j]->Fill(ZZMass,dbkg_kin,weight); temp_1d_4e[j]->Fill(dbkg_kin,weight); } 
+	        else { temp_zz_2e2mu[j]->Fill(ZZMass,dbkg_kin,weight);  temp_1d_2e2mu[j]->Fill(dbkg_kin,weight); }
 	      }
 
+              // fill plots
 	      for(int il = 0; il < vars+2; il++){
                 int iv = il; 
 		if (il == 0) theVar = dbkg_kin;
@@ -358,9 +381,9 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
 		if (j==0){                              //qqzz
 		  h1[iv]->Fill(theVar,weight);
 		  
-		  if (chan == 1) h8[iv]->Fill(theVar,weight); //mu
+		  /* if (chan == 1) h8[iv]->Fill(theVar,weight); //mu
 		  if (chan == 2) h7[iv]->Fill(theVar,weight); //e
-		  if (chan == 3)  h9[iv]->Fill(theVar,weight);          //mu+e
+		  if (chan == 3)  h9[iv]->Fill(theVar,weight);  */        //mu+e
 		}
 		if (j==1){                              //gg
 		  h2[iv]->Fill(theVar,weight);
@@ -374,14 +397,20 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
 		if (j==2){                              //vbs
 		  h3[iv]->Fill(theVar,weight);
 		  h3[iv]->SetFillColor(kMagenta);
-		  
+
 		  if (chan == 1) h14[iv]->Fill(theVar,weight); //mu
 		  if (chan == 2) h13[iv]->Fill(theVar,weight); //e
 		  if (chan == 3) h15[iv]->Fill(theVar,weight);          //mu+e
 		  
 		}
-		if (j==4) hnum[iv]->Fill(theVar,weight);
-		if (j==5) hden[iv]->Fill(theVar,weight);
+		if (j==4) {
+		  h2bis[iv]->Fill(theVar,weight);
+
+		  if (chan == 1) h8[iv]->Fill(theVar,weight); //mu
+		  if (chan == 2) h7[iv]->Fill(theVar,weight); //e
+		  if (chan == 3)  h9[iv]->Fill(theVar,weight);
+		}
+		if (j==5) h3bis[iv]->Fill(theVar,weight);
 		//kin_zz->GetYaxis()->SetTitle("Events/0.05");
 		//add histogram to stack
 		//for cycle ends here
@@ -395,10 +424,13 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
 	  if (it < 3) {
 	    TH2F* final_4e = rebinTemplate(temp_zz_4e[it],year,it);
 	    final_4e->Write();
+	    temp_1d_4e[it]->Write();
 	    TH2F* final_4mu = rebinTemplate(temp_zz_4mu[it],year,it);
 	    final_4mu->Write();
+	    temp_1d_4mu[it]->Write();
 	    TH2F* final_2e2mu = rebinTemplate(temp_zz_2e2mu[it],year,it);
 	    final_2e2mu->Write();
+	    temp_1d_2e2mu[it]->Write();
 	  }
 	  tnew[it]->Write();
 	  fnew[it]->Close();
@@ -460,15 +492,15 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
 	ofstream yields(filename,std::fstream::app);
         sprintf(filename,"datayields_%d.txt",year);
 	ofstream yields2(filename,std::fstream::app);
-	sprintf(filename,"MCyields_highMELA%d.txt",year);
+	sprintf(filename,"MCyields_highMELA_%d.txt",year);
 	ofstream yields3(filename,std::fstream::app);
-        sprintf(filename,"datayields_highMELA%d.txt",year);
+        sprintf(filename,"datayields_highMELA_%d.txt",year);
 	ofstream yields4(filename,std::fstream::app);
 
 	for(int iv = 0; iv < vars; iv++){
 	  cout << "Integral check" << endl;
 	  cout <<"qqzz,         integral is " << h1[iv]->Integral() << endl;
-          cout <<"qqzz alternative,         integral is " << hnum[iv]->Integral() << endl;
+          cout <<"qqzz alternative,         integral is " << h2bis[iv]->Integral() << endl;
 	  cout <<"qqzz (4e),    integral is " << h7[iv]->Integral() << endl;
 	  cout <<"qqzz (4mu),   integral is " << h8[iv]->Integral() << endl;
 	  cout <<"qqzz (2e2mu), integral is " << h9[iv]->Integral() << endl;
@@ -494,16 +526,16 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
             float vbsmumu_high = h14[iv]->Integral(19,20);
 
 	    // TEMPORARY MISSING SAMPLE
-	    if (year == 2017) {
+	    /* if (year == 2017) {
 	      vbsemu_high = (vbsee_high+vbsmumu_high)/2.;
 	      vbsee_high /= 2.;       vbsmumu_high /= 2.;
 	      vbsemu = (vbsee+vbsmumu)/2.;
 	      vbsee /= 2.;       vbsmumu /= 2.;
-	    }
-
-	    yields << vbsmumu << "\t zx4mu \t" << h8[iv]->Integral() << "\t" << h11[iv]->Integral() << "\t" << vbsee << "\t zx4e \t" <<  h7[iv]->Integral() << "\t" << h10[iv]->Integral() << "\t" << vbsemu << "\t zx2e2mu \t" << h9[iv]->Integral() << "\t" << h12[iv]->Integral() << endl;
+	      } */
+	    
+	    yields << vbsmumu << "\t zx4mu \t" << h8[iv]->Integral()*(1. + h3bis[iv]->Integral()/h2bis[iv]->Integral()) << "\t" << h11[iv]->Integral() << "\t" << vbsee << "\t zx4e \t" <<  h7[iv]->Integral()*(1. + h3bis[iv]->Integral()/h2bis[iv]->Integral()) << "\t" << h10[iv]->Integral() << "\t" << vbsemu << "\t zx2e2mu \t" << h9[iv]->Integral()*(1. + h3bis[iv]->Integral()/h2bis[iv]->Integral()) << "\t" << h12[iv]->Integral() << endl;
 	    yields2 << h0_mm[iv]->Integral() << "\t" << h0_ee[iv]->Integral() << "\t" << h0_em[iv]->Integral() << endl;
-	    yields3 << vbsmumu_high << "\t" << kin_zz_zx[iv]->Integral(19,20)/kin_zz_zx[iv]->Integral() << "*zx4mu \t" << h8[iv]->Integral(19,20) << "\t" << h11[iv]->Integral(19,20) << "\t" << vbsee_high << "\t" << kin_zz_zx[iv]->Integral(19,20)/kin_zz_zx[iv]->Integral() << "*zx4e \t" <<  h7[iv]->Integral(19,20) << "\t" << h10[iv]->Integral(19,20) << "\t" << vbsemu_high << "\t" << kin_zz_zx[iv]->Integral(19,20)/kin_zz_zx[iv]->Integral() << "*zx2e2mu \t" << h9[iv]->Integral(19,20) << "\t" << h12[iv]->Integral(19,20) << endl;
+	    yields3 << vbsmumu_high << "\t" << kin_zz_zx[iv]->Integral(19,20)/kin_zz_zx[iv]->Integral() << "\t zx4mu \t" << h8[iv]->Integral(19,20)*(1. + h3bis[iv]->Integral(19,20)/h2bis[iv]->Integral(19,20)) << "\t" << h11[iv]->Integral(19,20) << "\t" << vbsee_high << "\t" << kin_zz_zx[iv]->Integral(19,20)/kin_zz_zx[iv]->Integral() << "\t zx4e \t" <<  h7[iv]->Integral(19,20)*(1. + h3bis[iv]->Integral(19,20)/h2bis[iv]->Integral(19,20)) << "\t" << h10[iv]->Integral(19,20) << "\t" << vbsemu_high << "\t" << kin_zz_zx[iv]->Integral(19,20)/kin_zz_zx[iv]->Integral() << "\t zx2e2mu \t" << h9[iv]->Integral(19,20)*(1. + h3bis[iv]->Integral(19,20)/h2bis[iv]->Integral(19,20)) << "\t" << h12[iv]->Integral(19,20) << endl;
 	    yields4 << h0_mm[iv]->Integral(19,20) << "\t" << h0_ee[iv]->Integral(19,20) << "\t" << h0_em[iv]->Integral(19,20) << endl;
 	  }
 	  
@@ -511,10 +543,10 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
           const float powheg_integral = h1[iv]->Integral();
 	  
 	  /* if (year == 2018 && useMCatNLO > 0) {
-	    h1[iv]->Multiply(h1[iv],hnum[iv]);
-	    h1[iv]->Divide(h1[iv],hden[iv]);
+	    h1[iv]->Multiply(h1[iv],h2bis[iv]);
+	    h1[iv]->Divide(h1[iv],h3bis[iv]);
 	    }  */
-	  kin_zz_zx[iv]->Scale(zx_integral/kin_zz_zx[iv]->Integral());
+	  //kin_zz_zx[iv]->Scale(zx_integral/kin_zz_zx[iv]->Integral());
 	  
 	  //data normalisation
 	  float data_integral = 1.;// h5->Integral();
@@ -523,17 +555,20 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
 	  h1[iv]->Scale(data_integral/mc_integral);
 	  h4[iv]->Scale(data_integral/mc_integral);
 	  h5[iv]->Scale(data_integral/mc_integral);
-	  hnum[iv]->Scale(data_integral/mc_integral);
+	  h2bis[iv]->Scale(data_integral/mc_integral);
+          h3bis[iv]->Scale(data_integral/mc_integral);
 	  if (useMCatNLO == 2) {
 	    // if (year == 2018) h1[iv]->Scale(powheg_integral/h1[iv]->Integral());
 	    // else 
-	    hnum[iv]->Scale(powheg_integral/hnum[iv]->Integral());
+	    h2bis[iv]->Scale(powheg_integral/h2bis[iv]->Integral());
 	  }
 	  
 	  //HISTOGRAMS ADDED TO STACK
 	  kin_zz_zx[iv]->SetFillColor(kGreen);
-	  if (useMCatNLO == 0) h1bis[iv]->Add(kin_zz_zx[iv],h1[iv],1,1); //real ew
-	  else h1bis[iv]->Add(kin_zz_zx[iv],hnum[iv],1,1); //real ew
+          h3bis[iv]->Add(h3bis[iv],kin_zz_zx[iv],1,1);    //tt
+	  h3bis[iv]->SetFillColor(kYellow);
+	  if (useMCatNLO == 0) h1bis[iv]->Add(h3bis[iv],h1[iv],1,1); //real ew
+	  else h1bis[iv]->Add(h3bis[iv],h2bis[iv],1,1); //real ew
 	  h1bis[iv]->SetFillColor(kCyan);
 	  h4[iv]->Add(h1bis[iv],h2[iv],1,1); //real gg
 	  h4[iv]->SetFillColor(kBlue);
@@ -544,15 +579,17 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
 	  hs[iv]->Add(h5[iv],"hist");
 	  hs[iv]->Add(h4[iv],"hist");
 	  hs[iv]->Add(h1bis[iv],"hist");
+          hs[iv]->Add(h3bis[iv],"hist");
 	  hs[iv]->Add(kin_zz_zx[iv],"hist");
 	  TH1F *h0divide = (TH1F*)h0[iv]->Clone();
 	  hs[iv]->Add(h0[iv],"E1");
 	  
 	  // draw the legend
-	  TLegend *legend=new TLegend(0.6,0.65,0.88,0.85);
+	  TLegend *legend=new TLegend(0.6,0.55,0.85,0.88);
 	  legend->SetTextFont(72);
 	  legend->SetTextSize(0.04);
 	  legend->AddEntry(kin_zz_zx[iv],"Z+X","f");
+          legend->AddEntry(h3bis[iv],"t#bar{t}Z, WWZ","f");
 	  legend->AddEntry(h1bis[iv],"q#bar{q}#rightarrowZZ","f");
 	  legend->AddEntry(h4[iv],"gg#rightarrowZZ","f");
 	  legend->AddEntry(h5[iv],"VBS","f");
@@ -583,7 +620,7 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
 	    h77->SetLineWidth(3);
 	    h77->SetLineColor(kMagenta);
 	    h77->SetFillStyle(0);
-	    h77->Scale(30);
+	    h77->Scale(30);   
 	    legend->AddEntry(h77,"VBS (x30)","l");
 	    h77->Draw("histsame");
 	  }
@@ -641,9 +678,9 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
 	  
 	  //close and print on file
 	  c1->cd();
-	  if (useMCatNLO == 0) sprintf(filename,"onlymjjCut/%s_plot_allPOWHEG_%d.png",namegif[iv].c_str(),year);      
-	  if (useMCatNLO == 1) sprintf(filename,"onlymjjCut/%s_plot_allMCatNLO_%d.png",namegif[iv].c_str(),year);     
-	  if (useMCatNLO == 2) sprintf(filename,"onlymjjCut/%s_plot_MCatNLOshape_POWHEGint_%d.png",namegif[iv].c_str(),year);
+	  if (useMCatNLO == 0) sprintf(filename,"noScaleZX/%s_plot_allPOWHEG_%d.png",namegif[iv].c_str(),year);      
+	  if (useMCatNLO == 1) sprintf(filename,"noScaleZX/%s_plot_allMCatNLO_%d.png",namegif[iv].c_str(),year);     
+	  if (useMCatNLO == 2) sprintf(filename,"noScaleZX/%s_plot_MCatNLOshape_POWHEGint_%d.png",namegif[iv].c_str(),year);
 	  gPad->Print(filename);
 	}
 }
