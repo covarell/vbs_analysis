@@ -72,56 +72,61 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
 
         //histograms
 
-	TH1F *h_complete_data[vars]; //all data
-	TH1F *h00[vars]; //bkg_kin<0.7 cut full background plot
-	TH1F *h0[vars]; //data, because we are hiding higher energies in this phase
-	TH1F *h1[vars]; //ew
-	TH1F *h1bis[vars]; //ew+zx -> real ew
-	TH1F *h2[vars]; //gg
-	TH1F *h3[vars]; //vbs
-	TH1F *h4[vars]; //gg+ew -> real gg
-	TH1F *h5[vars]; //gg+ew+vbs
-	TH1F *h6[vars]; //gg+ew+vbs+zx ->real vbs
-	TH1F *h7[vars]; //qqzz e
-	TH1F *h8[vars]; //qqzz mu
-	TH1F *h9[vars]; //qqzz e mu
-	TH1F *h10[vars];//ggzz e
-	TH1F *h11[vars];//ggzz mu
-	TH1F *h12[vars]; //ggzz e mu
-	TH1F *h13[vars];//vbs e
-	TH1F *h14[vars];//vbs mu
-	TH1F *h15[vars];//vbs e mu
-	TH1F *h0_ee[vars];//vbs e
-	TH1F *h0_mm[vars];//vbs mu
-	TH1F *h0_em[vars];//vbs e mu
-	TH1F *h2bis[vars];//for 2018 rescale
-	TH1F *h3bis[vars];//for 2018 rescale
+	// TH1F *h_complete_data[vars]; //all data
+	// TH1F *h00[vars]; //bkg_kin<0.7 cut full background plot
+	TH1F *hdata[vars]; //data, because we are hiding higher energies in this phase
+	TH1F *hqqzz_powheg[vars]; //ew
+	TH1F *hqqzz[vars]; //ew+zx -> real ew
+	TH1F *hggzz[vars]; //gg
+	TH1F *hvbs[vars]; //vbs
+	TH1F *hsum1[vars]; //gg+ew -> real gg
+	TH1F *hsum2[vars]; //gg+ew+vbs
+	// TH1F *h6[vars]; //gg+ew+vbs+zx ->real vbs
+	TH1F *hqqzz_ee[vars]; //qqzz e
+	TH1F *hqqzz_mm[vars]; //qqzz mu
+	TH1F *hqqzz_em[vars]; //qqzz e mu
+	TH1F *hggzz_ee[vars];//ggzz e
+	TH1F *hggzz_mm[vars];//ggzz mu
+	TH1F *hggzz_em[vars]; //ggzz e mu
+	TH1F *hvbs_ee[vars];//vbs e
+	TH1F *hvbs_mm[vars];//vbs mu
+	TH1F *hvbs_em[vars];//vbs e mu
+	TH1F *hdata_ee[vars];//vbs e
+	TH1F *hdata_mm[vars];//vbs mu
+	TH1F *hdata_em[vars];//vbs e mu
+	TH1F *httzwwz[vars];//ttz + wwz
+	TH1F *httzwwz_ee[vars];//ttz + wwz e
+	TH1F *httzwwz_mm[vars];//ttz + wwz mu
+	TH1F *httzwwz_em[vars];//ttz + wwz e mu
 
 	for(int iv = 0; iv < vars; iv++){
-	  sprintf(filename,"hcd%d",iv);   h_complete_data[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]); //all data
-	  sprintf(filename,"h00_%d",iv);   h00[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]); //bkg_kin<0.7 cut full background plot
-	  sprintf(filename,"h0_%d",iv);   h0[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]); //data, because we are hiding higher energies in this phase
-	  sprintf(filename,"h1_%d",iv);   h1[iv] = new TH1F(filename,"h1;xtitle;ytitle",bins[iv],xmin[iv],xmax[iv]); //ew
-	  sprintf(filename,"h1bis_%d",iv);   h1bis[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]); //ew+zx -> real ew
-	  sprintf(filename,"h2_%d",iv);   h2[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]); //gg
-	  sprintf(filename,"h3_%d",iv);   h3[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]); //vbs
-	  sprintf(filename,"h4_%d",iv);   h4[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]); //gg+ew -> real gg
-	  sprintf(filename,"h5_%d",iv);   h5[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]); //gg+ew+vbs
-	  sprintf(filename,"h6_%d",iv);   h6[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]); //gg+ew+vbs+zx ->real vbs
-	  sprintf(filename,"h7_%d",iv);   h7[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]); //qqzz e
-	  sprintf(filename,"h8_%d",iv);   h8[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]); //qqzz mu
-	  sprintf(filename,"h9_%d",iv);   h9[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]); //qqzz e mu
-	  sprintf(filename,"h10_%d",iv);   h10[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);//ggzz e
-	  sprintf(filename,"h11_%d",iv);   h11[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);//ggzz mu
-	  sprintf(filename,"h12_%d",iv);  h12[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]); //ggzz e mu
-	  sprintf(filename,"h13_%d",iv); h13[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);//vbs e
-	  sprintf(filename,"h14_%d",iv); h14[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);//vbs mu
-	  sprintf(filename,"h15_%d",iv); h15[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);//vbs e mu
-	  sprintf(filename,"h0ee_%d",iv); h0_ee[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);//vbs e
-	  sprintf(filename,"h0mm_%d",iv); h0_mm[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);//vbs mu
-	  sprintf(filename,"h0em_%d",iv); h0_em[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);//vbs e mu
-	  sprintf(filename,"h2bis_%d",iv); h2bis[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);//for 2018 rescale
-	  sprintf(filename,"h3bis_%d",iv); h3bis[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);//for 2018 rescale
+	  // sprintf(filename,"hcd%d",iv);   h_complete_data[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]); //all data
+	  // sprintf(filename,"h00_%d",iv);   h00[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]); //bkg_kin<0.7 cut full background plot
+	  sprintf(filename,"hdata_%d",iv);   hdata[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]); //data, because we are hiding higher energies in this phase
+	  sprintf(filename,"hqqzz_powheg_%d",iv);   hqqzz_powheg[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]); //ew
+	  sprintf(filename,"hqqzz_%d",iv);   hqqzz[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]); //ew+zx -> real ew
+	  sprintf(filename,"hggzz_%d",iv);   hggzz[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]); //gg
+	  sprintf(filename,"hvbs_%d",iv);   hvbs[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]); //vbs
+	  sprintf(filename,"hsum1_%d",iv);   hsum1[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]); //gg+ew -> real gg
+	  sprintf(filename,"hsum2_%d",iv);   hsum2[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]); //gg+ew+vbs
+	  // sprintf(filename,"h6_%d",iv);   h6[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]); //gg+ew+vbs+zx ->real vbs
+	  sprintf(filename,"hqqzz_ee_%d",iv);   hqqzz_ee[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]); //qqzz e
+	  sprintf(filename,"hqqzz_mm_%d",iv);   hqqzz_mm[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]); //qqzz mu
+	  sprintf(filename,"hqqzz_em_%d",iv);   hqqzz_em[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]); //qqzz e mu
+	  sprintf(filename,"hggzz_ee_%d",iv);   hggzz_ee[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);//ggzz e
+	  sprintf(filename,"hggzz_mm_%d",iv);   hggzz_mm[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);//ggzz mu
+	  sprintf(filename,"hggzz_em_%d",iv);  hggzz_em[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]); //ggzz e mu
+	  sprintf(filename,"hvbs_ee_%d",iv); hvbs_ee[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);//vbs e
+	  sprintf(filename,"hvbs_mm_%d",iv); hvbs_mm[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);//vbs mu
+	  sprintf(filename,"hvbs_em_%d",iv); hvbs_em[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);//vbs e mu
+	  sprintf(filename,"hdataee_%d",iv); hdata_ee[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);//vbs e
+	  sprintf(filename,"hdatamm_%d",iv); hdata_mm[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);//vbs mu
+	  sprintf(filename,"hdataem_%d",iv); hdata_em[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);//vbs e mu
+	  // sprintf(filename,"h2bis_%d",iv); h2bis[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);//for 2018 rescale
+	  sprintf(filename,"httzwwz_%d",iv); httzwwz[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);//for 2018 rescale
+	  sprintf(filename,"httzwwz_ee_%d",iv); httzwwz_ee[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);//ttzwwz e
+	  sprintf(filename,"httzwwz_mm_%d",iv); httzwwz_mm[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);//ttzwwz mu
+	  sprintf(filename,"httzwwz_em_%d",iv); httzwwz_em[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);//ttzwwz e mu
 	}   
 	gStyle->SetPalette(1);
 	TFile *input_file;
@@ -308,8 +313,9 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
 	      
 	      weight= (xsec*KFactorEWKqqZZ*overallEventWeight*KFactorQCDqqZZ_M*L1prefiringWeight*lumi)/(resum);
 	      // correct k-factor for NNLO/NLO?
-	      if (j==1) weight= (xsec*overallEventWeight*KFactorQCDggzz_Nominal*L1prefiringWeight*lumi)/(resum);
-	      if (j==1 && useMCatNLO==1) weight /=1.7;
+	      // if (j==1) weight= (xsec*overallEventWeight*KFactorQCDggzz_Nominal*L1prefiringWeight*lumi)/(resum);
+	      // if (j==1 && useMCatNLO==1) weight /=1.7;
+	      if (j==1) weight= (xsec*overallEventWeight*1.3*L1prefiringWeight*lumi)/(resum);
               if (j==2 && year==2016) weight= (xsec*overallEventWeight*L1prefiringWeight*lumi)/(resum);
               if (j==2 && year>2016) weight= (xsec*overallEventWeight*L1prefiringWeight*lumi)/(genHEPMCweight*resum);             
 	      if (j==5) weight= (xsec*overallEventWeight*L1prefiringWeight*lumi)/(resum);
@@ -365,52 +371,59 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
    	      
 		//1D kin var hist fill
 		//this is the normalization histogram
-		if (j<3){
-		  if (theVar <= 1.1) h00[iv]->Fill(theVar,weight);    
-		  h_complete_data[iv]->Fill(theVar,weight);
-		}
+		// if (j<3){
+		//  if (theVar <= 1.1) h00[iv]->Fill(theVar,weight);    
+		// h_complete_data[iv]->Fill(theVar,weight);
+		//}
 		
 		if (j==3){
-		  if (iv > 0 || theVar < 0.75 || year == 2016) h0[iv]->Fill(theVar);
+		  if (iv > 0 || theVar < 0.75 || year == 2016) hdata[iv]->Fill(theVar);
 		  else cout << "Blinded event!" << endl;
-		  h0[iv]->SetMarkerStyle(20);
-		  if (chan == 2) h0_ee[iv]->Fill(theVar);
-		  if (chan == 1) h0_mm[iv]->Fill(theVar);
-		  if (chan == 3) h0_em[iv]->Fill(theVar);
+		  hdata[iv]->SetMarkerStyle(20);
+		  if (chan == 2) hdata_ee[iv]->Fill(theVar);
+		  if (chan == 1) hdata_mm[iv]->Fill(theVar);
+		  if (chan == 3) hdata_em[iv]->Fill(theVar);
 		}
 		if (j==0){                              //qqzz
-		  h1[iv]->Fill(theVar,weight);
+		  hqqzz_powheg[iv]->Fill(theVar,weight);
 		  
-		  /* if (chan == 1) h8[iv]->Fill(theVar,weight); //mu
-		  if (chan == 2) h7[iv]->Fill(theVar,weight); //e
-		  if (chan == 3)  h9[iv]->Fill(theVar,weight);  */        //mu+e
+		  /* if (chan == 1) hqqzz_mm[iv]->Fill(theVar,weight); //mu
+		  if (chan == 2) hqqzz_ee[iv]->Fill(theVar,weight); //e
+		  if (chan == 3)  hqqzz_em[iv]->Fill(theVar,weight);  */        //mu+e
 		}
 		if (j==1){                              //gg
-		  h2[iv]->Fill(theVar,weight);
-		  h2[iv]->SetFillColor(kBlue);
+		  hggzz[iv]->Fill(theVar,weight);
+		  hggzz[iv]->SetFillColor(kBlue);
 		  
-		  if (chan == 1) h11[iv]->Fill(theVar,weight); //mu
-		  if (chan == 2) h10[iv]->Fill(theVar,weight); //e
-		  if (chan == 3)  h12[iv]->Fill(theVar,weight);          //mu+e
+		  if (chan == 1) hggzz_mm[iv]->Fill(theVar,weight); //mu
+		  if (chan == 2) hggzz_ee[iv]->Fill(theVar,weight); //e
+		  if (chan == 3)  hggzz_em[iv]->Fill(theVar,weight);          //mu+e
 		  
 		}
 		if (j==2){                              //vbs
-		  h3[iv]->Fill(theVar,weight);
-		  h3[iv]->SetFillColor(kMagenta);
+		  hvbs[iv]->Fill(theVar,weight);
+		  hvbs[iv]->SetFillColor(kMagenta);
 
-		  if (chan == 1) h14[iv]->Fill(theVar,weight); //mu
-		  if (chan == 2) h13[iv]->Fill(theVar,weight); //e
-		  if (chan == 3) h15[iv]->Fill(theVar,weight);          //mu+e
+		  if (chan == 1) hvbs_mm[iv]->Fill(theVar,weight); //mu
+		  if (chan == 2) hvbs_ee[iv]->Fill(theVar,weight); //e
+		  if (chan == 3) hvbs_em[iv]->Fill(theVar,weight);          //mu+e
 		  
 		}
 		if (j==4) {
-		  h2bis[iv]->Fill(theVar,weight);
+		  hqqzz[iv]->Fill(theVar,weight);
 
-		  if (chan == 1) h8[iv]->Fill(theVar,weight); //mu
-		  if (chan == 2) h7[iv]->Fill(theVar,weight); //e
-		  if (chan == 3)  h9[iv]->Fill(theVar,weight);
+		  if (chan == 1) hqqzz_mm[iv]->Fill(theVar,weight); //mu
+		  if (chan == 2) hqqzz_ee[iv]->Fill(theVar,weight); //e
+		  if (chan == 3)  hqqzz_em[iv]->Fill(theVar,weight);
 		}
-		if (j==5) h3bis[iv]->Fill(theVar,weight);
+		if (j==5) {
+		  httzwwz[iv]->Fill(theVar,weight);
+
+		  if (chan == 1) httzwwz_mm[iv]->Fill(theVar,weight); //mu
+		  if (chan == 2) httzwwz_ee[iv]->Fill(theVar,weight); //e
+		  if (chan == 3) httzwwz_em[iv]->Fill(theVar,weight);          //mu+e
+		}
+		  
 		//kin_zz->GetYaxis()->SetTitle("Events/0.05");
 		//add histogram to stack
 		//for cycle ends here
@@ -419,23 +432,6 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
 	  }//entries loop  end
 	}//file loop  end
        
-        for (int it=0; it < 4; it++) {
-	  fnew[it]->cd();
-	  if (it < 3) {
-	    TH2F* final_4e = rebinTemplate(temp_zz_4e[it],year,it);
-	    final_4e->Write();
-	    temp_1d_4e[it]->Write();
-	    TH2F* final_4mu = rebinTemplate(temp_zz_4mu[it],year,it);
-	    final_4mu->Write();
-	    temp_1d_4mu[it]->Write();
-	    TH2F* final_2e2mu = rebinTemplate(temp_zz_2e2mu[it],year,it);
-	    final_2e2mu->Write();
-	    temp_1d_2e2mu[it]->Write();
-	  }
-	  tnew[it]->Write();
-	  fnew[it]->Close();
-	}
-
 	//ZX CONTRIBUTION
 	  
 	TChain *tqqzz_zx= new TChain("candTree");
@@ -443,15 +439,22 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
 	tqqzz_zx->Add(filename);
 	
 	//histogram declaration
-	TH1F *kin_zz_zx[vars]; 
+	TH1F *hzx[vars]; 
+	TH1F *hzx_ee[vars]; 
+	TH1F *hzx_em[vars]; 
+	TH1F *hzx_mm[vars]; 
 	for(int iv = 0; iv < vars; iv++){
-	  sprintf(filename,"kinzz%d",iv);   kin_zz_zx[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]); //full histogram
+	  sprintf(filename,"hzx%d",iv);   hzx[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]); //full histogram
+	  sprintf(filename,"hzx_ee%d",iv);   hzx_ee[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]); //full histogram
+	  sprintf(filename,"hzx_mm%d",iv);   hzx_mm[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]); //full histogram
+	  sprintf(filename,"hzx_em%d",iv);   hzx_em[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]); //full histogram
 	}
 	
 	//new variable declarations
 	float var_zx, dbkg_kin_zx, ZZMass_zx, DiJetMass_zx, DiJetDEta_zx;
 	float ptjet1_zx,ptjet2_zx,etajet1_zx,etajet2_zx; 
 	float weight_zx;
+	int chan_zx;
 	
 	//original branch addresses
 	tqqzz_zx->SetBranchAddress("dbkg_kin",&dbkg_kin_zx);
@@ -463,6 +466,7 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
 	tqqzz_zx->SetBranchAddress("ptjet2",&ptjet2_zx);   
 	tqqzz_zx->SetBranchAddress("etajet1",&etajet1_zx); 
 	tqqzz_zx->SetBranchAddress("etajet2",&etajet2_zx);
+	tqqzz_zx->SetBranchAddress("chan",&chan_zx);
 
 	//entries loop
 	for(int i=0;i<tqqzz_zx->GetEntries();i++){
@@ -480,11 +484,37 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
 	    if (il == 6) {var_zx = ptjet2_zx;   iv = 4;}
 	    if (il == 7) {var_zx = etajet2_zx;   iv = 5;}
 	    if (fabs(weight_zx) < 100000.) {
-	      kin_zz_zx[iv]->Fill(var_zx,weight_zx);
+	      hzx[iv]->Fill(var_zx,weight_zx);
+	      if (chan_zx == 2) hzx_ee[iv]->Fill(var_zx,weight_zx);
+	      if (chan_zx == 1) hzx_mm[iv]->Fill(var_zx,weight_zx);
+	      if (chan_zx == 3) hzx_em[iv]->Fill(var_zx,weight_zx);
 	    }
-	    if (var_zx<=0.7) h00[iv]->Fill(var_zx,weight_zx);
+	    // if (var_zx<=0.7) h00[iv]->Fill(var_zx,weight_zx);
 	    
 	  }
+	}
+	
+	for (int it=0; it < 4; it++) {
+	  fnew[it]->cd();
+	  if (it < 3) {
+	    TH2F* final_4e = rebinTemplate(temp_zz_4e[it],year,it);
+	    final_4e->Write();
+	    temp_1d_4e[it]->Write();
+	    TH2F* final_4mu = rebinTemplate(temp_zz_4mu[it],year,it);
+	    final_4mu->Write();
+	    temp_1d_4mu[it]->Write();
+	    TH2F* final_2e2mu = rebinTemplate(temp_zz_2e2mu[it],year,it);
+	    final_2e2mu->Write();
+	    temp_1d_2e2mu[it]->Write();
+	  }
+	  for(int il = 0; il < vars; il++){
+	    if (it==0) {hqqzz[il]->Write();    httzwwz[il]->Write();}
+	    if (it==1) hggzz[il]->Write();
+	    if (it==2) hvbs[il]->Write();
+	    if (it==3) {hdata[il]->Write();    hzx[il]->Write();}
+	  }
+	  tnew[it]->Write();
+	  fnew[it]->Close();
 	}
 	
 	//INTEGRAL CHECK
@@ -499,31 +529,36 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
 
 	for(int iv = 0; iv < vars; iv++){
 	  cout << "Integral check" << endl;
-	  cout <<"qqzz,         integral is " << h1[iv]->Integral() << endl;
-          cout <<"qqzz alternative,         integral is " << h2bis[iv]->Integral() << endl;
-	  cout <<"qqzz (4e),    integral is " << h7[iv]->Integral() << endl;
-	  cout <<"qqzz (4mu),   integral is " << h8[iv]->Integral() << endl;
-	  cout <<"qqzz (2e2mu), integral is " << h9[iv]->Integral() << endl;
-	  cout <<"ggzz,         integral is " << h2[iv]->Integral() << endl;
-	  cout <<"ggzz (4e),    integral is " << h10[iv]->Integral() << endl;
-	  cout <<"ggzz (4mu),   integral is " << h11[iv]->Integral() << endl;
-	  cout <<"ggzz (2e2mu), integral is " << h12[iv]->Integral() << endl;
-	  cout <<"vbs,          integral is " << h3[iv]->Integral() << endl;
-	  cout <<"vbs (4e),     integral is " << h13[iv]->Integral() << endl;
-	  cout <<"vbs (4mu),    integral is " << h14[iv]->Integral() << endl;
-	  cout <<"vbs (2e2mu),  integral is " << h15[iv]->Integral() << endl;
-	  cout <<"data,          integral is " << h0[iv]->Integral() << endl;
-	  cout <<"data (4e),     integral is " << h0_ee[iv]->Integral() << endl;
-	  cout <<"data (4mu),    integral is " << h0_mm[iv]->Integral() << endl;
-	  cout <<"data (2e2mu),  integral is " << h0_em[iv]->Integral() << endl;
+	  cout <<"qqzz POWHEG,         integral is " << hqqzz_powheg[iv]->Integral() << endl;
+          cout <<"qqzz,         integral is " << hqqzz[iv]->Integral() << endl;
+	  cout <<"qqzz (4e),    integral is " << hqqzz_ee[iv]->Integral() << endl;
+	  cout <<"qqzz (4mu),   integral is " << hqqzz_mm[iv]->Integral() << endl;
+	  cout <<"qqzz (2e2mu), integral is " << hqqzz_em[iv]->Integral() << endl;
+	  cout <<"ggzz,         integral is " << hggzz[iv]->Integral() << endl;
+	  cout <<"ggzz (4e),    integral is " << hggzz_ee[iv]->Integral() << endl;
+	  cout <<"ggzz (4mu),   integral is " << hggzz_mm[iv]->Integral() << endl;
+	  cout <<"ggzz (2e2mu), integral is " << hggzz_em[iv]->Integral() << endl;
+	  cout <<"vbs,          integral is " << hvbs[iv]->Integral() << endl;
+	  cout <<"vbs (4e),     integral is " << hvbs_ee[iv]->Integral() << endl;
+	  cout <<"vbs (4mu),    integral is " << hvbs_mm[iv]->Integral() << endl;
+	  cout <<"vbs (2e2mu),  integral is " << hvbs_em[iv]->Integral() << endl;
+	  cout <<"zx,          integral is " << hzx[iv]->Integral() << endl;
+	  cout <<"zx (4e),     integral is " << hzx_ee[iv]->Integral() << endl;
+	  cout <<"zx (4mu),    integral is " << hzx_mm[iv]->Integral() << endl;
+	  cout <<"zx (2e2mu),  integral is " << hzx_em[iv]->Integral() << endl;
+	  cout <<"data,          integral is " << hdata[iv]->Integral() << endl;
+	  cout <<"data (4e),     integral is " << hdata_ee[iv]->Integral() << endl;
+	  cout <<"data (4mu),    integral is " << hdata_mm[iv]->Integral() << endl;
+	  cout <<"data (2e2mu),  integral is " << hdata_em[iv]->Integral() << endl;
+	  
 	
 	  if (iv == 0) { 
-	    float vbsee  = h13[iv]->Integral();
-	    float vbsemu = h15[iv]->Integral();
-            float vbsmumu = h14[iv]->Integral();
-	    float vbsee_high  = h13[iv]->Integral(19,20);
-	    float vbsemu_high = h15[iv]->Integral(19,20);
-            float vbsmumu_high = h14[iv]->Integral(19,20);
+	    float vbsee  = hvbs_ee[iv]->Integral();
+	    float vbsemu = hvbs_em[iv]->Integral();
+            float vbsmumu = hvbs_mm[iv]->Integral();
+	    float vbsee_high  = hvbs_ee[iv]->Integral(19,20);
+	    float vbsemu_high = hvbs_em[iv]->Integral(19,20);
+            float vbsmumu_high = hvbs_mm[iv]->Integral(19,20);
 
 	    // TEMPORARY MISSING SAMPLE
 	    /* if (year == 2017) {
@@ -533,67 +568,59 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
 	      vbsee /= 2.;       vbsmumu /= 2.;
 	      } */
 	    
-	    yields << vbsmumu << "\t zx4mu \t" << h8[iv]->Integral()*(1. + h3bis[iv]->Integral()/h2bis[iv]->Integral()) << "\t" << h11[iv]->Integral() << "\t" << vbsee << "\t zx4e \t" <<  h7[iv]->Integral()*(1. + h3bis[iv]->Integral()/h2bis[iv]->Integral()) << "\t" << h10[iv]->Integral() << "\t" << vbsemu << "\t zx2e2mu \t" << h9[iv]->Integral()*(1. + h3bis[iv]->Integral()/h2bis[iv]->Integral()) << "\t" << h12[iv]->Integral() << endl;
-	    yields2 << h0_mm[iv]->Integral() << "\t" << h0_ee[iv]->Integral() << "\t" << h0_em[iv]->Integral() << endl;
-	    yields3 << vbsmumu_high << "\t" << kin_zz_zx[iv]->Integral(19,20)/kin_zz_zx[iv]->Integral() << "\t zx4mu \t" << h8[iv]->Integral(19,20)*(1. + h3bis[iv]->Integral(19,20)/h2bis[iv]->Integral(19,20)) << "\t" << h11[iv]->Integral(19,20) << "\t" << vbsee_high << "\t" << kin_zz_zx[iv]->Integral(19,20)/kin_zz_zx[iv]->Integral() << "\t zx4e \t" <<  h7[iv]->Integral(19,20)*(1. + h3bis[iv]->Integral(19,20)/h2bis[iv]->Integral(19,20)) << "\t" << h10[iv]->Integral(19,20) << "\t" << vbsemu_high << "\t" << kin_zz_zx[iv]->Integral(19,20)/kin_zz_zx[iv]->Integral() << "\t zx2e2mu \t" << h9[iv]->Integral(19,20)*(1. + h3bis[iv]->Integral(19,20)/h2bis[iv]->Integral(19,20)) << "\t" << h12[iv]->Integral(19,20) << endl;
-	    yields4 << h0_mm[iv]->Integral(19,20) << "\t" << h0_ee[iv]->Integral(19,20) << "\t" << h0_em[iv]->Integral(19,20) << endl;
+	    yields << vbsmumu << "\t" << hzx_mm[iv]->Integral() << "\t" << hqqzz_mm[iv]->Integral()+httzwwz_mm[iv]->Integral() << "\t" << hggzz_mm[iv]->Integral() << "\t" << vbsee << "\t" << hzx_ee[iv]->Integral() << "\t" <<  hqqzz_ee[iv]->Integral()+httzwwz_ee[iv]->Integral() << "\t" << hggzz_ee[iv]->Integral() << "\t" << vbsemu << "\t" << hzx_em[iv]->Integral() << "\t" << hqqzz_em[iv]->Integral()+httzwwz_em[iv]->Integral() << "\t" << hggzz_em[iv]->Integral() << endl;
+	    yields2 << hdata_mm[iv]->Integral() << "\t" << hdata_ee[iv]->Integral() << "\t" << hdata_em[iv]->Integral() << endl;
+	    yields3 << vbsmumu_high << "\t" << hzx_mm[iv]->Integral(19,20) << "\t" << hqqzz_mm[iv]->Integral(19,20)+ httzwwz_mm[iv]->Integral(19,20) << "\t" << hggzz_mm[iv]->Integral(19,20) << "\t" << vbsee_high << "\t" << hzx_ee[iv]->Integral(19,20) << "\t" <<  hqqzz_ee[iv]->Integral(19,20)+httzwwz[iv]->Integral(19,20) << "\t" << hggzz_ee[iv]->Integral(19,20) << "\t" << vbsemu_high << "\t" << hzx_em[iv]->Integral(19,20) << "\t" << hqqzz_em[iv]->Integral(19,20)+httzwwz_em[iv]->Integral(19,20) << "\t" << hggzz_em[iv]->Integral(19,20) << endl;
+	    yields4 << hdata_mm[iv]->Integral(19,20) << "\t" << hdata_ee[iv]->Integral(19,20) << "\t" << hdata_em[iv]->Integral(19,20) << endl;
 	  }
 	  
 	  float zx_integral = (2.00933+1.97468+3.96839)*lumi/35.9E03;
-          const float powheg_integral = h1[iv]->Integral();
+          const float powheg_integral = hqqzz_powheg[iv]->Integral();
 	  
 	  /* if (year == 2018 && useMCatNLO > 0) {
-	    h1[iv]->Multiply(h1[iv],h2bis[iv]);
-	    h1[iv]->Divide(h1[iv],h3bis[iv]);
+	    hqqzz_powheg[iv]->Multiply(hqqzz_powheg[iv],hqqzz[iv]);
+	    hqqzz_powheg[iv]->Divide(hqqzz_powheg[iv],httzwwz[iv]);
 	    }  */
-	  //kin_zz_zx[iv]->Scale(zx_integral/kin_zz_zx[iv]->Integral());
+	  //hzx[iv]->Scale(zx_integral/hzx[iv]->Integral());
 	  
 	  //data normalisation
-	  float data_integral = 1.;// h5->Integral();
-	  float mc_integral = 1.; //h_complete_data->Integral();
-	  kin_zz_zx[iv]->Scale(data_integral/mc_integral);
-	  h1[iv]->Scale(data_integral/mc_integral);
-	  h4[iv]->Scale(data_integral/mc_integral);
-	  h5[iv]->Scale(data_integral/mc_integral);
-	  h2bis[iv]->Scale(data_integral/mc_integral);
-          h3bis[iv]->Scale(data_integral/mc_integral);
 	  if (useMCatNLO == 2) {
-	    // if (year == 2018) h1[iv]->Scale(powheg_integral/h1[iv]->Integral());
+	    // if (year == 2018) hqqzz_powheg[iv]->Scale(powheg_integral/hqqzz_powheg[iv]->Integral());
 	    // else 
-	    h2bis[iv]->Scale(powheg_integral/h2bis[iv]->Integral());
+	    hqqzz[iv]->Scale(powheg_integral/hqqzz[iv]->Integral());
 	  }
 	  
 	  //HISTOGRAMS ADDED TO STACK
-	  kin_zz_zx[iv]->SetFillColor(kGreen);
-          h3bis[iv]->Add(h3bis[iv],kin_zz_zx[iv],1,1);    //tt
-	  h3bis[iv]->SetFillColor(kYellow);
-	  if (useMCatNLO == 0) h1bis[iv]->Add(h3bis[iv],h1[iv],1,1); //real ew
-	  else h1bis[iv]->Add(h3bis[iv],h2bis[iv],1,1); //real ew
-	  h1bis[iv]->SetFillColor(kCyan);
-	  h4[iv]->Add(h1bis[iv],h2[iv],1,1); //real gg
-	  h4[iv]->SetFillColor(kBlue);
-	  h5[iv]->Add(h4[iv],h3[iv],1,1);    //real vbs
-	  h5[iv]->SetFillColor(kMagenta);
+	  hzx[iv]->SetFillColor(kGreen);
+          httzwwz[iv]->Add(httzwwz[iv],hzx[iv],1,1);    //tt
+	  httzwwz[iv]->SetFillColor(kYellow);
+	  if (useMCatNLO == 0) hqqzz[iv]->Add(httzwwz[iv],hqqzz_powheg[iv],1,1); //real ew
+	  else hqqzz[iv]->Add(httzwwz[iv],hqqzz[iv],1,1); //real ew
+	  hqqzz[iv]->SetFillColor(kCyan);
+	  hsum1[iv]->Add(hqqzz[iv],hggzz[iv],1,1); //real gg
+	  hsum1[iv]->SetFillColor(kBlue);
+	  hsum2[iv]->Add(hsum1[iv],hvbs[iv],1,1);    //real vbs
+	  hsum2[iv]->SetFillColor(kMagenta);
 	  
 	  //add histograms to stack
-	  hs[iv]->Add(h5[iv],"hist");
-	  hs[iv]->Add(h4[iv],"hist");
-	  hs[iv]->Add(h1bis[iv],"hist");
-          hs[iv]->Add(h3bis[iv],"hist");
-	  hs[iv]->Add(kin_zz_zx[iv],"hist");
-	  TH1F *h0divide = (TH1F*)h0[iv]->Clone();
-	  hs[iv]->Add(h0[iv],"E1");
+	  hs[iv]->Add(hsum2[iv],"hist");
+	  hs[iv]->Add(hsum1[iv],"hist");
+	  hs[iv]->Add(hqqzz[iv],"hist");
+          hs[iv]->Add(httzwwz[iv],"hist");
+	  hs[iv]->Add(hzx[iv],"hist");
+	  TH1F *hdatadivide = (TH1F*)hdata[iv]->Clone();
+	  hs[iv]->Add(hdata[iv],"E1");
 	  
 	  // draw the legend
 	  TLegend *legend=new TLegend(0.6,0.55,0.85,0.88);
 	  legend->SetTextFont(72);
 	  legend->SetTextSize(0.04);
-	  legend->AddEntry(kin_zz_zx[iv],"Z+X","f");
-          legend->AddEntry(h3bis[iv],"t#bar{t}Z, WWZ","f");
-	  legend->AddEntry(h1bis[iv],"q#bar{q}#rightarrowZZ","f");
-	  legend->AddEntry(h4[iv],"gg#rightarrowZZ","f");
-	  legend->AddEntry(h5[iv],"VBS","f");
-	  legend->AddEntry(h0[iv],"Data","lep");
+	  legend->AddEntry(hzx[iv],"Z+X","f");
+          legend->AddEntry(httzwwz[iv],"t#bar{t}Z, WWZ","f");
+	  legend->AddEntry(hqqzz[iv],"q#bar{q}#rightarrowZZ","f");
+	  legend->AddEntry(hsum1[iv],"gg#rightarrowZZ","f");
+	  legend->AddEntry(hsum2[iv],"VBS","f");
+	  legend->AddEntry(hdata[iv],"Data","lep");
 	  legend->SetBorderSize(0);
 	  
 	  //GRAPHICS
@@ -616,7 +643,7 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
           if (iv == 0 || iv > 3) hs[iv]->SetMaximum(45.*lumi/35.9E3);
 	  hs[iv]->Draw("nostack"); //old
 	  if (drawSignal[iv]) {
-	    TH1F* h77 = (TH1F*)h3[iv]->Clone();
+	    TH1F* h77 = (TH1F*)hvbs[iv]->Clone();
 	    h77->SetLineWidth(3);
 	    h77->SetLineColor(kMagenta);
 	    h77->SetFillStyle(0);
@@ -641,34 +668,34 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
 	  pad2->Draw();
 	  pad2->cd();
 	  //bottom plot
-	  TH1F *h0copy = (TH1F*) h0divide->Clone();
+	  TH1F *hdatacopy = (TH1F*) hdatadivide->Clone();
 	  //axis labels
-	  h0copy->GetXaxis()->SetLabelFont(59);//change this for font type
-	  h0copy->GetXaxis()->SetLabelSize(22);
-	  h0copy->GetYaxis()->SetLabelFont(59);//change this for font type
-	  h0copy->GetYaxis()->SetLabelSize(22);
+	  hdatacopy->GetXaxis()->SetLabelFont(59);//change this for font type
+	  hdatacopy->GetXaxis()->SetLabelSize(22);
+	  hdatacopy->GetYaxis()->SetLabelFont(59);//change this for font type
+	  hdatacopy->GetYaxis()->SetLabelSize(22);
 	  //axis titles
-	  h0copy->GetXaxis()->SetTitleFont(59); //change this for font type
-	  h0copy->GetXaxis()->SetTitleSize(22);
-	  h0copy->GetYaxis()->SetTitleFont(59); //change this for font type
-	  h0copy->GetYaxis()->SetTitleSize(22);
-	  h0copy->GetXaxis()->SetTitleOffset(4.5);
-	  h0copy->GetYaxis()->SetTitleOffset(1.7);
-	  h0copy->GetYaxis()->SetRangeUser(-1.,3.);
+	  hdatacopy->GetXaxis()->SetTitleFont(59); //change this for font type
+	  hdatacopy->GetXaxis()->SetTitleSize(22);
+	  hdatacopy->GetYaxis()->SetTitleFont(59); //change this for font type
+	  hdatacopy->GetYaxis()->SetTitleSize(22);
+	  hdatacopy->GetXaxis()->SetTitleOffset(4.5);
+	  hdatacopy->GetYaxis()->SetTitleOffset(1.7);
+	  hdatacopy->GetYaxis()->SetRangeUser(-1.,3.);
 	  
-	  h0copy->Sumw2();
-	  h0copy->SetStats(0); //clear stat box
-	  h0copy->Divide(h5[iv]); //invert divide
-	  h0copy->SetMarkerStyle(20);
+	  hdatacopy->Sumw2();
+	  hdatacopy->SetStats(0); //clear stat box
+	  hdatacopy->Divide(hsum2[iv]); //invert divide
+	  hdatacopy->SetMarkerStyle(20);
 	  string title = " ;"+titlex[iv]+"; Data/MC";
-	  h0copy->SetTitle(title.c_str());
-	  //h0copy->GetXaxis()->SetTitleSize(50);
-	  //h0copy->GetXaxis()->SetLabelSize(35);
-	  //h0copy->GetYaxis()->SetTitleSize(15);
-	  //h0copy->GetYaxis()->SetLabelSize(15);
+	  hdatacopy->SetTitle(title.c_str());
+	  //hdatacopy->GetXaxis()->SetTitleSize(50);
+	  //hdatacopy->GetXaxis()->SetLabelSize(35);
+	  //hdatacopy->GetYaxis()->SetTitleSize(15);
+	  //hdatacopy->GetYaxis()->SetLabelSize(15);
 	  
 	  //gStyle->SetLabelSize(2,"x").
-	  h0copy->Draw("ep");
+	  hdatacopy->Draw("ep");
 	  
 	  //Orizontal line
 	  TLine *line = new TLine(xmin[iv],1,xmax[iv],1);
