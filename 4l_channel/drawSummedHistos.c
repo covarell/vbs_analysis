@@ -36,7 +36,7 @@ void drawSummedHistos(){
 	  TFile fdata("template/root_output_files/data.root");
 	  sprintf(filename,"hdata_%d",iv); 
 	  hdata[iv] = (TH1F*)((fdata.Get(filename))->Clone());
-	  if (iv == 0) {for (int ibin=18; ibin < 21; ibin++) hdata[iv]->SetBinContent(ibin,0.);}
+	  if (iv == 0) {for (int ibin=16; ibin < 21; ibin++) hdata[iv]->SetBinContent(ibin,0.);}    // blind MELA > 0.75
 	  sprintf(filename,"hzx%d",iv); 
 	  hzx[iv] = (TH1F*)((fdata.Get(filename))->Clone());
 
@@ -107,8 +107,8 @@ void drawSummedHistos(){
 	  pad1->Draw();
 	  pad1->cd();
 	  //top plot
-	  hs[iv]->SetMaximum(30.*lumi/35.9);
-          if (iv == 0 || iv > 3) hs[iv]->SetMaximum(45.*lumi/35.9);
+	  hs[iv]->SetMaximum(25.*lumi/35.9);
+          if (iv == 0 || iv > 3) hs[iv]->SetMaximum(35.*lumi/35.9);
 	  hs[iv]->Draw("nostack"); //old
 	  if (drawSignal[iv]) {
 	    TH1F* h77 = (TH1F*)hvbs[iv]->Clone();
@@ -149,7 +149,7 @@ void drawSummedHistos(){
 	  hdatacopy->GetYaxis()->SetTitleSize(22);
 	  hdatacopy->GetXaxis()->SetTitleOffset(4.5);
 	  hdatacopy->GetYaxis()->SetTitleOffset(1.7);
-	  hdatacopy->GetYaxis()->SetRangeUser(-1.,3.);
+	  hdatacopy->GetYaxis()->SetRangeUser(-0.5,2.5);
 	  
 	  hdatacopy->Sumw2();
 	  hdatacopy->SetStats(0); //clear stat box
