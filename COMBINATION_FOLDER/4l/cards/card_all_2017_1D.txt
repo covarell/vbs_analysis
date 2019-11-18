@@ -2,27 +2,25 @@ imax 3 number of bins
 jmax 4 number of processes minus 1
 kmax 13 number of nuisance parameters
 ----------------------------------------------------------------------------------------------------------------------------------
-shapes *            ch1_4mu     /afs/cern.ch/work/c/covarell/vbs2017/CMSSW_8_0_26_patch1/src/vbs_analysis/4l_channel/workspace/1D_vbs4lSyst_4mu1S_2016.input_func.root $PROCESS $PROCESS_$SYSTEMATIC
-shapes *            ch2_4e      /afs/cern.ch/work/c/covarell/vbs2017/CMSSW_8_0_26_patch1/src/vbs_analysis/4l_channel/workspace/1D_vbs4lSyst_4e1S_2016.input_func.root $PROCESS $PROCESS_$SYSTEMATIC
-shapes *            ch3_2e2mu   /afs/cern.ch/work/c/covarell/vbs2017/CMSSW_8_0_26_patch1/src/vbs_analysis/4l_channel/workspace/1D_vbs4lSyst_2e2mu1S_2016.input_func.root $PROCESS $PROCESS_$SYSTEMATIC
+shapes *            ch1_4mu     /afs/cern.ch/work/c/covarell/vbs2017/CMSSW_8_0_26_patch1/src/vbs_analysis/4l_channel/workspace/1D_vbs4lSyst_4mu1S_2017.input_func.root $PROCESS $PROCESS_$SYSTEMATIC
+shapes *            ch2_4e      /afs/cern.ch/work/c/covarell/vbs2017/CMSSW_8_0_26_patch1/src/vbs_analysis/4l_channel/workspace/1D_vbs4lSyst_4e1S_2017.input_func.root $PROCESS $PROCESS_$SYSTEMATIC
+shapes *            ch3_2e2mu   /afs/cern.ch/work/c/covarell/vbs2017/CMSSW_8_0_26_patch1/src/vbs_analysis/4l_channel/workspace/1D_vbs4lSyst_2e2mu1S_2017.input_func.root $PROCESS $PROCESS_$SYSTEMATIC
 ----------------------------------------------------------------------------------------------------------------------------------
 bin          ch1_4mu      ch2_4e       ch3_2e2mu 
-observation  27		  14	       59
+observation  39		  19	       45
 #observation  -1	          -1	       -1
 ----------------------------------------------------------------------------------------------------------------------------------
 bin                                   ch1_4mu	   ch1_4mu	ch1_4mu	     ch1_4mu	  ch1_4mu      ch2_4e       ch2_4e	 ch2_4e       ch2_4e       ch2_4e       ch3_2e2mu    ch3_2e2mu    ch3_2e2mu    ch3_2e2mu  ch3_2e2mu
 process                               bkg_vbs      bkg_zjet     bkg_qqzz     bkg_ggzz     bkg_ttzwzz   bkg_vbs      bkg_zjet     bkg_qqzz     bkg_ggzz     bkg_ttzwzz	bkg_vbs      bkg_zjet     bkg_qqzz     bkg_ggzz   bkg_ttzwzz
 process                               0            1            2            3            4            0	    1            2            3            4		0            1            2            3          4 
-#rate                                  2.15427	   2.00933 	17.1208	     5.71263	  1.19477      1.97468 	    9.1128	 3.77645      3.15765	   3.96839 	24.008	     9.7088          
-#rate                                  1.88852	   1.46864 	14.8097	     5.78895	  1.05085      1.43402 	    7.82524	 3.7277       2.79161	   2.88707 	20.9818	     9.69629  
-rate                                   1.81852	   0.245643	19.8234	     5.94684	  1.61412      1.01452	    0.469177	 10.9023      3.83333 	   1.34674	2.72406	     0.804875	 30.6245     9.97788    3.36352
+rate                                  1.9953	   0.227581	22.7194	     6.87449	  2.26598      1.12399	    0.372973	 11.8508      4.43129	   1.6758	2.99819	     0.7147	  33.3423      11.5343	  4.14415
 ----------------------------------------------------------------------------------------------------------------------------------
 CMS_eff_e               lnN           -            -            -            -            -	       1.09         -            1.09         1.09         1.09         1.045         -            1.045         1.045   1.045                     
 CMS_eff_m               lnN           1.025         -            1.025         1.025      1.025        -            -            -            -            -		1.012        -             1.012        1.012	 1.012
 CMS_hzz2e2mu_Zjets      lnN           -            -            -            -            -	       -            -            -            -            -		-            0.621/1.387  -            -	  -
 CMS_hzz4e_Zjets         lnN           -            -            -            -            -	       -            0.595/1.427  -            -            -		-            -            -            -	  -
 CMS_hzz4mu_Zjets        lnN           -            0.639/1.362  -            -            -	       -            -            -            -            -		-            -            -            -	  -
-JES                     lnN           1.068         -           1.068        1.068        1.068	       1.068         -           1.068        1.068        1.068		1.068         -            1.068        1.068 	  1.068
+JES                     lnN           1.12         -           1.12        1.12        1.12	       1.12         -           1.12        1.12        1.12		1.12         -            1.12        1.12 	  1.12
 SistPDF2                lnN           1.047         -           1.031        1.021        1.027	       1.047        -            1.031        1.021        1.027	1.047         -            1.031       1.021	  1.027
 QCDScale_vbf            lnN           1.062        -      	 -           -            -	       1.062         -            -            -            -		1.062        -            -             - 	  -
 ShapeQCDscale           shape         1		   -		 -	     -		  -	       1	     -		  -	       -	    -		1	     -		  -		-	  -

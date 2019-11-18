@@ -94,10 +94,10 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
 	TH1F *hdata_ee[vars];//vbs e
 	TH1F *hdata_mm[vars];//vbs mu
 	TH1F *hdata_em[vars];//vbs e mu
-	TH1F *httzwwz[vars];//ttz + wwz
-	TH1F *httzwwz_ee[vars];//ttz + wwz e
-	TH1F *httzwwz_mm[vars];//ttz + wwz mu
-	TH1F *httzwwz_em[vars];//ttz + wwz e mu
+	TH1F *httzwzz[vars];//ttz + wwz
+	TH1F *httzwzz_ee[vars];//ttz + wwz e
+	TH1F *httzwzz_mm[vars];//ttz + wwz mu
+	TH1F *httzwzz_em[vars];//ttz + wwz e mu
 
 	for(int iv = 0; iv < vars; iv++){
 	  // sprintf(filename,"hcd%d",iv);   h_complete_data[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]); //all data
@@ -123,10 +123,10 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
 	  sprintf(filename,"hdatamm_%d",iv); hdata_mm[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);//vbs mu
 	  sprintf(filename,"hdataem_%d",iv); hdata_em[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);//vbs e mu
 	  // sprintf(filename,"h2bis_%d",iv); h2bis[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);//for 2018 rescale
-	  sprintf(filename,"httzwwz_%d",iv); httzwwz[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);//for 2018 rescale
-	  sprintf(filename,"httzwwz_ee_%d",iv); httzwwz_ee[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);//ttzwwz e
-	  sprintf(filename,"httzwwz_mm_%d",iv); httzwwz_mm[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);//ttzwwz mu
-	  sprintf(filename,"httzwwz_em_%d",iv); httzwwz_em[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);//ttzwwz e mu
+	  sprintf(filename,"httzwzz_%d",iv); httzwzz[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);//for 2018 rescale
+	  sprintf(filename,"httzwzz_ee_%d",iv); httzwzz_ee[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);//ttzwzz e
+	  sprintf(filename,"httzwzz_mm_%d",iv); httzwzz_mm[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);//ttzwzz mu
+	  sprintf(filename,"httzwzz_em_%d",iv); httzwzz_em[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);//ttzwzz e mu
 	}   
 	gStyle->SetPalette(1);
 	TFile *input_file;
@@ -189,22 +189,23 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
 	float dbkg_kin, theVar; 
 	
 	//output branches
-	TTree *tnew[4]; 
-	TFile *fnew[4];
+	TTree *tnew[5]; 
+	TFile *fnew[5];
 	//template declarations (1D) 
-	TH1F *temp_1d_4e[4];
-	TH1F *temp_1d_4mu[4];
-	TH1F *temp_1d_2e2mu[4];
+	TH1F *temp_1d_4e[5];
+	TH1F *temp_1d_4mu[5];
+	TH1F *temp_1d_2e2mu[5];
 	//template declarations (2D) 
-	TH2F *temp_zz_4e[4];
-	TH2F *temp_zz_4mu[4];
-	TH2F *temp_zz_2e2mu[4];
+	TH2F *temp_zz_4e[5];
+	TH2F *temp_zz_4mu[5];
+	TH2F *temp_zz_2e2mu[5];
 
-	for (int it=0; it < 4; it++) {
+	for (int it=0; it < 5; it++) {
 	  if (it==0) sprintf(filename,"template/root_output_files/qqzz_Moriond_%d.root",year); 
 	  if (it==1) sprintf(filename,"template/root_output_files/ggzz_Moriond_%d.root",year); 
 	  if (it==2) sprintf(filename,"template/root_output_files/vbs_Moriond_%d.root",year); 
 	  if (it==3) sprintf(filename,"template/root_output_files/data_%d.root",year); 
+	  if (it==4) sprintf(filename,"template/root_output_files/ttzwzz_Moriond_%d.root",year); 
 	  fnew[it] = new TFile(filename,"recreate");
 	  tnew[it] = new TTree("SelectedTree","SelectedTree");
 	  tnew[it]->Branch("mreco",&ZZMass,"mreco/F");
@@ -242,8 +243,8 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
 	  if (rootname[is].Contains("AllData")) j = 3;   
 	  if (rootname[is].Contains("ggTo") || rootname[is].Contains("ggZZnew")) j = 1;      
           if (rootname[is].Contains("VBFTo")) j = 2;
-	  if (rootname[is].Contains("amcatnlo")) j = 4;
-	  if (rootname[is].Contains("WWZ") || rootname[is].Contains("TTZ")) j = 5;   
+	  if (rootname[is].Contains("amcatnlo")) j = 5;
+	  if (rootname[is].Contains("WWZ") || rootname[is].Contains("TTZ")) j = 4;   
 	  //histogram declaration
 	  //TH1F *kin_zz = new TH1F("kin_zz","",bins,xmin,xmax); //was 100 bins
 	  
@@ -335,21 +336,21 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
 	      if (dbkg_kin < 0.00 || dbkg_kin > 1.00) continue;
 
 	      // fill templates
-	      if ((useMCatNLO > 0 && j==4) || j==5) {
+	      if (useMCatNLO > 0 && j==5) {
 		tnew[0]->Fill();
 		if(chan==1) { temp_zz_4mu[0]->Fill(ZZMass,dbkg_kin,weight); temp_1d_4mu[0]->Fill(dbkg_kin,weight); } 
 		else if(chan==2) { temp_zz_4e[0]->Fill(ZZMass,dbkg_kin,weight); temp_1d_4e[0]->Fill(dbkg_kin,weight); }
 	        else { temp_zz_2e2mu[0]->Fill(ZZMass,dbkg_kin,weight); temp_1d_2e2mu[0]->Fill(dbkg_kin,weight); }
-	      } else if ((useMCatNLO == 0 && j==0) || j==5) {
+	      } else if (useMCatNLO == 0 && j==0) {
 		tnew[0]->Fill();
 		if(chan==1) { temp_zz_4mu[0]->Fill(ZZMass,dbkg_kin,weight); temp_1d_4mu[0]->Fill(dbkg_kin,weight); }
 		else if(chan==2) { temp_zz_4e[0]->Fill(ZZMass,dbkg_kin,weight);  temp_1d_4e[0]->Fill(dbkg_kin,weight); }
 	        else { temp_zz_2e2mu[0]->Fill(ZZMass,dbkg_kin,weight); temp_1d_2e2mu[0]->Fill(dbkg_kin,weight); }
-	      } else if (j==1) {
-		tnew[1]->Fill();
-		temp_zz_4mu[1]->Fill(ZZMass,dbkg_kin,weight);  temp_1d_4mu[1]->Fill(dbkg_kin,weight);
-		temp_zz_4e[1]->Fill(ZZMass,dbkg_kin,weight);  temp_1d_4e[1]->Fill(dbkg_kin,weight);
-	        temp_zz_2e2mu[1]->Fill(ZZMass,dbkg_kin,weight);  temp_1d_2e2mu[1]->Fill(dbkg_kin,weight);
+	      } else if (j==1 || j==4) {
+		tnew[j]->Fill();
+		temp_zz_4mu[j]->Fill(ZZMass,dbkg_kin,weight);  temp_1d_4mu[j]->Fill(dbkg_kin,weight);
+		temp_zz_4e[j]->Fill(ZZMass,dbkg_kin,weight);  temp_1d_4e[j]->Fill(dbkg_kin,weight);
+	        temp_zz_2e2mu[j]->Fill(ZZMass,dbkg_kin,weight);  temp_1d_2e2mu[j]->Fill(dbkg_kin,weight);
 	      } else {
 		tnew[j]->Fill();
 		if(chan==1) { temp_zz_4mu[j]->Fill(ZZMass,dbkg_kin,weight);  temp_1d_4mu[j]->Fill(dbkg_kin,weight); }
@@ -409,19 +410,19 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
 		  if (chan == 3) hvbs_em[iv]->Fill(theVar,weight);          //mu+e
 		  
 		}
-		if (j==4) {
+		if (j==5) {
 		  hqqzz[iv]->Fill(theVar,weight);
 
 		  if (chan == 1) hqqzz_mm[iv]->Fill(theVar,weight); //mu
 		  if (chan == 2) hqqzz_ee[iv]->Fill(theVar,weight); //e
 		  if (chan == 3)  hqqzz_em[iv]->Fill(theVar,weight);
 		}
-		if (j==5) {
-		  httzwwz[iv]->Fill(theVar,weight);
+		if (j==4) {
+		  httzwzz[iv]->Fill(theVar,weight);
 
-		  if (chan == 1) httzwwz_mm[iv]->Fill(theVar,weight); //mu
-		  if (chan == 2) httzwwz_ee[iv]->Fill(theVar,weight); //e
-		  if (chan == 3) httzwwz_em[iv]->Fill(theVar,weight);          //mu+e
+		  if (chan == 1) httzwzz_mm[iv]->Fill(theVar,weight); //mu
+		  if (chan == 2) httzwzz_ee[iv]->Fill(theVar,weight); //e
+		  if (chan == 3) httzwzz_em[iv]->Fill(theVar,weight);          //mu+e
 		}
 		  
 		//kin_zz->GetYaxis()->SetTitle("Events/0.05");
@@ -494,9 +495,9 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
 	  }
 	}
 	
-	for (int it=0; it < 4; it++) {
+	for (int it=0; it < 5; it++) {
 	  fnew[it]->cd();
-	  if (it < 3) {
+	  if (it < 3 || it == 4) {
 	    TH2F* final_4e = rebinTemplate(temp_zz_4e[it],year,it);
 	    final_4e->Write();
 	    temp_1d_4e[it]->Write();
@@ -508,10 +509,11 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
 	    temp_1d_2e2mu[it]->Write();
 	  }
 	  for(int il = 0; il < vars; il++){
-	    if (it==0) {hqqzz[il]->Write();    httzwwz[il]->Write();}
+	    if (it==0) hqqzz[il]->Write();  
 	    if (it==1) hggzz[il]->Write();
 	    if (it==2) hvbs[il]->Write();
 	    if (it==3) {hdata[il]->Write();    hzx[il]->Write();}
+	    if (it==4) httzwzz[il]->Write();
 	  }
 	  tnew[it]->Write();
 	  fnew[it]->Close();
@@ -568,9 +570,9 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
 	      vbsee /= 2.;       vbsmumu /= 2.;
 	      } */
 	    
-	    yields << vbsmumu << "\t" << hzx_mm[iv]->Integral() << "\t" << hqqzz_mm[iv]->Integral()+httzwwz_mm[iv]->Integral() << "\t" << hggzz_mm[iv]->Integral() << "\t" << vbsee << "\t" << hzx_ee[iv]->Integral() << "\t" <<  hqqzz_ee[iv]->Integral()+httzwwz_ee[iv]->Integral() << "\t" << hggzz_ee[iv]->Integral() << "\t" << vbsemu << "\t" << hzx_em[iv]->Integral() << "\t" << hqqzz_em[iv]->Integral()+httzwwz_em[iv]->Integral() << "\t" << hggzz_em[iv]->Integral() << endl;
+	    yields << vbsmumu << "\t" << hzx_mm[iv]->Integral() << "\t" << hqqzz_mm[iv]->Integral()  << "\t" << hggzz_mm[iv]->Integral() << "\t" << httzwzz_mm[iv]->Integral() << "\t" << vbsee << "\t" << hzx_ee[iv]->Integral() << "\t" <<  hqqzz_ee[iv]->Integral()  << "\t" << hggzz_ee[iv]->Integral() << "\t" << httzwzz_ee[iv]->Integral() << "\t" << vbsemu << "\t" << hzx_em[iv]->Integral() << "\t" << hqqzz_em[iv]->Integral()  << "\t" << hggzz_em[iv]->Integral() << "\t" << httzwzz_em[iv]->Integral() << endl;
 	    yields2 << hdata_mm[iv]->Integral() << "\t" << hdata_ee[iv]->Integral() << "\t" << hdata_em[iv]->Integral() << endl;
-	    yields3 << vbsmumu_high << "\t" << hzx_mm[iv]->Integral(19,20) << "\t" << hqqzz_mm[iv]->Integral(19,20)+ httzwwz_mm[iv]->Integral(19,20) << "\t" << hggzz_mm[iv]->Integral(19,20) << "\t" << vbsee_high << "\t" << hzx_ee[iv]->Integral(19,20) << "\t" <<  hqqzz_ee[iv]->Integral(19,20)+httzwwz[iv]->Integral(19,20) << "\t" << hggzz_ee[iv]->Integral(19,20) << "\t" << vbsemu_high << "\t" << hzx_em[iv]->Integral(19,20) << "\t" << hqqzz_em[iv]->Integral(19,20)+httzwwz_em[iv]->Integral(19,20) << "\t" << hggzz_em[iv]->Integral(19,20) << endl;
+	    yields3 << vbsmumu_high << "\t" << hzx_mm[iv]->Integral(19,20) << "\t" << hqqzz_mm[iv]->Integral(19,20)  << "\t" << hggzz_mm[iv]->Integral(19,20) << "\t" << "\t" <<  httzwzz_mm[iv]->Integral(19,20) << vbsee_high << "\t" << hzx_ee[iv]->Integral(19,20) << "\t" <<  hqqzz_ee[iv]->Integral(19,20)  << "\t" << hggzz_ee[iv]->Integral(19,20) << "\t" << httzwzz[iv]->Integral(19,20) << "\t" << vbsemu_high << "\t" << hzx_em[iv]->Integral(19,20) << "\t" << hqqzz_em[iv]->Integral(19,20) << "\t" << hggzz_em[iv]->Integral(19,20) << "\t" <<  httzwzz_em[iv]->Integral(19,20) << endl;
 	    yields4 << hdata_mm[iv]->Integral(19,20) << "\t" << hdata_ee[iv]->Integral(19,20) << "\t" << hdata_em[iv]->Integral(19,20) << endl;
 	  }
 	  
@@ -579,7 +581,7 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
 	  
 	  /* if (year == 2018 && useMCatNLO > 0) {
 	    hqqzz_powheg[iv]->Multiply(hqqzz_powheg[iv],hqqzz[iv]);
-	    hqqzz_powheg[iv]->Divide(hqqzz_powheg[iv],httzwwz[iv]);
+	    hqqzz_powheg[iv]->Divide(hqqzz_powheg[iv],httzwzz[iv]);
 	    }  */
 	  //hzx[iv]->Scale(zx_integral/hzx[iv]->Integral());
 	  
@@ -592,10 +594,10 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
 	  
 	  //HISTOGRAMS ADDED TO STACK
 	  hzx[iv]->SetFillColor(kGreen);
-          httzwwz[iv]->Add(httzwwz[iv],hzx[iv],1,1);    //tt
-	  httzwwz[iv]->SetFillColor(kYellow);
-	  if (useMCatNLO == 0) hqqzz[iv]->Add(httzwwz[iv],hqqzz_powheg[iv],1,1); //real ew
-	  else hqqzz[iv]->Add(httzwwz[iv],hqqzz[iv],1,1); //real ew
+          httzwzz[iv]->Add(httzwzz[iv],hzx[iv],1,1);    //tt
+	  httzwzz[iv]->SetFillColor(kYellow);
+	  if (useMCatNLO == 0) hqqzz[iv]->Add(httzwzz[iv],hqqzz_powheg[iv],1,1); //real ew
+	  else hqqzz[iv]->Add(httzwzz[iv],hqqzz[iv],1,1); //real ew
 	  hqqzz[iv]->SetFillColor(kCyan);
 	  hsum1[iv]->Add(hqqzz[iv],hggzz[iv],1,1); //real gg
 	  hsum1[iv]->SetFillColor(kBlue);
@@ -606,7 +608,7 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
 	  hs[iv]->Add(hsum2[iv],"hist");
 	  hs[iv]->Add(hsum1[iv],"hist");
 	  hs[iv]->Add(hqqzz[iv],"hist");
-          hs[iv]->Add(httzwwz[iv],"hist");
+          hs[iv]->Add(httzwzz[iv],"hist");
 	  hs[iv]->Add(hzx[iv],"hist");
 	  TH1F *hdatadivide = (TH1F*)hdata[iv]->Clone();
 	  hs[iv]->Add(hdata[iv],"E1");
@@ -616,7 +618,7 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
 	  legend->SetTextFont(72);
 	  legend->SetTextSize(0.04);
 	  legend->AddEntry(hzx[iv],"Z+X","f");
-          legend->AddEntry(httzwwz[iv],"t#bar{t}Z, WWZ","f");
+          legend->AddEntry(httzwzz[iv],"t#bar{t}Z, WWZ","f");
 	  legend->AddEntry(hqqzz[iv],"q#bar{q}#rightarrowZZ","f");
 	  legend->AddEntry(hsum1[iv],"gg#rightarrowZZ","f");
 	  legend->AddEntry(hsum2[iv],"VBS","f");

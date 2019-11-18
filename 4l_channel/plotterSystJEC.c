@@ -108,38 +108,31 @@ void plotterSystJEC(int year = 2018, int whichSample = 1){
 	float dbkg_kin, theVar; 
 	
 	//output branches
-	/* TTree *tnew[4]; 
-	TFile *fnew[4];
+	//TTree *tnew[4]; 
+	TFile *fnew;
 	//template declarations (1D) 
-	TH1F *temp_1d_4e[4];
-	TH1F *temp_1d_4mu[4];
-	TH1F *temp_1d_2e2mu[4];
+	TH1F *temp_1d_4e[2];
+	TH1F *temp_1d_4mu[2];
+	TH1F *temp_1d_2e2mu[2];
 	//template declarations (2D) 
-	TH2F *temp_zz_4e[4];
+	/* TH2F *temp_zz_4e[4];
 	TH2F *temp_zz_4mu[4];
-	TH2F *temp_zz_2e2mu[4];
+	TH2F *temp_zz_2e2mu[4]; */
 
-	for (int it=0; it < 4; it++) {
-	  if (it==0) sprintf(filename,"template/root_output_files/qqzz_Moriond_%d.root",year); 
-	  if (it==1) sprintf(filename,"template/root_output_files/ggzz_Moriond_%d.root",year); 
-	  if (it==2) sprintf(filename,"template/root_output_files/vbs_Moriond_%d.root",year); 
-	  if (it==3) sprintf(filename,"template/root_output_files/data_%d.root",year); 
-	  fnew[it] = new TFile(filename,"recreate");
-	  tnew[it] = new TTree("SelectedTree","SelectedTree");
-	  tnew[it]->Branch("mreco",&ZZMass,"mreco/F");
-	  tnew[it]->Branch("dbkg_kin",&dbkg_kin,"dbkg_kin/F");
-	  tnew[it]->Branch("weight",&weight,"weight/F");
-	  tnew[it]->Branch("weight_up",&weight_up,"weight_up/F");
-	  tnew[it]->Branch("weight_dn",&weight_dn,"weight_dn/F");
-	  tnew[it]->Branch("chan",&chan,"chan/I");
-	  tnew[it]->Branch("vbfcate",&vbfcate,"vbfcate/I");
-	  temp_zz_4e[it] = new TH2F("temp_zz_4e","",nbins,xbin,40,0.,1.);
-	  temp_zz_4mu[it] = new TH2F("temp_zz_4mu","",nbins,xbin,40,0.,1.);
-	  temp_zz_2e2mu[it] = new TH2F("temp_zz_2e2mu","",nbins,xbin,40,0.,1.);
-	  temp_1d_4e[it] = new TH1F("temp_1d_4e","",50,0.,1.);
-	  temp_1d_4mu[it] = new TH1F("temp_1d_4mu","",50,0.,1.);
-	  temp_1d_2e2mu[it] = new TH1F("temp_1d_2e2mu","",50,0.,1.);
-	  }  */
+	if (whichSample==0) sprintf(filename,"template/root_output_files/qqzz_Moriond_JEC_%d.root",year); 
+	if (whichSample==1) sprintf(filename,"template/root_output_files/ggzz_Moriond_JEC_%d.root",year); 
+	if (whichSample==2) sprintf(filename,"template/root_output_files/vbs_Moriond_JEC_%d.root",year);
+	if (whichSample==4) sprintf(filename,"template/root_output_files/ttzwzz_Moriond_JEC_%d.root",year);
+	fnew = new TFile(filename,"recreate");
+
+	for (int it=0; it < 2; it++) {
+	  sprintf(filename,"temp_1d_4e_%d",it);
+	  temp_1d_4e[it] = new TH1F(filename,"",50,0.,1.);
+	  sprintf(filename,"temp_1d_4mu_%d",it);
+	  temp_1d_4mu[it] = new TH1F(filename,"",50,0.,1.);
+	  sprintf(filename,"temp_1d_2e2mu_%d",it);
+	  temp_1d_2e2mu[it] = new TH1F(filename,"",50,0.,1.);
+	}  
 	
 	//for loop for different samples
 	for(int is = 0; is < nSamp-1; is++){
@@ -159,7 +152,7 @@ void plotterSystJEC(int year = 2018, int whichSample = 1){
           //process class
           int j = 0;   // qqzz powheg
           bool process = false;
-	  // process = (((rootname[is].Contains("ggTo") || rootname[is].Contains("ggZZnew")) && whichSample==1) || (rootname[is].Contains("VBFTo") && whichSample==2) || (rootname[is].Contains("amcatnlo") && whichSample==0));
+	  // process = (((rootname[is].Contains("ggTo") || rootname[is].Contains("ggZZnew")) && whichSample==1) || (rootname[is].Contains("VBFTo") && whichSample==2) || (rootname[is].Contains("amcatnlo") && whichSample==0) || ((rootname[is].Contains("WWZ") || rootname[is].Contains("TTZ")) && whichSample == 4));
 	   process = ((rootname[is].Contains("ZZTo4l") && !(rootname[is].Contains("amcatnlo"))));
 	  if (!process) continue;
 	  
@@ -227,194 +220,181 @@ void plotterSystJEC(int year = 2018, int whichSample = 1){
 	  for(int iv=0;iv<vars;iv++){
 
 	    for(int i=0;i<enne;i++){
-	    tqqzz->GetEntry(i);
+	      tqqzz->GetEntry(i);
 	    
-	   	    //unique selection condition (see paper page 8) & DiJetMass condition
-	    // if(DiJetMass>100 && nExtraLep==0 && ZZMass > 160 &&(((nCleanedJetsPt30==2||nCleanedJetsPt30==3)&&nCleanedJetsPt30BTagged_bTagSF<=1)||(nCleanedJetsPt30>=4&&nCleanedJetsPt30BTagged_bTagSF==0))){
-	    
-	    if(ZZMass > 180 && Z1Mass < 120 && Z1Mass > 60 && Z2Mass < 120 && Z2Mass > 60 && nCleanedJets>1){
-
-	      //kin variable
-              float c_mzz = c_constant*ts->Eval(ZZMass);
-	      dbkg_kin = p_JJVBF_BKG_MCFM_JECNominal/(p_JJVBF_BKG_MCFM_JECNominal+ p_JJQCD_BKG_MCFM_JECNominal*c_mzz);
-	      // TEMPORARY: probabilities with JECUp and JECDn broken!
-	      if (iv==1 && p_JJVBF_BKG_MCFM_JECUp>0 && p_JJQCD_BKG_MCFM_JECUp > 0) dbkg_kin = p_JJVBF_BKG_MCFM_JECUp/(p_JJVBF_BKG_MCFM_JECUp+ p_JJQCD_BKG_MCFM_JECUp*c_mzz);
-	      if (iv==2 && p_JJVBF_BKG_MCFM_JECDn>0 && p_JJQCD_BKG_MCFM_JECDn > 0) dbkg_kin = p_JJVBF_BKG_MCFM_JECDn/(p_JJVBF_BKG_MCFM_JECDn+ p_JJQCD_BKG_MCFM_JECDn*c_mzz);
-	      if (dbkg_kin < 0.00 || dbkg_kin > 1.00) continue;
-
-	      // recompute dijet mass (not computed if ptJet < 30...)
-	      TLorentzVector j1;
-	      float pt;
-	      if (iv==0) pt = JetPt->at(0);
-	      if (iv==1 && JetPt->at(0) < JetPtJEC_noJER->at(0)) pt = JetPtJEC_noJER->at(0);
-	      if (iv==1 && JetPt->at(0) > JetPtJEC_noJER->at(0)) pt = 2*JetPt->at(0) - JetPtJEC_noJER->at(0);
-	      if (iv==2 && JetPt->at(0) > JetPtJEC_noJER->at(0)) pt = JetPtJEC_noJER->at(0);
-	      if (iv==2 && JetPt->at(0) < JetPtJEC_noJER->at(0)) pt = 2*JetPt->at(0) - JetPtJEC_noJER->at(0);
-	      j1.SetPtEtaPhiM(pt,JetEta->at(0),JetPhi->at(0),JetMass->at(0));
-
-	      TLorentzVector j2;
-	      if (iv==0) pt = JetPt->at(1);
-	      if (iv==1 && JetPt->at(1) < JetPtJEC_noJER->at(1)) pt = JetPtJEC_noJER->at(1);
-	      if (iv==1 && JetPt->at(1) > JetPtJEC_noJER->at(1)) pt = 2*JetPt->at(1) - JetPtJEC_noJER->at(1);
-	      if (iv==2 && JetPt->at(1) > JetPtJEC_noJER->at(1)) pt = JetPtJEC_noJER->at(1);
-	      if (iv==2 && JetPt->at(1) < JetPtJEC_noJER->at(1)) pt = 2*JetPt->at(1) - JetPtJEC_noJER->at(1);
-	      j2.SetPtEtaPhiM(pt,JetEta->at(1),JetPhi->at(1),JetMass->at(1));
+	      //unique selection condition (see paper page 8) & DiJetMass condition
+	      // if(DiJetMass>100 && nExtraLep==0 && ZZMass > 160 &&(((nCleanedJetsPt30==2||nCleanedJetsPt30==3)&&nCleanedJetsPt30BTagged_bTagSF<=1)||(nCleanedJetsPt30>=4&&nCleanedJetsPt30BTagged_bTagSF==0))){
 	      
-	      // if (nCleanedJetsPt30<2 && nCleanedJetsPt30_jecUp>=2) cout << "UP!" << (j1+j2).M() << " " << nCleanedJetsPt30 << " " << nCleanedJetsPt30_jecUp << " " << dbkg_kin << endl;
-	      // if (nCleanedJetsPt30>=2 && nCleanedJetsPt30_jecDn<2) cout << "DOWN!" << (j1+j2).M() << " " << nCleanedJetsPt30 << " " << nCleanedJetsPt30_jecDn << " " << dbkg_kin << endl;
-
-	      if (/* iv == 0 && */ nCleanedJetsPt30<2) continue; 
-	      //if (iv == 1 && nCleanedJetsPt30_jecUp<2) continue; 
-	      //if (iv == 2 && nCleanedJetsPt30_jecDn<2) continue; 
-	     
-	      if ((j1+j2).M() < 100.) continue;
-	      
-	      
-	      //set vbf_category
-	      vbfcate=1;
-	      //weight definition
-	      //KFactorEWKqqZZ = 1;
-	      //KFactorQCDqqZZ_M = 1;
-	      //weight=1;
-	      
-	      weight= (sum*KFactorEWKqqZZ*overallEventWeight*KFactorQCDqqZZ_M*L1prefiringWeight*lumi)/(resum);
-	      // correct k-factor for NNLO/NLO?
-	      if (j==1) weight= (sum*overallEventWeight*KFactorQCDggzz_Nominal*L1prefiringWeight*lumi)/(resum);
-	      //if (j==1) weight /=1.7;
-              if (j==2 && year==2016) weight= (sum*overallEventWeight*L1prefiringWeight*lumi)/(resum);
-              if (j==2 && year>2016) weight= (sum*overallEventWeight*L1prefiringWeight*lumi)/(genHEPMCweight*resum);             
-	    
-	 	   
-	      //TEMPORARY FOR MISSING 2e2mu SAMPLE
-	      //if (j==2 && year==2017) weight *= 2.;
-
-	      //division in channels
-	      if(abs(Z1Flav)==abs(Z2Flav) && abs(Z1Flav)==121) chan=2;
-	      else if (abs(Z1Flav)==abs(Z2Flav) && abs(Z1Flav)!=121) chan=1;
-	      else chan=3;
-	      
-	      
-
-	      // fill templates
-	      /* if ((useMCatNLO > 0 && j==4) || j==5) {
-		tnew[0]->Fill();
-		if(chan==1) { temp_zz_4mu[0]->Fill(ZZMass,dbkg_kin,weight); temp_1d_4mu[0]->Fill(dbkg_kin,weight); } 
-		else if(chan==2) { temp_zz_4e[0]->Fill(ZZMass,dbkg_kin,weight); temp_1d_4e[0]->Fill(dbkg_kin,weight); }
-	        else { temp_zz_2e2mu[0]->Fill(ZZMass,dbkg_kin,weight); temp_1d_2e2mu[0]->Fill(dbkg_kin,weight); }
-	      } else if ((useMCatNLO == 0 && j==0) || j==5) {
-		tnew[0]->Fill();
-		if(chan==1) { temp_zz_4mu[0]->Fill(ZZMass,dbkg_kin,weight); temp_1d_4mu[0]->Fill(dbkg_kin,weight); }
-		else if(chan==2) { temp_zz_4e[0]->Fill(ZZMass,dbkg_kin,weight);  temp_1d_4e[0]->Fill(dbkg_kin,weight); }
-	        else { temp_zz_2e2mu[0]->Fill(ZZMass,dbkg_kin,weight); temp_1d_2e2mu[0]->Fill(dbkg_kin,weight); }
-	      } else if (j==1) {
-		tnew[1]->Fill();
-		temp_zz_4mu[1]->Fill(ZZMass,dbkg_kin,weight);  temp_1d_4mu[1]->Fill(dbkg_kin,weight);
-		temp_zz_4e[1]->Fill(ZZMass,dbkg_kin,weight);  temp_1d_4e[1]->Fill(dbkg_kin,weight);
-	        temp_zz_2e2mu[1]->Fill(ZZMass,dbkg_kin,weight);  temp_1d_2e2mu[1]->Fill(dbkg_kin,weight);
-	      } else {
-		tnew[j]->Fill();
-		if(chan==1) { temp_zz_4mu[j]->Fill(ZZMass,dbkg_kin,weight);  temp_1d_4mu[j]->Fill(dbkg_kin,weight); }
-		else if(chan==2) { temp_zz_4e[j]->Fill(ZZMass,dbkg_kin,weight); temp_1d_4e[j]->Fill(dbkg_kin,weight); } 
-	        else { temp_zz_2e2mu[j]->Fill(ZZMass,dbkg_kin,weight);  temp_1d_2e2mu[j]->Fill(dbkg_kin,weight); }
-		}  */
-
-             
-	      h1[iv]->Fill(dbkg_kin,weight);
-	    }
-	  }//entries loop  end
-	}//file loop  end
-       
-	  /* for (int it=0; it < 4; it++) {
-	  fnew[it]->cd();
-	  if (it < 3) {
-	    TH2F* final_4e = rebinTemplate(temp_zz_4e[it],year,it);
-	    final_4e->Write();
-	    temp_1d_4e[it]->Write();
-	    TH2F* final_4mu = rebinTemplate(temp_zz_4mu[it],year,it);
-	    final_4mu->Write();
-	    temp_1d_4mu[it]->Write();
-	    TH2F* final_2e2mu = rebinTemplate(temp_zz_2e2mu[it],year,it);
-	    final_2e2mu->Write();
-	    temp_1d_2e2mu[it]->Write();
-	  }
-	  tnew[it]->Write();
-	  fnew[it]->Close();
-	} */
-	  for(int iv=0;iv<vars;iv++){
-            hratio[iv]->Add(h1[iv],h1[0],1,-1);
-	    hratio[iv]->Divide(hratio[iv],h1[0]);
-	  } 
-	  
-	  /* for(int binx=1;binx<hratio[0]->GetXaxis()->GetNbins()+1;binx++){
-	    float theMax = 0;   float theMin = 0;
-	    for(int iv=1;iv<vars;iv++){  
-	      if (hratio[iv]->GetBinContent(binx) > theMax) {
-		hratio[vars]->SetBinContent(binx, hratio[iv]->GetBinContent(binx));  
-		hratio[vars]->SetBinError(binx, hratio[iv]->GetBinError(binx));
-		theMax = hratio[iv]->GetBinContent(binx); 
+	      if(ZZMass > 180 && Z1Mass < 120 && Z1Mass > 60 && Z2Mass < 120 && Z2Mass > 60 && nCleanedJets>1){
+		
+		//kin variable
+		float c_mzz = c_constant*ts->Eval(ZZMass);
+		dbkg_kin = p_JJVBF_BKG_MCFM_JECNominal/(p_JJVBF_BKG_MCFM_JECNominal+ p_JJQCD_BKG_MCFM_JECNominal*c_mzz);
+		// TEMPORARY: probabilities with JECUp and JECDn broken!
+		if (iv==1 && p_JJVBF_BKG_MCFM_JECUp>0 && p_JJQCD_BKG_MCFM_JECUp > 0) dbkg_kin = p_JJVBF_BKG_MCFM_JECUp/(p_JJVBF_BKG_MCFM_JECUp+ p_JJQCD_BKG_MCFM_JECUp*c_mzz);
+		if (iv==2 && p_JJVBF_BKG_MCFM_JECDn>0 && p_JJQCD_BKG_MCFM_JECDn > 0) dbkg_kin = p_JJVBF_BKG_MCFM_JECDn/(p_JJVBF_BKG_MCFM_JECDn+ p_JJQCD_BKG_MCFM_JECDn*c_mzz);
+		if (dbkg_kin < 0.00 || dbkg_kin > 1.00) continue;
+		
+		// recompute dijet mass (not computed if ptJet < 30...)
+		TLorentzVector j1;
+		float pt;
+		if (iv==0) pt = JetPt->at(0);
+		if (iv==1 && JetPt->at(0) < JetPtJEC_noJER->at(0)) pt = JetPtJEC_noJER->at(0);
+		if (iv==1 && JetPt->at(0) > JetPtJEC_noJER->at(0)) pt = 2*JetPt->at(0) - JetPtJEC_noJER->at(0);
+		if (iv==2 && JetPt->at(0) > JetPtJEC_noJER->at(0)) pt = JetPtJEC_noJER->at(0);
+		if (iv==2 && JetPt->at(0) < JetPtJEC_noJER->at(0)) pt = 2*JetPt->at(0) - JetPtJEC_noJER->at(0);
+		j1.SetPtEtaPhiM(pt,JetEta->at(0),JetPhi->at(0),JetMass->at(0));
+		
+		TLorentzVector j2;
+		if (iv==0) pt = JetPt->at(1);
+		if (iv==1 && JetPt->at(1) < JetPtJEC_noJER->at(1)) pt = JetPtJEC_noJER->at(1);
+		if (iv==1 && JetPt->at(1) > JetPtJEC_noJER->at(1)) pt = 2*JetPt->at(1) - JetPtJEC_noJER->at(1);
+		if (iv==2 && JetPt->at(1) > JetPtJEC_noJER->at(1)) pt = JetPtJEC_noJER->at(1);
+		if (iv==2 && JetPt->at(1) < JetPtJEC_noJER->at(1)) pt = 2*JetPt->at(1) - JetPtJEC_noJER->at(1);
+		j2.SetPtEtaPhiM(pt,JetEta->at(1),JetPhi->at(1),JetMass->at(1));
+		
+		// if (nCleanedJetsPt30<2 && nCleanedJetsPt30_jecUp>=2) cout << "UP!" << (j1+j2).M() << " " << nCleanedJetsPt30 << " " << nCleanedJetsPt30_jecUp << " " << dbkg_kin << endl;
+		// if (nCleanedJetsPt30>=2 && nCleanedJetsPt30_jecDn<2) cout << "DOWN!" << (j1+j2).M() << " " << nCleanedJetsPt30 << " " << nCleanedJetsPt30_jecDn << " " << dbkg_kin << endl;
+		
+		if (iv == 0 && nCleanedJetsPt30<2) continue; 
+		if (iv == 1 && nCleanedJetsPt30_jecUp<2) continue; 
+		if (iv == 2 && nCleanedJetsPt30_jecDn<2) continue; 
+		
+		if ((j1+j2).M() < 100.) continue;
+		
+		
+		//set vbf_category
+		vbfcate=1;
+		//weight definition
+		//KFactorEWKqqZZ = 1;
+		//KFactorQCDqqZZ_M = 1;
+		//weight=1;
+		
+		weight= (xsec*overallEventWeight*L1prefiringWeight*lumi)/(resum);
+		if (j==0) weight= (xsec*KFactorEWKqqZZ*overallEventWeight*KFactorQCDqqZZ_M*L1prefiringWeight*lumi)/(resum);
+		// correct k-factor for NNLO/NLO?
+		if (j==1) weight= (xsec*overallEventWeight*KFactorQCDggzz_Nominal*L1prefiringWeight*lumi)/(resum);
+		//if (j==1) weight /=1.7;
+		if (j==2 && year==2016) weight= (xsec*overallEventWeight*L1prefiringWeight*lumi)/(resum);
+		if (j==2 && year>2016) weight= (xsec*overallEventWeight*L1prefiringWeight*lumi)/(genHEPMCweight*resum);             
+		
+	 	
+		//TEMPORARY FOR MISSING 2e2mu SAMPLE
+		//if (j==2 && year==2017) weight *= 2.;
+		
+		//division in channels
+		if(abs(Z1Flav)==abs(Z2Flav) && abs(Z1Flav)==121) chan=2;
+		else if (abs(Z1Flav)==abs(Z2Flav) && abs(Z1Flav)!=121) chan=1;
+		else chan=3;
+		
+		// fill templates
+		if (iv == 0) {
+		  for (int it=0; it < 2; it++) {
+		    if (j==1 || j==4) {
+		      temp_1d_4mu[it]->Fill(dbkg_kin,weight);
+		      temp_1d_4e[it]->Fill(dbkg_kin,weight);
+		      temp_1d_2e2mu[it]->Fill(dbkg_kin,weight);
+		    } else if (j==0 || j==2) {
+		      if(chan==1) temp_1d_4mu[it]->Fill(dbkg_kin,weight); 
+		      else if(chan==2) temp_1d_4e[it]->Fill(dbkg_kin,weight);  
+		      else temp_1d_2e2mu[it]->Fill(dbkg_kin,weight); 
+		    }  
+		  }
+		}
+		
+		h1[iv]->Fill(dbkg_kin,weight);
 	      }
-	      if (hratio[iv]->GetBinContent(binx) < theMin) {
-		hratio[vars+1]->SetBinContent(binx, hratio[iv]->GetBinContent(binx));  
-		hratio[vars+1]->SetBinError(binx, hratio[iv]->GetBinError(binx));
-		theMin = hratio[iv]->GetBinContent(binx);
-	      } 
-	    }
-	    } */
-	  
-	  hratio[0]->SetLineColor(1);
-	  hratio[1]->SetLineColor(2);
-	  hratio[2]->SetLineColor(4);
-	
-	  // draw the legend
-	  TLegend *legend=new TLegend(0.6,0.75,0.85,0.88);
-	  legend->SetTextFont(72);
-	  legend->SetTextSize(0.04);
-	 
-	  legend->AddEntry(hratio[0],"nominal","lep");
-	  legend->AddEntry(hratio[1],"up","lep");
-	  legend->AddEntry(hratio[2],"down","lep");
-	  legend->SetBorderSize(0);
-	  
-	  //GRAPHICS
-	  //hs->GetXaxis()->SetTitle("K_{D}");
-	  //hs->GetXaxis()->SetTitleSize(.15);
-	  //hs->GetYaxis()->SetTitle("Events/0.05");
-	  //hs->GetYaxis()->SetTitleSize(.15);
-	  
-	  //RATIO PLOT
-	  //canvas
-	  TCanvas *c1 = new TCanvas("c1","example",800,800);
-	  //pad1
-	  /* float eps =0;// 0.006;
-	  TPad *pad1 = new TPad("pad1","pad1",0,0.3,1,1,0);
-	  pad1->SetBottomMargin(0);
-	  pad1->Draw();
-	  pad1->cd();  */
-	  //top plot
-	  hratio[0]->GetXaxis()->SetTitle(titlex.c_str());
-	  hratio[0]->SetMaximum(0.8);
-          hratio[0]->SetMinimum(-0.8);
-	  /* h1[0]->SetLineColor(1);
-	  h1[1]->SetLineColor(2);
-	  h1[2]->SetLineColor(4);
-	  h1[0]->Draw("hist");
-	  h1[1]->Draw("same");
-	  h1[2]->Draw("same"); */  
-	  hratio[0]->Draw(); //old
-          hratio[1]->Fit("pol0","","e1same");
-          hratio[2]->Fit("pol0","","e1same");
-	  legend->Draw("same");
-	  TLine *line = new TLine(xmin,0.,xmax,0.);
-	  line->SetLineColor(kBlack);
-	  line->SetLineStyle(2);
-	  line->Draw("same");
-	  //switch?
-	  
-	  //close and print on file
-	  // c1->cd();
-	  if (whichSample == 0) sprintf(filename,"syst/%s_qqZZ_SystJEC_%d.png",namegif.c_str(),year);      
-	  if (whichSample == 1) sprintf(filename,"syst/%s_ggZZ_SystJEC_%d.png",namegif.c_str(),year);
-	  if (whichSample == 2) sprintf(filename,"syst/%s_VBS_SystJEC_%d.png",namegif.c_str(),year);
-	  c1->Print(filename);
+	    }//entries loop  end
+	  }//file loop  end
 	}
+	  
+	for(int iv=0;iv<vars;iv++){
+	  hratio[iv]->Add(h1[iv],h1[0],1,-1);
+	  hratio[iv]->Divide(hratio[iv],h1[0]);
+	} 
+	
+	/* for(int binx=1;binx<hratio[0]->GetXaxis()->GetNbins()+1;binx++){
+	   float theMax = 0;   float theMin = 0;
+	   for(int iv=1;iv<vars;iv++){  
+	   if (hratio[iv]->GetBinContent(binx) > theMax) {
+	   hratio[vars]->SetBinContent(binx, hratio[iv]->GetBinContent(binx));  
+	   hratio[vars]->SetBinError(binx, hratio[iv]->GetBinError(binx));
+	   theMax = hratio[iv]->GetBinContent(binx); 
+	   }
+	   if (hratio[iv]->GetBinContent(binx) < theMin) {
+	   hratio[vars+1]->SetBinContent(binx, hratio[iv]->GetBinContent(binx));  
+	   hratio[vars+1]->SetBinError(binx, hratio[iv]->GetBinError(binx));
+	   theMin = hratio[iv]->GetBinContent(binx);
+	   } 
+	   }
+	   } */
+	
+	hratio[0]->SetLineColor(1);
+	hratio[1]->SetLineColor(2);
+	hratio[2]->SetLineColor(4);
+	
+	for(int binx=1;binx<temp_1d_4e[0]->GetXaxis()->GetNbins()+1;binx++){
+	  int theOtherBin = hratio[vars]->FindBin(temp_1d_4e[0]->GetBinCenter(binx));  
+	  temp_1d_4e[0]->SetBinContent(binx,temp_1d_4e[0]->GetBinContent(binx)*(1.+hratio[1]->GetBinContent(theOtherBin)));
+	  temp_1d_4mu[0]->SetBinContent(binx,temp_1d_4mu[0]->GetBinContent(binx)*(1.+hratio[1]->GetBinContent(theOtherBin)));
+	  temp_1d_2e2mu[0]->SetBinContent(binx,temp_1d_2e2mu[0]->GetBinContent(binx)*(1.+hratio[1]->GetBinContent(theOtherBin)));
+	  temp_1d_4e[1]->SetBinContent(binx,temp_1d_4e[1]->GetBinContent(binx)*(1.+hratio[2]->GetBinContent(theOtherBin)));
+	  temp_1d_4mu[1]->SetBinContent(binx,temp_1d_4mu[1]->GetBinContent(binx)*(1.+hratio[2]->GetBinContent(theOtherBin)));
+	  temp_1d_2e2mu[1]->SetBinContent(binx,temp_1d_2e2mu[1]->GetBinContent(binx)*(1.+hratio[2]->GetBinContent(theOtherBin)));
+	  
+	} 
+	
+	// draw the legend
+	TLegend *legend=new TLegend(0.6,0.75,0.85,0.88);
+	legend->SetTextFont(72);
+	legend->SetTextSize(0.04);
+	
+	legend->AddEntry(hratio[0],"nominal","lep");
+	legend->AddEntry(hratio[1],"up","lep");
+	legend->AddEntry(hratio[2],"down","lep");
+	legend->SetBorderSize(0);
+	
+	//GRAPHICS
+	//hs->GetXaxis()->SetTitle("K_{D}");
+	//hs->GetXaxis()->SetTitleSize(.15);
+	//hs->GetYaxis()->SetTitle("Events/0.05");
+	//hs->GetYaxis()->SetTitleSize(.15);
+	
+	//RATIO PLOT
+	//canvas
+	TCanvas *c1 = new TCanvas("c1","example",800,800);
+	//pad1
+	/* float eps =0;// 0.006;
+	   TPad *pad1 = new TPad("pad1","pad1",0,0.3,1,1,0);
+	   pad1->SetBottomMargin(0);
+	   pad1->Draw();
+	   pad1->cd();  */
+	//top plot
+	hratio[0]->GetXaxis()->SetTitle(titlex.c_str());
+	hratio[0]->SetMaximum(0.8);
+	hratio[0]->SetMinimum(-0.8);
+	/* h1[0]->SetLineColor(1);
+	   h1[1]->SetLineColor(2);
+	   h1[2]->SetLineColor(4);
+	   h1[0]->Draw("hist");
+	   h1[1]->Draw("same");
+	   h1[2]->Draw("same"); */  
+	hratio[0]->Draw(); //old
+	hratio[1]->Fit("pol0","","e1same");
+	hratio[2]->Fit("pol0","","e1same");
+	legend->Draw("same");
+	TLine *line = new TLine(xmin,0.,xmax,0.);
+	line->SetLineColor(kBlack);
+	line->SetLineStyle(2);
+	line->Draw("same");
+	//switch?
+	
+	//close and print on file
+	// c1->cd();
+	if (whichSample == 0) sprintf(filename,"syst/%s_qqZZ_SystJEC_%d.png",namegif.c_str(),year);      
+	if (whichSample == 1) sprintf(filename,"syst/%s_ggZZ_SystJEC_%d.png",namegif.c_str(),year);
+	if (whichSample == 2) sprintf(filename,"syst/%s_VBS_SystJEC_%d.png",namegif.c_str(),year);
+	if (whichSample == 4) sprintf(filename,"syst/%s_ttZWZZ_SystJEC_%d.png",namegif.c_str(),year);
+	c1->Print(filename);
+	
 }
