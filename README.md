@@ -30,11 +30,13 @@ plotterAndTemplateMaker.c -> The file reads 4l MC + data (from relevant reposito
 - 1D pictures portraying all contributions (&lt;directory&gt;/&lt;variable&gt;_allaMCatNLO_&lt;year&gt;.png)
 - 1D templates, selected trees and their pictures (in template/root_output_files/ divided by MC/data contributions) 
 - yields for MC and data (MC/datayields_&lt;year&gt;.txt, to be copied in the combine cards) 
+
 Run with: plotterAndTemplateMaker(&lt;year&gt;,1,&lt;ifVBSenriched&gt;)  <- last option not available yet
 
 plotterSystXXX.c -> Evaluates normalization systematics (by a constant fit to up and down variations of systematic
 effect XXX and if needed, stores alternative templates in template/root_output_files/.
-Run with: plotterSystXXX(&lt;year&gt;,&lt;MC sample&gt;) 
+
+Run with: plotterSystXXX(&lt;year&gt;,&lt;MC sample&gt;) .
 MC sample: 0 = qqZZ, 1 = ggZZ, 2 = EWK ZZ, 4 = ttbarZ+WWZ
 
 bkg_Workspace1d.c -> Generation of workspaces for signal and background (devided by component: vbs, qqZZ etc..). 
