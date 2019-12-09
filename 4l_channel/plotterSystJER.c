@@ -3,7 +3,7 @@
 #include <TString.h>
 #include <memory>
 
-void plotterSystJEC(int year = 2018, int whichSample = 1){
+void plotterSystJER(int year = 2018, int whichSample = 1){
   
        //whichSample = 0 : use just qqZZ
        //whichSample = 1 : use just ggZZ
@@ -55,7 +55,7 @@ void plotterSystJEC(int year = 2018, int whichSample = 1){
         // find available samples  
 	int nSamp = 0;  
 	TString rootname[40];
- 	sprintf(filename,"newsamples%d_withMGggZZandVBS.txt",year);
+ 	sprintf(filename,"badsamples%d_withMGggZZandVBS.txt",year);
 
 	ifstream parInput(filename);
         
@@ -73,7 +73,8 @@ void plotterSystJEC(int year = 2018, int whichSample = 1){
 	float xsec,KFactorEWKqqZZ,overallEventWeight,L1prefiringWeight,genHEPMCweight,KFactorQCDqqZZ_M;
 	vector<float> *LepPt=new vector<float>;
 	vector<float> *JetPt=new vector<float>;
-	vector<float> *JetPtJEC_noJER=new vector<float>;
+	vector<float> *JetPt_JERUp=new vector<float>;
+	vector<float> *JetPt_JERDown=new vector<float>;
 	vector<float> *JetEta=new vector<float>;
 	vector<float> *JetPhi=new vector<float>;
 	vector<float> *JetMass=new vector<float>;
@@ -87,17 +88,17 @@ void plotterSystJEC(int year = 2018, int whichSample = 1){
 	short nExtraLep;
 	short nCleanedJets;
 	short nCleanedJetsPt30BTagged_bTagSF;
-	short nCleanedJetsPt30_jecUp;
-	short nCleanedJetsPt30_jecDn;
+	short nCleanedJetsPt30_jerUp;
+	short nCleanedJetsPt30_jerDn;
 	
 	//new variable declarations
 	float p_JJEW_BKG_MCFM_JECNominal; //not in use
 	float p_JJQCD_BKG_MCFM_JECNominal;
 	float p_JJVBF_BKG_MCFM_JECNominal;
-	float p_JJQCD_BKG_MCFM_JECUp;
-	float p_JJVBF_BKG_MCFM_JECUp;
-	float p_JJQCD_BKG_MCFM_JECDn;
-	float p_JJVBF_BKG_MCFM_JECDn;
+	float p_JJQCD_BKG_MCFM_JERUp;
+	float p_JJVBF_BKG_MCFM_JERUp;
+	float p_JJQCD_BKG_MCFM_JERDn;
+	float p_JJVBF_BKG_MCFM_JERDn;
 	float KFactorQCDggzz_Nominal;
 
 	//additional and output variable declarations
@@ -119,10 +120,10 @@ void plotterSystJEC(int year = 2018, int whichSample = 1){
 	TH2F *temp_zz_4mu[4];
 	TH2F *temp_zz_2e2mu[4]; */
 
-	if (whichSample==0) sprintf(filename,"template/root_output_files/qqzz_Moriond_JEC_%d.root",year); 
-	if (whichSample==1) sprintf(filename,"template/root_output_files/ggzz_Moriond_JEC_%d.root",year); 
-	if (whichSample==2) sprintf(filename,"template/root_output_files/vbs_Moriond_JEC_%d.root",year);
-	if (whichSample==4) sprintf(filename,"template/root_output_files/ttzwzz_Moriond_JEC_%d.root",year);
+	if (whichSample==0) sprintf(filename,"template/root_output_files/qqzz_Moriond_JER_%d.root",year); 
+	if (whichSample==1) sprintf(filename,"template/root_output_files/ggzz_Moriond_JER_%d.root",year); 
+	if (whichSample==2) sprintf(filename,"template/root_output_files/vbs_Moriond_JER_%d.root",year);
+	if (whichSample==4) sprintf(filename,"template/root_output_files/ttzwzz_Moriond_JER_%d.root",year);
 	fnew = new TFile(filename,"recreate");
 
 	for (int it=0; it < 2; it++) {
@@ -152,8 +153,8 @@ void plotterSystJEC(int year = 2018, int whichSample = 1){
           //process class
           int j = 0;   // qqzz powheg
           bool process = false;
-	  // process = (((rootname[is].Contains("ggTo") || rootname[is].Contains("ggZZnew")) && whichSample==1) || (rootname[is].Contains("VBFTo") && whichSample==2) || (rootname[is].Contains("amcatnlo") && whichSample==0) || ((rootname[is].Contains("WWZ") || rootname[is].Contains("TTZ")) && whichSample == 4));
-	   process = ((rootname[is].Contains("ZZTo4l") && !(rootname[is].Contains("amcatnlo"))));
+	  process = (((rootname[is].Contains("ggTo") || rootname[is].Contains("ggZZnew")) && whichSample==1) || (rootname[is].Contains("VBFTo") && whichSample==2) || (rootname[is].Contains("amcatnlo") && whichSample==0) || ((rootname[is].Contains("WWZ") || rootname[is].Contains("TTZ")) && whichSample == 4));
+	  // process = ((rootname[is].Contains("ZZTo4l") && !(rootname[is].Contains("amcatnlo"))));
 	  if (!process) continue;
 	  
 	  j = whichSample;
@@ -184,7 +185,8 @@ void plotterSystJEC(int year = 2018, int whichSample = 1){
 	  tqqzz->SetBranchAddress("LepLepId",&LepLepId);
 	  tqqzz->SetBranchAddress("LepPt",&LepPt);
           tqqzz->SetBranchAddress("JetPt",&JetPt);
-	  tqqzz->SetBranchAddress("JetPtJEC_noJER",&JetPtJEC_noJER);
+	  tqqzz->SetBranchAddress("JetPt_JERUp",&JetPt_JERUp);
+          tqqzz->SetBranchAddress("JetPt_JERDown",&JetPt_JERDown);
           tqqzz->SetBranchAddress("JetEta",&JetEta);
 	  tqqzz->SetBranchAddress("JetPhi",&JetPhi);
           tqqzz->SetBranchAddress("JetMass",&JetMass);
@@ -194,17 +196,17 @@ void plotterSystJEC(int year = 2018, int whichSample = 1){
 	  tqqzz->SetBranchAddress("KFactor_QCD_qqZZ_M",&KFactorQCDqqZZ_M);
 	  tqqzz->SetBranchAddress("nCleanedJets",&nCleanedJets);
 	  tqqzz->SetBranchAddress("nCleanedJetsPt30",&nCleanedJetsPt30);
-	  tqqzz->SetBranchAddress("nCleanedJetsPt30_jecUp",&nCleanedJetsPt30_jecUp);
-	  tqqzz->SetBranchAddress("nCleanedJetsPt30_jecDn",&nCleanedJetsPt30_jecDn);
+	  tqqzz->SetBranchAddress("nCleanedJetsPt30_jerUp",&nCleanedJetsPt30_jerUp);
+	  tqqzz->SetBranchAddress("nCleanedJetsPt30_jerDn",&nCleanedJetsPt30_jerDn);
 	  
 	  //new branch addresses
 	  tqqzz->SetBranchAddress("p_JJEW_BKG_MCFM_JECNominal",&p_JJEW_BKG_MCFM_JECNominal);
 	  tqqzz->SetBranchAddress("p_JJVBF_BKG_MCFM_JECNominal",&p_JJVBF_BKG_MCFM_JECNominal);
 	  tqqzz->SetBranchAddress("p_JJQCD_BKG_MCFM_JECNominal",&p_JJQCD_BKG_MCFM_JECNominal);
-	  tqqzz->SetBranchAddress("p_JJVBF_BKG_MCFM_JECUp",&p_JJVBF_BKG_MCFM_JECUp);
-	  tqqzz->SetBranchAddress("p_JJQCD_BKG_MCFM_JECDn",&p_JJQCD_BKG_MCFM_JECUp);
-	  tqqzz->SetBranchAddress("p_JJVBF_BKG_MCFM_JECDn",&p_JJVBF_BKG_MCFM_JECDn);
-	  tqqzz->SetBranchAddress("p_JJQCD_BKG_MCFM_JECDn",&p_JJQCD_BKG_MCFM_JECDn);	  
+	  tqqzz->SetBranchAddress("p_JJVBF_BKG_MCFM_JERUp",&p_JJVBF_BKG_MCFM_JERUp);
+	  tqqzz->SetBranchAddress("p_JJQCD_BKG_MCFM_JERDn",&p_JJQCD_BKG_MCFM_JERUp);
+	  tqqzz->SetBranchAddress("p_JJVBF_BKG_MCFM_JERDn",&p_JJVBF_BKG_MCFM_JERDn);
+	  tqqzz->SetBranchAddress("p_JJQCD_BKG_MCFM_JERDn",&p_JJQCD_BKG_MCFM_JERDn);	  
 	  tqqzz->SetBranchAddress("DiJetMass",&DiJetMass);
           tqqzz->SetBranchAddress("DiJetDEta",&DiJetDEta);
 	  tqqzz->SetBranchAddress("KFactor_QCD_ggZZ_Nominal",&KFactorQCDggzz_Nominal);
@@ -225,43 +227,36 @@ void plotterSystJEC(int year = 2018, int whichSample = 1){
 	      //unique selection condition (see paper page 8) & DiJetMass condition
 	      // if(DiJetMass>100 && nExtraLep==0 && ZZMass > 160 &&(((nCleanedJetsPt30==2||nCleanedJetsPt30==3)&&nCleanedJetsPt30BTagged_bTagSF<=1)||(nCleanedJetsPt30>=4&&nCleanedJetsPt30BTagged_bTagSF==0))){
 	      
-	      if(ZZMass > 180 && Z1Mass < 120 && Z1Mass > 60 && Z2Mass < 120 && Z2Mass > 60 && nCleanedJets>1){
+	      if(ZZMass > 180 && Z1Mass < 120 && Z1Mass > 60 && Z2Mass < 120 && Z2Mass > 60){
+
+		if (iv == 0 && nCleanedJetsPt30<2) continue; 
+		if (iv == 1 && nCleanedJetsPt30_jerUp<2) continue; 
+		if (iv == 2 && nCleanedJetsPt30_jerDn<2) continue;
 		
 		//kin variable
 		float c_mzz = c_constant*ts->Eval(ZZMass);
 		dbkg_kin = p_JJVBF_BKG_MCFM_JECNominal/(p_JJVBF_BKG_MCFM_JECNominal+ p_JJQCD_BKG_MCFM_JECNominal*c_mzz);
-		// TEMPORARY: probabilities with JECUp and JECDn broken!
-		if (iv==1 && p_JJVBF_BKG_MCFM_JECUp>0 && p_JJQCD_BKG_MCFM_JECUp > 0) dbkg_kin = p_JJVBF_BKG_MCFM_JECUp/(p_JJVBF_BKG_MCFM_JECUp+ p_JJQCD_BKG_MCFM_JECUp*c_mzz);
-		if (iv==2 && p_JJVBF_BKG_MCFM_JECDn>0 && p_JJQCD_BKG_MCFM_JECDn > 0) dbkg_kin = p_JJVBF_BKG_MCFM_JECDn/(p_JJVBF_BKG_MCFM_JECDn+ p_JJQCD_BKG_MCFM_JECDn*c_mzz);
+		if (iv==1 && p_JJVBF_BKG_MCFM_JERUp>0 && p_JJQCD_BKG_MCFM_JERUp > 0) dbkg_kin = p_JJVBF_BKG_MCFM_JERUp/(p_JJVBF_BKG_MCFM_JERUp+ p_JJQCD_BKG_MCFM_JERUp*c_mzz);
+		if (iv==2 && p_JJVBF_BKG_MCFM_JERDn>0 && p_JJQCD_BKG_MCFM_JERDn > 0) dbkg_kin = p_JJVBF_BKG_MCFM_JERDn/(p_JJVBF_BKG_MCFM_JERDn+ p_JJQCD_BKG_MCFM_JERDn*c_mzz);
 		if (dbkg_kin < 0.00 || dbkg_kin > 1.00) continue;
 		
 		// recompute dijet mass (not computed if ptJet < 30...)
 		TLorentzVector j1;
 		float pt;
 		if (iv==0) pt = JetPt->at(0);
-		if (iv==1 && JetPt->at(0) < JetPtJEC_noJER->at(0)) pt = JetPtJEC_noJER->at(0);
-		if (iv==1 && JetPt->at(0) > JetPtJEC_noJER->at(0)) pt = 2*JetPt->at(0) - JetPtJEC_noJER->at(0);
-		if (iv==2 && JetPt->at(0) > JetPtJEC_noJER->at(0)) pt = JetPtJEC_noJER->at(0);
-		if (iv==2 && JetPt->at(0) < JetPtJEC_noJER->at(0)) pt = 2*JetPt->at(0) - JetPtJEC_noJER->at(0);
+		if (iv==1) pt = JetPt_JERUp->at(0);
+		if (iv==2) pt = JetPt_JERDown->at(0);
 		j1.SetPtEtaPhiM(pt,JetEta->at(0),JetPhi->at(0),JetMass->at(0));
 		
 		TLorentzVector j2;
 		if (iv==0) pt = JetPt->at(1);
-		if (iv==1 && JetPt->at(1) < JetPtJEC_noJER->at(1)) pt = JetPtJEC_noJER->at(1);
-		if (iv==1 && JetPt->at(1) > JetPtJEC_noJER->at(1)) pt = 2*JetPt->at(1) - JetPtJEC_noJER->at(1);
-		if (iv==2 && JetPt->at(1) > JetPtJEC_noJER->at(1)) pt = JetPtJEC_noJER->at(1);
-		if (iv==2 && JetPt->at(1) < JetPtJEC_noJER->at(1)) pt = 2*JetPt->at(1) - JetPtJEC_noJER->at(1);
+		if (iv==1) pt = JetPt_JERUp->at(1);
+		if (iv==2) pt = JetPt_JERDown->at(1);
 		j2.SetPtEtaPhiM(pt,JetEta->at(1),JetPhi->at(1),JetMass->at(1));
 		
-		// if (nCleanedJetsPt30<2 && nCleanedJetsPt30_jecUp>=2) cout << "UP!" << (j1+j2).M() << " " << nCleanedJetsPt30 << " " << nCleanedJetsPt30_jecUp << " " << dbkg_kin << endl;
-		// if (nCleanedJetsPt30>=2 && nCleanedJetsPt30_jecDn<2) cout << "DOWN!" << (j1+j2).M() << " " << nCleanedJetsPt30 << " " << nCleanedJetsPt30_jecDn << " " << dbkg_kin << endl;
-		
-		if (iv == 0 && nCleanedJetsPt30<2) continue; 
-		if (iv == 1 && nCleanedJetsPt30_jecUp<2) continue; 
-		if (iv == 2 && nCleanedJetsPt30_jecDn<2) continue; 
-		
-		if ((j1+j2).M() < 100.) continue;
-		
+		// if (iv==0 || i%10000 == 0) cout << "Check!" << (j1+j2).M() << " " << DiJetMass << endl;
+	
+		if ((j1+j2).M() < 100.) continue;		
 		
 		//set vbf_category
 		vbfcate=1;
@@ -395,10 +390,10 @@ void plotterSystJEC(int year = 2018, int whichSample = 1){
 	
 	//close and print on file
 	// c1->cd();
-	if (whichSample == 0) sprintf(filename,"syst/%s_qqZZ_SystJEC_%d.png",namegif.c_str(),year);      
-	if (whichSample == 1) sprintf(filename,"syst/%s_ggZZ_SystJEC_%d.png",namegif.c_str(),year);
-	if (whichSample == 2) sprintf(filename,"syst/%s_VBS_SystJEC_%d.png",namegif.c_str(),year);
-	if (whichSample == 4) sprintf(filename,"syst/%s_ttZWZZ_SystJEC_%d.png",namegif.c_str(),year);
+	if (whichSample == 0) sprintf(filename,"syst/%s_qqZZ_SystJER_%d.png",namegif.c_str(),year);      
+	if (whichSample == 1) sprintf(filename,"syst/%s_ggZZ_SystJER_%d.png",namegif.c_str(),year);
+	if (whichSample == 2) sprintf(filename,"syst/%s_VBS_SystJER_%d.png",namegif.c_str(),year);
+	if (whichSample == 4) sprintf(filename,"syst/%s_ttZWZZ_SystJER_%d.png",namegif.c_str(),year);
 	c1->Print(filename);
 	
 }
