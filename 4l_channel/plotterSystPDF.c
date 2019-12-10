@@ -218,13 +218,17 @@ void plotterSystPDF(int year = 2018, int whichSample = 1){
 		//KFactorQCDqqZZ_M = 1;
 		//weight=1;
 		
-		weight= (xsec*overallEventWeight*L1prefiringWeight*lumi)/(resum);
-		if (j==0) weight= (xsec*KFactorEWKqqZZ*overallEventWeight*KFactorQCDqqZZ_M*L1prefiringWeight*lumi)/(resum);
+		// make sure prefiring weight is 1 for real data
+		float prefiringWeight = L1prefiringWeight;
+		if (j==2) prefiringWeight = 1.; 
+		
+		weight= (xsec*overallEventWeight*prefiringWeight*lumi)/(resum);
+		if (j==0) weight= (xsec*KFactorEWKqqZZ*overallEventWeight*KFactorQCDqqZZ_M*prefiringWeight*lumi)/(resum);
 		// correct k-factor for NNLO/NLO?
-		if (j==1) weight= (xsec*overallEventWeight*1.3*L1prefiringWeight*lumi)/(resum);
+		if (j==1) weight= (xsec*overallEventWeight*1.3*prefiringWeight*lumi)/(resum);
 		//if (j==1) weight /=1.7;
-		if (j==2 && year==2016) weight= (xsec*overallEventWeight*L1prefiringWeight*lumi)/(resum);
-		if (j==2 && year>2016) weight= (xsec*overallEventWeight*L1prefiringWeight*lumi)/(genHEPMCweight*resum);             
+		if (j==2 && year==2016) weight= (xsec*overallEventWeight*prefiringWeight*lumi)/(resum);
+		if (j==2 && year>2016) weight= (xsec*overallEventWeight*prefiringWeight*lumi)/(genHEPMCweight*resum);             
 		
 		if (iv == 1) weight *= LHEweight_PDFVariation_Up;
 		if (iv == 2) weight *= LHEweight_PDFVariation_Dn;
@@ -337,6 +341,14 @@ void plotterSystPDF(int year = 2018, int whichSample = 1){
 	line->SetLineStyle(2);
 	line->Draw("same");
 	//switch?
+	
+	fnew->cd();
+	for (int it=0; it < 2; it++) {
+	  temp_1d_4e[it]->Write();
+	  temp_1d_4mu[it]->Write();
+	  temp_1d_2e2mu[it]->Write();
+	}	 	 
+	fnew->Close();
 	
 	//close and print on file
 	// c1->cd();

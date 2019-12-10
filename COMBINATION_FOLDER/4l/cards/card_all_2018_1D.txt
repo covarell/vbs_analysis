@@ -1,6 +1,6 @@
 imax 3 number of bins
 jmax 4 number of processes minus 1
-kmax 13 number of nuisance parameters
+kmax 15 number of nuisance parameters
 ----------------------------------------------------------------------------------------------------------------------------------
 shapes *            ch1_4mu     /afs/cern.ch/work/c/covarell/vbs2017/CMSSW_8_0_26_patch1/src/vbs_analysis/4l_channel/workspace/1D_vbs4lSyst_4mu1S_2018.input_func.root $PROCESS $PROCESS_$SYSTEMATIC
 shapes *            ch2_4e      /afs/cern.ch/work/c/covarell/vbs2017/CMSSW_8_0_26_patch1/src/vbs_analysis/4l_channel/workspace/1D_vbs4lSyst_4e1S_2018.input_func.root $PROCESS $PROCESS_$SYSTEMATIC
@@ -20,10 +20,12 @@ CMS_eff_m               lnN           1.025         -            1.025         1
 CMS_hzz2e2mu_Zjets      lnN           -            -            -            -            -	       -            -            -            -            -		-            0.621/1.387  -            -	  -
 CMS_hzz4e_Zjets         lnN           -            -            -            -            -	       -            0.595/1.427  -            -            -		-            -            -            -	  -
 CMS_hzz4mu_Zjets        lnN           -            0.639/1.362  -            -            -	       -            -            -            -            -		-            -            -            -	  -
-JES                     lnN           1.15         -           1.15        1.15        1.15	       1.15         -           1.15        1.15        1.15		1.15         -            1.15        1.15 	  1.15
+JES                     lnN           1.007         -           1.049        1.043        1.049	       1.007         -           1.049        1.043        1.049		1.007         -            1.049        1.043 	  1.049
+JER                     lnN           1.002         -           1.024        1.011        1.024	       1.002         -           1.024        1.011        1.024		1.002         -            1.024        1.011 	  1.024
 SistPDF2                lnN           1.047         -           1.031        1.021        1.027	       1.047        -            1.031        1.021        1.027	1.047         -            1.031       1.021	  1.027
 QCDScale_vbf            lnN           1.062        -      	 -           -            -	       1.062         -            -            -            -		1.062        -            -             - 	  -
 ShapeQCDscale           shape         1		   -		 -	     -		  -	       1	     -		  -	       -	    -		1	     -		  -		-	  -
+ShapeJES           	shape         1		   -		 1	     1		  -	       1	     -		  1	       1	    -		1	     -		  1		1	  -
 QCDScale_ggZZ           lnN           -            -              -          1.11         - 	       -            -            -            1.11         -		-        -            -             1.11	  -
 QCDscale_ZZ		lnN           -            -            1.032        -            -	       -            -            1.032        -            -		-            -            1.032        -	  -
 QCDscale_ttz		lnN           -            -            -            -            1.12	       -            -            -            -            1.12		-            -            -          -	         1.12
@@ -31,6 +33,6 @@ lumi_13TeV              lnN           1.025        -            1.025        1.0
 
 # lumiScaler rateParam * * 1
 theory group = SistPDF2 QCDScale_vbf QCDScale_ggZZ QCDscale_ZZ 
-experiment group = CMS_eff_e CMS_eff_m CMS_hzz2e2mu_Zjets CMS_hzz4e_Zjets CMS_hzz4mu_Zjets JES lumi_13TeV 
-all group = SistPDF2 QCDScale_vbf QCDScale_ggZZ QCDscale_ZZ CMS_eff_e CMS_eff_m CMS_hzz2e2mu_Zjets CMS_hzz4e_Zjets CMS_hzz4mu_Zjets JES lumi_13TeV
+experiment group = JES JER CMS_eff_e CMS_eff_m CMS_hzz2e2mu_Zjets CMS_hzz4e_Zjets CMS_hzz4mu_Zjets lumi_13TeV 
+all group = JES JER SistPDF2 QCDScale_vbf QCDScale_ggZZ QCDscale_ZZ CMS_eff_e CMS_eff_m CMS_hzz2e2mu_Zjets CMS_hzz4e_Zjets CMS_hzz4mu_Zjets lumi_13TeV
 # nuisance edit freeze lumiScaler

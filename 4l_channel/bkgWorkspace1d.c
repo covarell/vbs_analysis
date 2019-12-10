@@ -20,14 +20,14 @@ void dosomething(TString chan="2e2mu", int year=2016){
 
         static const int samples = 5;
         string namesamp[samples] = {"vbs","zjet","qqzz","ggzz","ttzwzz"}; 
-	static const int systs = 3;   //4
-        string namesyst[systs] = {"scale","PDF","JEC"/*,"JER"*/};	
-	bool hasShape[samples][systs] = {{true,false,false},
-					 {false,false,false},
-					 {false,false,false},
-					 {false,false,false},
-					 {false,false,false}};
-	string newnamesyst[systs] = {"ShapeQCDscale","ShapePDF","ShapeJEC"/*,"ShapeJER"*/};
+	static const int systs = 4;   //4
+        string namesyst[systs] = {"scale","PDF","JES","JER"};	
+	bool hasShape[samples][systs] = {{true,false,true,false},
+					 {false,false,false,false},
+					 {false,false,true,false},
+					 {false,false,true,false},
+					 {false,false,false,false}};
+	string newnamesyst[systs] = {"ShapeQCDscale","ShapePDF","ShapeJES","ShapeJER"};
 	float normalizations[samples][3];
 
 	TH1F *temp_1d[samples];

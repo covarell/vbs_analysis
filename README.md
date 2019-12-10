@@ -1,4 +1,4 @@
-# vbs_analysis
+B# vbs_analysis
 The repository contains the principal files used in the analysis.
 
 <b> 4l channel, ZX data driven MC </b>
@@ -54,17 +54,20 @@ To combine multiple cards:
 
 combineCards.py Name1=old_card1.txt Name2=old_card2.txt .... > new_card.txt
 
-To run the likelihood analysis (expected significance, without systematics): 
+To run the likelihood analysis (expected, without systematics): 
 
 combine -M Significance card_name.txt -t -1 --expectSignal=1 --freezeParameters=allConstrainedNuisances
+combine -M MultiDimFit card_name.txt --cl=0.68 --algo singles -t -1 --expectSignal=1 --freezeParameters=allConstrainedNuisances (may add --robustFit 1)
 
-To run the likelihood analysis (expected significance, with systematics): 
+To run the likelihood analysis (expected, with systematics): 
 
 combine -M Significance card_name.txt -t -1 --expectSignal=1
+combine -M MultiDimFit card_name.txt --cl=0.68 --algo singles -t -1 --expectSignal=1 (may add --robustFit 1)
 
 To run the likelihood analysis (observed significance): 
 
 combine -M Significance card_name.txt 
+combine -M MultiDimFit card_name.txt --cl=0.68 --algo singles (may add --robustFit 1)
 
 To run fits for signal strength and impacts follow instructions in the combine gitbook to install the new scripts
 combineTool.py and plotImpacts.py
@@ -76,14 +79,6 @@ For full fits of mu and nuisance parameters follow:
 https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#nuisance-parameter-impacts
 
 (adding -t -1 and --expectSignal=1 for the expected values)
-
-To run mu without systematics
-
-combine -M MultiDimFit card_name.txt -t -1 --expectSignal=1 --freezeParameters=allConstrainedNuisances -v 3 --robustFit
-
-or 
-
-combine -M MultiDimFit card_name.txt --freezeParameters=allConstrainedNuisances -v 3 --robustFit
 
 <b> Note by Connor </b>
 

@@ -387,6 +387,14 @@ void plotterSystJER(int year = 2018, int whichSample = 1){
 	line->SetLineStyle(2);
 	line->Draw("same");
 	//switch?
+		
+	fnew->cd();
+	for (int it=0; it < 2; it++) {
+	  temp_1d_4e[it]->Write();
+	  temp_1d_4mu[it]->Write();
+	  temp_1d_2e2mu[it]->Write();
+	}	 	 
+	fnew->Close();
 	
 	//close and print on file
 	// c1->cd();
