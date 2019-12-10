@@ -56,18 +56,18 @@ combineCards.py Name1=old_card1.txt Name2=old_card2.txt .... > new_card.txt
 
 To run the likelihood analysis (expected, without systematics): 
 
-combine -M Significance card_name.txt -t -1 --expectSignal=1 --freezeParameters=allConstrainedNuisances
-combine -M MultiDimFit card_name.txt --cl=0.68 --algo singles -t -1 --expectSignal=1 --freezeParameters=allConstrainedNuisances (may add --robustFit 1)
+- combine -M Significance card_name.txt -t -1 --expectSignal=1 --freezeParameters=allConstrainedNuisances
+- combine -M MultiDimFit card_name.txt --cl=0.68 --algo singles -t -1 --expectSignal=1 --freezeParameters=allConstrainedNuisances (may add --robustFit 1)
 
 To run the likelihood analysis (expected, with systematics): 
 
-combine -M Significance card_name.txt -t -1 --expectSignal=1
-combine -M MultiDimFit card_name.txt --cl=0.68 --algo singles -t -1 --expectSignal=1 (may add --robustFit 1)
+- combine -M Significance card_name.txt -t -1 --expectSignal=1
+- combine -M MultiDimFit card_name.txt --cl=0.68 --algo singles -t -1 --expectSignal=1 (may add --robustFit 1)
 
 To run the likelihood analysis (observed significance): 
 
-combine -M Significance card_name.txt 
-combine -M MultiDimFit card_name.txt --cl=0.68 --algo singles (may add --robustFit 1)
+- combine -M Significance card_name.txt 
+- combine -M MultiDimFit card_name.txt --cl=0.68 --algo singles (may add --robustFit 1)
 
 To run fits for signal strength and impacts follow instructions in the combine gitbook to install the new scripts
 combineTool.py and plotImpacts.py
