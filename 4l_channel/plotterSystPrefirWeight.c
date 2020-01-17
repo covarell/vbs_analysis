@@ -3,7 +3,7 @@
 #include <TString.h>
 #include <memory>
 
-void plotterSystJES(int year = 2018, int whichSample = 1, bool isVBSenriched = false){
+void plotterSystPrefirWeight(int year = 2018, int whichSample = 1, bool isVBSenriched = false){
   
        //whichSample = 0 : use just qqZZ
        //whichSample = 1 : use just ggZZ
@@ -12,9 +12,6 @@ void plotterSystJES(int year = 2018, int whichSample = 1, bool isVBSenriched = f
         float lumi = 35.9;
         if (year == 2017) lumi = 41.5;
 	if (year == 2018) lumi = 59.7;
-
-	string theExtra = "";
-        if (isVBSenriched) theExtra = "_VBSenr";
 
 	//scale vars
 	static const int vars = 3;
@@ -33,6 +30,7 @@ void plotterSystJES(int year = 2018, int whichSample = 1, bool isVBSenriched = f
         //histograms
 	TH1F *h1[vars+2]; //ew
 	TH1F *hratio[vars+2]; //ew
+        TH1F *hstat = new TH1F("hstat","hstat",1,0.,1.); 
 
 	for(int iv = 0; iv < vars+2; iv++){
 	  sprintf(filename,"h1_%d",iv);
@@ -58,7 +56,7 @@ void plotterSystJES(int year = 2018, int whichSample = 1, bool isVBSenriched = f
         // find available samples  
 	int nSamp = 0;  
 	TString rootname[40];
- 	sprintf(filename,"badsamples%d_withMGggZZandVBS.txt",year);
+ 	sprintf(filename,"newsamples%d_withMGggZZandVBS.txt",year);
 
 	ifstream parInput(filename);
         
@@ -76,11 +74,7 @@ void plotterSystJES(int year = 2018, int whichSample = 1, bool isVBSenriched = f
 	float xsec,KFactorEWKqqZZ,overallEventWeight,L1prefiringWeight,genHEPMCweight,KFactorQCDqqZZ_M;
 	vector<float> *LepPt=new vector<float>;
 	vector<float> *JetPt=new vector<float>;
-	vector<float> *JetPt_JESUp=new vector<float>;
-	vector<float> *JetPt_JESDown=new vector<float>;
 	vector<float> *JetEta=new vector<float>;
-	vector<float> *JetPhi=new vector<float>;
-	vector<float> *JetMass=new vector<float>;
 	short Z1Flav,Z2Flav;
 	short nCleanedJetsPt30;
 	float pvbf_VAJHU_old;
@@ -89,19 +83,13 @@ void plotterSystJES(int year = 2018, int whichSample = 1, bool isVBSenriched = f
 	short ZZsel;
 	vector<short> *LepLepId=0;
 	short nExtraLep;
-	short nCleanedJets;
 	short nCleanedJetsPt30BTagged_bTagSF;
-	short nCleanedJetsPt30_jesUp;
-	short nCleanedJetsPt30_jesDn;
+	float L1prefiringWeightUp, L1prefiringWeightDn;
 	
 	//new variable declarations
 	float p_JJEW_BKG_MCFM_JECNominal; //not in use
 	float p_JJQCD_BKG_MCFM_JECNominal;
 	float p_JJVBF_BKG_MCFM_JECNominal;
-	float p_JJQCD_BKG_MCFM_JESUp;
-	float p_JJVBF_BKG_MCFM_JESUp;
-	float p_JJQCD_BKG_MCFM_JESDn;
-	float p_JJVBF_BKG_MCFM_JESDn;
 	float KFactorQCDggzz_Nominal;
 
 	//additional and output variable declarations
@@ -123,10 +111,10 @@ void plotterSystJES(int year = 2018, int whichSample = 1, bool isVBSenriched = f
 	TH2F *temp_zz_4mu[4];
 	TH2F *temp_zz_2e2mu[4]; */
 
-	if (whichSample==0) sprintf(filename,"template/root_output_files/qqzz_Moriond_JES_%d%s.root",year,theExtra.c_str()); 
-	if (whichSample==1) sprintf(filename,"template/root_output_files/ggzz_Moriond_JES_%d%s.root",year,theExtra.c_str()); 
-	if (whichSample==2) sprintf(filename,"template/root_output_files/vbs_Moriond_JES_%d%s.root",year,theExtra.c_str());
-	if (whichSample==4) sprintf(filename,"template/root_output_files/ttzwzz_Moriond_JES_%d%s.root",year,theExtra.c_str());
+	if (whichSample==0) sprintf(filename,"template/root_output_files/qqzz_Moriond_PrefirWeight_%d.root",year); 
+	if (whichSample==1) sprintf(filename,"template/root_output_files/ggzz_Moriond_PrefirWeight_%d.root",year); 
+	if (whichSample==2) sprintf(filename,"template/root_output_files/vbs_Moriond_PrefirWeight_%d.root",year);
+	if (whichSample==4) sprintf(filename,"template/root_output_files/ttzwzz_Moriond_PrefirWeight_%d.root",year);
 	fnew = new TFile(filename,"recreate");
 
 	for (int it=0; it < 2; it++) {
@@ -140,7 +128,7 @@ void plotterSystJES(int year = 2018, int whichSample = 1, bool isVBSenriched = f
 	
 	//for loop for different samples
 	for(int is = 0; is < nSamp-1; is++){
-
+	  
 	  //print cycle
 	  std::cout << endl << is << endl;
 	  
@@ -156,11 +144,10 @@ void plotterSystJES(int year = 2018, int whichSample = 1, bool isVBSenriched = f
           //process class
           int j = 0;   // qqzz powheg
           bool process = false;
-	  process = (((rootname[is].Contains("ggTo") || rootname[is].Contains("ggZZnew")) && whichSample==1) || (rootname[is].Contains("VBFTo") && whichSample==2) || (rootname[is].Contains("amcatnlo") && whichSample==0) || ((rootname[is].Contains("WWZ") || rootname[is].Contains("TTZ")) && whichSample == 4));
-	  // process = ((rootname[is].Contains("ZZTo4l") && !(rootname[is].Contains("amcatnlo"))));
+          process = (((rootname[is].Contains("ggTo") || rootname[is].Contains("ggZZnew")) && whichSample==1) || (rootname[is].Contains("VBFTo") && whichSample==2) || (rootname[is].Contains("amcatnlo") && whichSample==0) || ((rootname[is].Contains("WWZ") || rootname[is].Contains("TTZ")) && whichSample == 4));
 	  if (!process) continue;
-	  
-	  j = whichSample;
+
+          j = whichSample;
 	  //histogram declaration
 	  //TH1F *kin_zz = new TH1F("kin_zz","",bins,xmin,xmax); //was 100 bins
 	  
@@ -188,80 +175,42 @@ void plotterSystJES(int year = 2018, int whichSample = 1, bool isVBSenriched = f
 	  tqqzz->SetBranchAddress("LepLepId",&LepLepId);
 	  tqqzz->SetBranchAddress("LepPt",&LepPt);
           tqqzz->SetBranchAddress("JetPt",&JetPt);
-	  tqqzz->SetBranchAddress("JetPt_JESUp",&JetPt_JESUp);
-          tqqzz->SetBranchAddress("JetPt_JESDown",&JetPt_JESDown);
           tqqzz->SetBranchAddress("JetEta",&JetEta);
-	  tqqzz->SetBranchAddress("JetPhi",&JetPhi);
-          tqqzz->SetBranchAddress("JetMass",&JetMass);
 	  tqqzz->SetBranchAddress("overallEventWeight",&overallEventWeight);
 	  tqqzz->SetBranchAddress("genHEPMCweight",&genHEPMCweight);
 	  tqqzz->SetBranchAddress("L1prefiringWeight",&L1prefiringWeight);
 	  tqqzz->SetBranchAddress("KFactor_QCD_qqZZ_M",&KFactorQCDqqZZ_M);
-	  tqqzz->SetBranchAddress("nCleanedJets",&nCleanedJets);
 	  tqqzz->SetBranchAddress("nCleanedJetsPt30",&nCleanedJetsPt30);
-	  tqqzz->SetBranchAddress("nCleanedJetsPt30_jesUp",&nCleanedJetsPt30_jesUp);
-	  tqqzz->SetBranchAddress("nCleanedJetsPt30_jesDn",&nCleanedJetsPt30_jesDn);
 	  
 	  //new branch addresses
 	  tqqzz->SetBranchAddress("p_JJEW_BKG_MCFM_JECNominal",&p_JJEW_BKG_MCFM_JECNominal);
 	  tqqzz->SetBranchAddress("p_JJVBF_BKG_MCFM_JECNominal",&p_JJVBF_BKG_MCFM_JECNominal);
 	  tqqzz->SetBranchAddress("p_JJQCD_BKG_MCFM_JECNominal",&p_JJQCD_BKG_MCFM_JECNominal);
-	  tqqzz->SetBranchAddress("p_JJVBF_BKG_MCFM_JESUp",&p_JJVBF_BKG_MCFM_JESUp);
-	  tqqzz->SetBranchAddress("p_JJQCD_BKG_MCFM_JESDn",&p_JJQCD_BKG_MCFM_JESUp);
-	  tqqzz->SetBranchAddress("p_JJVBF_BKG_MCFM_JESDn",&p_JJVBF_BKG_MCFM_JESDn);
-	  tqqzz->SetBranchAddress("p_JJQCD_BKG_MCFM_JESDn",&p_JJQCD_BKG_MCFM_JESDn);	  
+	  tqqzz->SetBranchAddress("L1prefiringWeightUp",&L1prefiringWeightUp);
+          tqqzz->SetBranchAddress("L1prefiringWeightDn",&L1prefiringWeightDn);	  
 	  tqqzz->SetBranchAddress("DiJetMass",&DiJetMass);
           tqqzz->SetBranchAddress("DiJetDEta",&DiJetDEta);
 	  tqqzz->SetBranchAddress("KFactor_QCD_ggZZ_Nominal",&KFactorQCDggzz_Nominal);
-
+	  
 	  //loop on entries
 	  int enne = tqqzz->GetEntries();
-
+	  
 	  // preliminary loop to fix MG wrong weights (only VBS 2017-18)
 	  float resum = gen_sum_weights;
 	  float sum = hCounters->GetBinContent(1);
           if (j==2 && year>2016) resum = hCounters->GetBinContent(1);
-  
+	  
 	  for(int iv=0;iv<vars;iv++){
-
+	    
 	    for(int i=0;i<enne;i++){
 	      tqqzz->GetEntry(i);
-	    
+	      
 	      //unique selection condition (see paper page 8) & DiJetMass condition
 	      // if(DiJetMass>100 && nExtraLep==0 && ZZMass > 160 &&(((nCleanedJetsPt30==2||nCleanedJetsPt30==3)&&nCleanedJetsPt30BTagged_bTagSF<=1)||(nCleanedJetsPt30>=4&&nCleanedJetsPt30BTagged_bTagSF==0))){
 	      
-	      if(ZZMass > 180 && Z1Mass < 120 && Z1Mass > 60 && Z2Mass < 120 && Z2Mass > 60 && (!isVBSenriched || fabs(DiJetDEta) > 2.4)){
-
-		if (iv == 0 && nCleanedJetsPt30<2) continue; 
-		if (iv == 1 && nCleanedJetsPt30_jesUp<2) continue; 
-		if (iv == 2 && nCleanedJetsPt30_jesDn<2) continue;
+	      if(DiJetMass>100 && ZZMass > 180 && nCleanedJetsPt30>1 && Z1Mass < 120 && Z1Mass > 60 && Z2Mass < 120 && Z2Mass > 60){
 		
-		//kin variable
-		float c_mzz = c_constant*ts->Eval(ZZMass);
-		dbkg_kin = p_JJVBF_BKG_MCFM_JECNominal/(p_JJVBF_BKG_MCFM_JECNominal+ p_JJQCD_BKG_MCFM_JECNominal*c_mzz);
-		// TEMPORARY: probabilities with JESUp and JESDn broken!
-		if (iv==1 && p_JJVBF_BKG_MCFM_JESUp>0 && p_JJQCD_BKG_MCFM_JESUp > 0) dbkg_kin = p_JJVBF_BKG_MCFM_JESUp/(p_JJVBF_BKG_MCFM_JESUp+ p_JJQCD_BKG_MCFM_JESUp*c_mzz);
-		if (iv==2 && p_JJVBF_BKG_MCFM_JESDn>0 && p_JJQCD_BKG_MCFM_JESDn > 0) dbkg_kin = p_JJVBF_BKG_MCFM_JESDn/(p_JJVBF_BKG_MCFM_JESDn+ p_JJQCD_BKG_MCFM_JESDn*c_mzz);
-		if (dbkg_kin < 0.00 || dbkg_kin > 1.00) continue;
-		
-		// recompute dijet mass (not computed if ptJet < 30...)
-		TLorentzVector j1;
-		float pt;
-		if (iv==0) pt = JetPt->at(0);
-		if (iv==1) pt = JetPt_JESUp->at(0);
-		if (iv==2) pt = JetPt_JESDown->at(0);
-		j1.SetPtEtaPhiM(pt,JetEta->at(0),JetPhi->at(0),JetMass->at(0));
-		
-		TLorentzVector j2;
-		if (iv==0) pt = JetPt->at(1);
-		if (iv==1) pt = JetPt_JESUp->at(1);
-		if (iv==2) pt = JetPt_JESDown->at(1);
-		j2.SetPtEtaPhiM(pt,JetEta->at(1),JetPhi->at(1),JetMass->at(1));
-		
-		// if (iv==0 || i%10000 == 0) cout << "Check!" << (j1+j2).M() << " " << DiJetMass << endl;
-	
-		if ((j1+j2).M() < 100.) continue;
-                if (isVBSenriched && (j1+j2).M() < 400.) continue;		
+		// if(DiJetMass>100 && ZZMass > 180 && nCleanedJetsPt30>1 && Z1Mass < 120 && Z1Mass > 60 && Z2Mass < 120 && Z2Mass > 60 && JetPt->at(0) > 50 && JetPt->at(1) > 50){
 		
 		//set vbf_category
 		vbfcate=1;
@@ -269,20 +218,22 @@ void plotterSystJES(int year = 2018, int whichSample = 1, bool isVBSenriched = f
 		//KFactorEWKqqZZ = 1;
 		//KFactorQCDqqZZ_M = 1;
 		//weight=1;
-
+		
 		// make sure prefiring weight is 1 for real data
 		float prefiringWeight = L1prefiringWeight;
-		if (j==2) prefiringWeight = 1.; 
+		// if (j==2) prefiringWeight = 1.; 
 		
 		weight= (xsec*overallEventWeight*prefiringWeight*lumi)/(resum);
 		if (j==0) weight= (xsec*KFactorEWKqqZZ*overallEventWeight*KFactorQCDqqZZ_M*prefiringWeight*lumi)/(resum);
 		// correct k-factor for NNLO/NLO?
-		if (j==1) weight= (xsec*overallEventWeight*KFactorQCDggzz_Nominal*prefiringWeight*lumi)/(resum);
+		if (j==1) weight= (xsec*overallEventWeight*1.3*prefiringWeight*lumi)/(resum);
 		//if (j==1) weight /=1.7;
 		if (j==2 && year==2016) weight= (xsec*overallEventWeight*prefiringWeight*lumi)/(resum);
 		if (j==2 && year>2016) weight= (xsec*overallEventWeight*prefiringWeight*lumi)/(genHEPMCweight*resum);             
 		
-	 	
+		if (iv == 1) weight *= L1prefiringWeightUp/prefiringWeight;
+		if (iv == 2) weight *= L1prefiringWeightDn/prefiringWeight;
+		
 		//TEMPORARY FOR MISSING 2e2mu SAMPLE
 		//if (j==2 && year==2017) weight *= 2.;
 		
@@ -291,8 +242,14 @@ void plotterSystJES(int year = 2018, int whichSample = 1, bool isVBSenriched = f
 		else if (abs(Z1Flav)==abs(Z2Flav) && abs(Z1Flav)!=121) chan=1;
 		else chan=3;
 		
+		//kin variable
+		float c_mzz = c_constant*ts->Eval(ZZMass);
+		dbkg_kin = p_JJVBF_BKG_MCFM_JECNominal/(p_JJVBF_BKG_MCFM_JECNominal+ p_JJQCD_BKG_MCFM_JECNominal*c_mzz);
+		if (dbkg_kin < 0.00 || dbkg_kin > 1.00) continue;
+		
 		// fill templates
 		if (iv == 0) {
+                  if (dbkg_kin > 0.5 && (!isVBSenriched || (DiJetMass > 400 && fabs(DiJetDEta) > 2.4))) hstat->Fill(dbkg_kin,weight);
 		  for (int it=0; it < 2; it++) {
 		    if (j==1 || j==4) {
 		      temp_1d_4mu[it]->Fill(dbkg_kin,weight);
@@ -307,20 +264,19 @@ void plotterSystJES(int year = 2018, int whichSample = 1, bool isVBSenriched = f
 		}
 		
 		h1[iv]->Fill(dbkg_kin,weight);
+                
 	      }
 	    }//entries loop  end
 	  }//file loop  end
-	}
-	  
+	}       
+	
 	for(int iv=0;iv<vars;iv++){
 	  hratio[iv]->Add(h1[iv],h1[0],1,-1);
 	  hratio[iv]->Divide(hratio[iv],h1[0]);
 	} 
 	
 	for(int binx=1;binx<hratio[0]->GetXaxis()->GetNbins()+1;binx++){
-	  hratio[vars]->SetBinContent(binx,0.);
-	  hratio[vars+1]->SetBinContent(binx,0.);
-	  float theMax = -9999.;   float theMin = 9999.;
+	  float theMax = 0;   float theMin = 0;
 	  for(int iv=1;iv<vars;iv++){  
 	    if (hratio[iv]->GetBinContent(binx) > theMax) {
 	      hratio[vars]->SetBinContent(binx, hratio[iv]->GetBinContent(binx));  
@@ -379,22 +335,17 @@ void plotterSystJES(int year = 2018, int whichSample = 1, bool isVBSenriched = f
 	hratio[0]->GetXaxis()->SetTitle(titlex.c_str());
 	hratio[0]->SetMaximum(0.8);
 	hratio[0]->SetMinimum(-0.8);
-	/* h1[0]->SetLineColor(1);
-	h1[1]->SetLineColor(2);
-	h1[2]->SetLineColor(4);
-	h1[0]->Draw("hist");
-	h1[1]->Draw("same");
-	h1[2]->Draw("same");  */  
 	hratio[0]->Draw(); //old
 	hratio[vars]->Fit("pol0","","e1same");
-	hratio[vars+1]->Fit("pol0","","e1same"); 
+	hratio[vars+1]->Fit("pol0","","e1same");
 	legend->Draw("same");
 	TLine *line = new TLine(xmin,0.,xmax,0.);
 	line->SetLineColor(kBlack);
 	line->SetLineStyle(2);
 	line->Draw("same");
 	//switch?
-		
+        cout << "hstat: " << hstat->GetBinContent(1) << " +/- " << hstat->GetBinError(1) << "( " << 100.*hstat->GetBinError(1)/ hstat->GetBinContent(1) << " %) " << endl;
+	
 	fnew->cd();
 	for (int it=0; it < 2; it++) {
 	  temp_1d_4e[it]->Write();
@@ -405,10 +356,10 @@ void plotterSystJES(int year = 2018, int whichSample = 1, bool isVBSenriched = f
 	
 	//close and print on file
 	// c1->cd();
-	if (whichSample == 0) sprintf(filename,"syst/%s_qqZZ_SystJES_%d%s.png",namegif.c_str(),year,theExtra.c_str());      
-	if (whichSample == 1) sprintf(filename,"syst/%s_ggZZ_SystJES_%d%s.png",namegif.c_str(),year,theExtra.c_str());
-	if (whichSample == 2) sprintf(filename,"syst/%s_VBS_SystJES_%d%s.png",namegif.c_str(),year,theExtra.c_str());
-	if (whichSample == 4) sprintf(filename,"syst/%s_ttZWZZ_SystJES_%d%s.png",namegif.c_str(),year,theExtra.c_str());
+	if (whichSample == 0) sprintf(filename,"syst/%s_qqZZ_SystPrefirWeight_%d.png",namegif.c_str(),year);      
+	if (whichSample == 1) sprintf(filename,"syst/%s_ggZZ_SystPrefirWeight_%d.png",namegif.c_str(),year);
+	if (whichSample == 2) sprintf(filename,"syst/%s_VBS_SystPrefirWeight_%d.png",namegif.c_str(),year);
+	if (whichSample == 4) sprintf(filename,"syst/%s_ttZWZZ_SystPrefirWeight_%d.png",namegif.c_str(),year);
 	c1->Print(filename);
 	
 }

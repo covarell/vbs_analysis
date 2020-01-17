@@ -3,7 +3,7 @@
 #include <TString.h>
 #include <memory>
 
-void plotterSystScale(int year = 2018, int whichSample = 1){
+void plotterSystScale(int year = 2018, int whichSample = 1, bool isVBSenriched = false){
   
        //whichSample = 0 : use just qqZZ
        //whichSample = 1 : use just ggZZ
@@ -13,6 +13,9 @@ void plotterSystScale(int year = 2018, int whichSample = 1){
         float lumi = 35.9;
         if (year == 2017) lumi = 41.5;
 	if (year == 2018) lumi = 59.7;
+
+	string theExtra = "";
+        if (isVBSenriched) theExtra = "_VBSenr";
 
 	//scale vars
 	static const int vars = 7;
@@ -111,10 +114,10 @@ void plotterSystScale(int year = 2018, int whichSample = 1){
 	TH2F *temp_zz_4mu[4];
 	TH2F *temp_zz_2e2mu[4]; */
 
-	if (whichSample==0) sprintf(filename,"template/root_output_files/qqzz_Moriond_scale_%d.root",year); 
-	if (whichSample==1) sprintf(filename,"template/root_output_files/ggzz_Moriond_scale_%d.root",year); 
-	if (whichSample==2) sprintf(filename,"template/root_output_files/vbs_Moriond_scale_%d.root",year);
-	if (whichSample==4) sprintf(filename,"template/root_output_files/ttzwzz_Moriond_scale_%d.root",year);
+	if (whichSample==0) sprintf(filename,"template/root_output_files/qqzz_Moriond_scale_%d%s.root",year,theExtra.c_str()); 
+	if (whichSample==1) sprintf(filename,"template/root_output_files/ggzz_Moriond_scale_%d%s.root",year,theExtra.c_str()); 
+	if (whichSample==2) sprintf(filename,"template/root_output_files/vbs_Moriond_scale_%d%s.root",year,theExtra.c_str());
+	if (whichSample==4) sprintf(filename,"template/root_output_files/ttzwzz_Moriond_scale_%d%s.root",year,theExtra.c_str());
 	fnew = new TFile(filename,"recreate");
 
 	for (int it=0; it < 2; it++) {
@@ -212,7 +215,7 @@ void plotterSystScale(int year = 2018, int whichSample = 1){
 	   	    //unique selection condition (see paper page 8) & DiJetMass condition
 	    // if(DiJetMass>100 && nExtraLep==0 && ZZMass > 160 &&(((nCleanedJetsPt30==2||nCleanedJetsPt30==3)&&nCleanedJetsPt30BTagged_bTagSF<=1)||(nCleanedJetsPt30>=4&&nCleanedJetsPt30BTagged_bTagSF==0))){
 	    
-	      if(DiJetMass>100 && ZZMass > 180 && nCleanedJetsPt30>1 && Z1Mass < 120 && Z1Mass > 60 && Z2Mass < 120 && Z2Mass > 60){
+	      if(DiJetMass>100 && ZZMass > 180 && nCleanedJetsPt30>1 && Z1Mass < 120 && Z1Mass > 60 && Z2Mass < 120 && Z2Mass > 60 && (!isVBSenriched || (DiJetMass > 400 && fabs(DiJetDEta) > 2.4))){
 		
 		// if(DiJetMass>100 && ZZMass > 180 && nCleanedJetsPt30>1 && Z1Mass < 120 && Z1Mass > 60 && Z2Mass < 120 && Z2Mass > 60 && JetPt->at(0) > 50 && JetPt->at(1) > 50){
 	      
@@ -222,14 +225,18 @@ void plotterSystScale(int year = 2018, int whichSample = 1){
 	      //KFactorEWKqqZZ = 1;
 	      //KFactorQCDqqZZ_M = 1;
 	      //weight=1;
+
+		// make sure prefiring weight is 1 for real data
+		float prefiringWeight = L1prefiringWeight;
+		if (j==2) prefiringWeight = 1.; 
 	      
-		weight= (xsec*overallEventWeight*L1prefiringWeight*lumi)/(resum);
-		if (j==0) weight= (xsec*KFactorEWKqqZZ*overallEventWeight*KFactorQCDqqZZ_M*L1prefiringWeight*lumi)/(resum);
+		weight= (xsec*overallEventWeight*prefiringWeight*lumi)/(resum);
+		if (j==0) weight= (xsec*KFactorEWKqqZZ*overallEventWeight*KFactorQCDqqZZ_M*prefiringWeight*lumi)/(resum);
 		// correct k-factor for NNLO/NLO?
-		if (j==1) weight= (xsec*overallEventWeight*1.3*L1prefiringWeight*lumi)/(resum);
+		if (j==1) weight= (xsec*overallEventWeight*1.3*prefiringWeight*lumi)/(resum);
 		//if (j==1) weight /=1.7;
-		if (j==2 && year==2016) weight= (xsec*overallEventWeight*L1prefiringWeight*lumi)/(resum);
-		if (j==2 && year>2016) weight= (xsec*overallEventWeight*L1prefiringWeight*lumi)/(genHEPMCweight*resum);             
+		if (j==2 && year==2016) weight= (xsec*overallEventWeight*prefiringWeight*lumi)/(resum);
+		if (j==2 && year>2016) weight= (xsec*overallEventWeight*prefiringWeight*lumi)/(genHEPMCweight*resum);             
 		
 		if (iv == 1) weight *= LHEweight_QCDscale_muR1_muF2;
 		if (iv == 2) weight *= LHEweight_QCDscale_muR1_muF0p5;
@@ -358,10 +365,10 @@ void plotterSystScale(int year = 2018, int whichSample = 1){
 	
 	//close and print on file
 	// c1->cd();
-	if (whichSample == 0) sprintf(filename,"syst/%s_qqZZ_SystScale_%d.png",namegif.c_str(),year);      
-	if (whichSample == 1) sprintf(filename,"syst/%s_ggZZ_SystScale_%d.png",namegif.c_str(),year);
-	if (whichSample == 2) sprintf(filename,"syst/%s_VBS_SystScale_%d.png",namegif.c_str(),year);
-	if (whichSample == 4) sprintf(filename,"syst/%s_ttZWZZ_SystScale_%d.png",namegif.c_str(),year);
+	if (whichSample == 0) sprintf(filename,"syst/%s_qqZZ_SystScale_%d%s.png",namegif.c_str(),year,theExtra.c_str());      
+	if (whichSample == 1) sprintf(filename,"syst/%s_ggZZ_SystScale_%d%s.png",namegif.c_str(),year,theExtra.c_str());
+	if (whichSample == 2) sprintf(filename,"syst/%s_VBS_SystScale_%d%s.png",namegif.c_str(),year,theExtra.c_str());
+	if (whichSample == 4) sprintf(filename,"syst/%s_ttZWZZ_SystScale_%d%s.png",namegif.c_str(),year,theExtra.c_str());
 	c1->Print(filename);
 	
 }
