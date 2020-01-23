@@ -48,7 +48,7 @@ source runbkg.sh (in bash)
 
 <b> Combine </b>
 
-All cards can be found in the COMBINATION_FOLDER, with sub-directory 4l. 
+All cards can be found in the COMBINATION_FOLDER, with sub-directory 4l. Use CMSSW 10_2_13 for this part.
 
 To combine multiple cards: 
 
