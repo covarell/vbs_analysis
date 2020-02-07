@@ -1,4 +1,3 @@
-B# vbs_analysis
 The repository contains the principal files used in the analysis.
 
 <b> 4l channel, ZX data driven MC </b>
@@ -31,7 +30,9 @@ plotterAndTemplateMaker.c -> The file reads 4l MC + data (from relevant reposito
 - 1D templates, selected trees and their pictures (in template/root_output_files/ divided by MC/data contributions) 
 - yields for MC and data (MC/datayields_&lt;year&gt;.txt, to be copied in the combine cards) 
 
-Run with: plotterAndTemplateMaker(&lt;year&gt;,1,&lt;ifVBSenriched&gt;)  <- last option not available yet
+Run with: plotterAndTemplateMaker(&lt;year&gt;,1,&lt;VBSenriched&gt;)  <- check macro for the several enrichment options
+
+The drawSummedHistos.c macro can be used to plot summed histos for the 3 years.
 
 plotterSystXXX.c -> Evaluates normalization systematics (by a constant fit to up and down variations of systematic
 effect XXX and if needed, stores alternative templates in template/root_output_files/.
