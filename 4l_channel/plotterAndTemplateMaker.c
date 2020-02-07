@@ -40,16 +40,28 @@ TH2F* rebinTemplate(TH2F* orig, int year=2016, int itype=0) {
    return result;    
 }
 
-void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
+void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1, int enriched = 0){
   
        //useMCatNLO = 0 : use just POWHEG
        //useMCatNLO = 1 : use just aMCatNLO
        //useMCatNLO = 2 : use aMCatNLO for shape, POWHEG for integral
 
+       //enriched = 0 : baseline selection
+       //enriched = 1 : VBS-enriched
+       //enriched = 2 : super-VBS-enriched
+       //enriched = 3 : bkgd enriched
+       //enriched = 4 : ptjet > 50 GeV
+
         float lumi = 35.9;
         if (year == 2017) lumi = 41.5;
 	if (year == 2018) lumi = 59.7;
 
+        string theExtra = "";
+        if (enriched == 1) theExtra = "_VBSenr";
+	if (enriched == 2) theExtra = "_superVBSenr";
+	if (enriched == 3) theExtra = "_bkgdEnr";
+	if (enriched == 4) theExtra = "_ptjet50";
+	
 	static const int vars = 6;
         string titlex[vars] = {"K_{D}","M_{4l} [GeV]","M_{jj} [GeV]","#Delta #eta_{jj}","p_{T,j}","#eta_{j}"};        
         string titley[vars] = {"Events/0.025","Events/16 GeV","Events/22.5 GeV","Events/0.175","Events/5 GeV","Events/0.25"};     
@@ -201,11 +213,11 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
 	TH2F *temp_zz_2e2mu[5];
 
 	for (int it=0; it < 5; it++) {
-	  if (it==0) sprintf(filename,"template/root_output_files/qqzz_Moriond_%d.root",year); 
-	  if (it==1) sprintf(filename,"template/root_output_files/ggzz_Moriond_%d.root",year); 
-	  if (it==2) sprintf(filename,"template/root_output_files/vbs_Moriond_%d.root",year); 
-	  if (it==3) sprintf(filename,"template/root_output_files/data_%d.root",year); 
-	  if (it==4) sprintf(filename,"template/root_output_files/ttzwzz_Moriond_%d.root",year); 
+	  if (it==0) sprintf(filename,"template/root_output_files/qqzz_Moriond_%d%s.root",year,theExtra.c_str()); 
+	  if (it==1) sprintf(filename,"template/root_output_files/ggzz_Moriond_%d%s.root",year,theExtra.c_str()); 
+	  if (it==2) sprintf(filename,"template/root_output_files/vbs_Moriond_%d%s.root",year,theExtra.c_str()); 
+	  if (it==3) sprintf(filename,"template/root_output_files/data_%d%s.root",year,theExtra.c_str()); 
+	  if (it==4) sprintf(filename,"template/root_output_files/ttzwzz_Moriond_%d%s.root",year,theExtra.c_str()); 
 	  fnew[it] = new TFile(filename,"recreate");
 	  tnew[it] = new TTree("SelectedTree","SelectedTree");
 	  tnew[it]->Branch("mreco",&ZZMass,"mreco/F");
@@ -298,11 +310,12 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
 	    tqqzz->GetEntry(i);
 	    
 	   	    //unique selection condition (see paper page 8) & DiJetMass condition
-	    // if(DiJetMass>100 && nExtraLep==0 && ZZMass > 160 &&(((nCleanedJetsPt30==2||nCleanedJetsPt30==3)&&nCleanedJetsPt30BTagged_bTagSF<=1)||(nCleanedJetsPt30>=4&&nCleanedJetsPt30BTagged_bTagSF==0))){
-	    
-	    if(DiJetMass>100 && ZZMass > 180 && nCleanedJetsPt30>1 && Z1Mass < 120 && Z1Mass > 60 && Z2Mass < 120 && Z2Mass > 60){
-	    
-	      // if(DiJetMass>100 && ZZMass > 180 && nCleanedJetsPt30>1 && Z1Mass < 120 && Z1Mass > 60 && Z2Mass < 120 && Z2Mass > 60 && JetPt->at(0) > 50 && JetPt->at(1) > 50){
+		    
+	    if(DiJetMass>100 && ZZMass > 180 && nCleanedJetsPt30>1 && Z1Mass < 120 && Z1Mass > 60 && Z2Mass < 120 && Z2Mass > 60) { 
+	      if (enriched == 1 && (DiJetMass < 400 || fabs(DiJetDEta) < 2.4)) continue;
+	      if (enriched == 2 && (DiJetMass < 400 || fabs(DiJetDEta) < 5.0)) continue;
+	      if (enriched == 3 && DiJetMass > 400 && fabs(DiJetDEta) > 2.4) continue;
+	      if (enriched == 4 && (JetPt->at(0) < 50 || JetPt->at(1) < 50)) continue;
 	      
 	      //set vbf_category
 	      vbfcate=1;
@@ -311,16 +324,19 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
 	      //KFactorQCDqqZZ_M = 1;
 	      //weight=1;
 
+	      // make sure prefiring weight is 1 for real data
+	      float prefiringWeight = L1prefiringWeight;
+	      if (j==2) prefiringWeight = 1.; 
 	      
-	      weight= (xsec*KFactorEWKqqZZ*overallEventWeight*KFactorQCDqqZZ_M*L1prefiringWeight*lumi)/(resum);
+	      weight= (xsec*KFactorEWKqqZZ*overallEventWeight*KFactorQCDqqZZ_M*prefiringWeight*lumi)/(resum);
 	      // correct k-factor for NNLO/NLO?
-	      // if (j==1) weight= (xsec*overallEventWeight*KFactorQCDggzz_Nominal*L1prefiringWeight*lumi)/(resum);
+	      // if (j==1) weight= (xsec*overallEventWeight*KFactorQCDggzz_Nominal*prefiringWeight*lumi)/(resum);
 	      // if (j==1 && useMCatNLO==1) weight /=1.7;
-	      if (j==1) weight= (xsec*overallEventWeight*1.3*L1prefiringWeight*lumi)/(resum);
-              if (j==2 && year==2016) weight= (xsec*overallEventWeight*L1prefiringWeight*lumi)/(resum);
-              if (j==2 && year>2016) weight= (xsec*overallEventWeight*L1prefiringWeight*lumi)/(genHEPMCweight*resum);             
-	      if (j==5) weight= (xsec*overallEventWeight*L1prefiringWeight*lumi)/(resum);
-	      if (j==3) weight=1.; 
+	      if (j==1) weight= (xsec*overallEventWeight*1.3*prefiringWeight*lumi)/(resum);
+              if (j==2 && year==2016) weight= (xsec*overallEventWeight*prefiringWeight*lumi)/(resum);
+              if (j==2 && year>2016) weight= (xsec*overallEventWeight*prefiringWeight*lumi)/(genHEPMCweight*resum);             
+	      if (j==5) weight= (xsec*overallEventWeight*prefiringWeight*lumi)/(resum);
+	      if (j==3) weight=prefiringWeight; 
 
 	      //TEMPORARY FOR MISSING 2e2mu SAMPLE
 	      //if (j==2 && year==2017) weight *= 2.;
@@ -436,7 +452,7 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
 	//ZX CONTRIBUTION
 	  
 	TChain *tqqzz_zx= new TChain("candTree");
-	sprintf(filename,"/afs/cern.ch/work/c/covarell/vbs2017/CMSSW_8_0_26_patch1/src/data_driven_MC/ZX%d_noCut.root",year); 
+	sprintf(filename,"/afs/cern.ch/work/c/covarell/vbs2017/CMSSW_8_0_26_patch1/src/data_driven_MC/ZX%d_noCut%s.root",year,theExtra.c_str()); 
 	tqqzz_zx->Add(filename);
 	
 	//histogram declaration
@@ -520,13 +536,13 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
 	}
 	
 	//INTEGRAL CHECK
-	sprintf(filename,"MCyields_%d.txt",year);
+	sprintf(filename,"MCyields_%d%s.txt",year,theExtra.c_str());
 	ofstream yields(filename,std::fstream::app);
-        sprintf(filename,"datayields_%d.txt",year);
+        sprintf(filename,"datayields_%d%s.txt",year,theExtra.c_str());
 	ofstream yields2(filename,std::fstream::app);
-	sprintf(filename,"MCyields_highMELA_%d.txt",year);
+	sprintf(filename,"MCyields_highMELA_%d%s.txt",year,theExtra.c_str());
 	ofstream yields3(filename,std::fstream::app);
-        sprintf(filename,"datayields_highMELA_%d.txt",year);
+        sprintf(filename,"datayields_highMELA_%d%s.txt",year,theExtra.c_str());
 	ofstream yields4(filename,std::fstream::app);
 
 	for(int iv = 0; iv < vars; iv++){
@@ -643,8 +659,10 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
 	  //top plot
 	  hs[iv]->SetMaximum(30.*lumi/35.9E3);
           if (iv == 0 || iv > 3) hs[iv]->SetMaximum(45.*lumi/35.9E3);
+          if (enriched==1 || enriched ==2) hs[iv]->SetMaximum(7.*lumi/35.9E3);
+          if ((enriched==1 || enriched ==2) && (iv == 0 || iv > 3)) hs[iv]->SetMaximum(11.*lumi/35.9E3);
 	  hs[iv]->Draw("nostack"); //old
-	  if (drawSignal[iv]) {
+	  if (drawSignal[iv] && !enriched) {
 	    TH1F* h77 = (TH1F*)hvbs[iv]->Clone();
 	    h77->SetLineWidth(3);
 	    h77->SetLineColor(kMagenta);
@@ -707,9 +725,9 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1){
 	  
 	  //close and print on file
 	  c1->cd();
-	  if (useMCatNLO == 0) sprintf(filename,"noScaleZX/%s_plot_allPOWHEG_%d.png",namegif[iv].c_str(),year);      
-	  if (useMCatNLO == 1) sprintf(filename,"noScaleZX/%s_plot_allMCatNLO_%d.png",namegif[iv].c_str(),year);     
-	  if (useMCatNLO == 2) sprintf(filename,"noScaleZX/%s_plot_MCatNLOshape_POWHEGint_%d.png",namegif[iv].c_str(),year);
+	  if (useMCatNLO == 0) sprintf(filename,"noScaleZX/%s_plot_allPOWHEG_%d%s.png",namegif[iv].c_str(),year,theExtra.c_str());      
+	  if (useMCatNLO == 1) sprintf(filename,"noScaleZX/%s_plot_allMCatNLO_%d%s.png",namegif[iv].c_str(),year,theExtra.c_str());     
+	  if (useMCatNLO == 2) sprintf(filename,"noScaleZX/%s_plot_MCatNLOshape_POWHEGint_%d%s.png",namegif[iv].c_str(),year,theExtra.c_str());
 	  gPad->Print(filename);
 	}
 }
