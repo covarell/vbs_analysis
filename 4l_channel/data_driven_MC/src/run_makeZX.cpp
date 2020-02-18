@@ -55,7 +55,7 @@ int main( int argc, char *argv[] ){
 	//2018
         if (year == 2018) t->Add("/eos/cms/store/group/phys_higgs/cmshzz4l/cjlst/RunIILegacy/200205_CutBased/Data_2018/AllData/ZZ4lAnalysis.root");
 
-	float c_constant = 8.5;
+	float c_constant = 14.0;
         //if (year == 2017) c_constant = 2.3;
 	//if (year == 2018) c_constant = 2.3; 
         
