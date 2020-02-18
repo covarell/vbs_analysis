@@ -64,11 +64,11 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1, int enriched =
 	
 	static const int vars = 6;
         string titlex[vars] = {"K_{D}","M_{4l} [GeV]","M_{jj} [GeV]","#Delta #eta_{jj}","p_{T,j}","#eta_{j}"};        
-        string titley[vars] = {"Events/0.025","Events/16 GeV","Events/22.5 GeV","Events/0.175","Events/5 GeV","Events/0.25"};     
+        string titley[vars] = {"Events/0.025","Events/16 GeV","Events/40 GeV","Events/0.175","Events/5 GeV","Events/0.33"};     
 	string namegif[vars] = {"Dbkgkin","m4l","mjj","detajj","ptj","etaj"};
-        int bins[vars] = {20,20,20,20,30,20};
+        int bins[vars] = {20,20,30,20,40,30};
         float xmin[vars] = {0.,160.,100.,0.,0.,-5.};
-	float xmax[vars] = {1.,800.,1000.,8.,300.,5.};	
+	float xmax[vars] = {1.,800.,1300.,8.,400.,5.};	
 	bool drawSignal[vars] = {false,false,true,true,true,true};
 
 	//histogram stack
@@ -112,6 +112,7 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1, int enriched =
 	TH1F *httzwzz_em[vars];//ttz + wwz e mu
 
 	for(int iv = 0; iv < vars; iv++){
+	  if (enriched == 1 || enriched == 2) bins[iv] /= 2; 
 	  // sprintf(filename,"hcd%d",iv);   h_complete_data[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]); //all data
 	  // sprintf(filename,"h00_%d",iv);   h00[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]); //bkg_kin<0.7 cut full background plot
 	  sprintf(filename,"hdata_%d",iv);   hdata[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]); //data, because we are hiding higher energies in this phase
@@ -148,7 +149,7 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1, int enriched =
 	  200,208,216,224,234,246,260,278,302,338,1500
 	}; 
 
-	float c_constant = 8.5;
+	float c_constant = 14.0;    //8.5;
         // if (year == 2017) c_constant = 3.5;
 	// if (year == 2018) c_constant = 3.5; 
 	TFile* f_ = TFile::Open("/afs/cern.ch/work/c/covarell/vbs2017/CMSSW_10_2_15_slc7/src/ZZAnalysis/AnalysisStep/data/cconstants/SmoothKDConstant_m4l_DjjVBF13TeV.root");
@@ -158,7 +159,7 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1, int enriched =
         // find available samples  
 	int nSamp = 0;  
 	TString rootname[40];
- 	sprintf(filename,"newsamples%d_withMGggZZandVBS.txt",year);
+ 	sprintf(filename,"cutbased_samples%d.txt",year);
 
 	ifstream parInput(filename);
         
@@ -256,7 +257,7 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1, int enriched =
 	  if (rootname[is].Contains("ggTo") || rootname[is].Contains("ggZZnew")) j = 1;      
           if (rootname[is].Contains("VBFTo")) j = 2;
 	  if (rootname[is].Contains("amcatnlo")) j = 5;
-	  if (rootname[is].Contains("WWZ") || rootname[is].Contains("TTZ")) j = 4;   
+	  if (rootname[is].Contains("WWZ") || rootname[is].Contains("TTZ") || rootname[is].Contains("WZZ")) j = 4;   
 	  //histogram declaration
 	  //TH1F *kin_zz = new TH1F("kin_zz","",bins,xmin,xmax); //was 100 bins
 	  
@@ -332,7 +333,8 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1, int enriched =
 	      // correct k-factor for NNLO/NLO?
 	      // if (j==1) weight= (xsec*overallEventWeight*KFactorQCDggzz_Nominal*prefiringWeight*lumi)/(resum);
 	      // if (j==1 && useMCatNLO==1) weight /=1.7;
-	      if (j==1) weight= (xsec*overallEventWeight*1.3*prefiringWeight*lumi)/(resum);
+	      if (j==1) weight= (xsec*overallEventWeight*1.53*1.64*prefiringWeight*lumi)/(resum);
+              // LO weight from dynamic to fixed scale + NLO k-factor
               if (j==2 && year==2016) weight= (xsec*overallEventWeight*prefiringWeight*lumi)/(resum);
               if (j==2 && year>2016) weight= (xsec*overallEventWeight*prefiringWeight*lumi)/(genHEPMCweight*resum);             
 	      if (j==5) weight= (xsec*overallEventWeight*prefiringWeight*lumi)/(resum);
@@ -351,17 +353,23 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1, int enriched =
 	      dbkg_kin = p_JJVBF_BKG_MCFM_JECNominal/(p_JJVBF_BKG_MCFM_JECNominal+ p_JJQCD_BKG_MCFM_JECNominal*c_mzz);
 	      if (dbkg_kin < 0.00 || dbkg_kin > 1.00) continue;
 
-	      // fill templates
+	      // fill templates 
 	      if (useMCatNLO > 0 && j==5) {
 		tnew[0]->Fill();
-		if(chan==1) { temp_zz_4mu[0]->Fill(ZZMass,dbkg_kin,weight); temp_1d_4mu[0]->Fill(dbkg_kin,weight); } 
-		else if(chan==2) { temp_zz_4e[0]->Fill(ZZMass,dbkg_kin,weight); temp_1d_4e[0]->Fill(dbkg_kin,weight); }
-	        else { temp_zz_2e2mu[0]->Fill(ZZMass,dbkg_kin,weight); temp_1d_2e2mu[0]->Fill(dbkg_kin,weight); }
+		// if(chan==1) { 
+		temp_zz_4mu[0]->Fill(ZZMass,dbkg_kin,weight); temp_1d_4mu[0]->Fill(dbkg_kin,weight);  
+		// else if(chan==2) { 
+		temp_zz_4e[0]->Fill(ZZMass,dbkg_kin,weight); temp_1d_4e[0]->Fill(dbkg_kin,weight); 
+	        // else { 
+		temp_zz_2e2mu[0]->Fill(ZZMass,dbkg_kin,weight); temp_1d_2e2mu[0]->Fill(dbkg_kin,weight); 
 	      } else if (useMCatNLO == 0 && j==0) {
 		tnew[0]->Fill();
-		if(chan==1) { temp_zz_4mu[0]->Fill(ZZMass,dbkg_kin,weight); temp_1d_4mu[0]->Fill(dbkg_kin,weight); }
-		else if(chan==2) { temp_zz_4e[0]->Fill(ZZMass,dbkg_kin,weight);  temp_1d_4e[0]->Fill(dbkg_kin,weight); }
-	        else { temp_zz_2e2mu[0]->Fill(ZZMass,dbkg_kin,weight); temp_1d_2e2mu[0]->Fill(dbkg_kin,weight); }
+		// if(chan==1) { 
+		temp_zz_4mu[0]->Fill(ZZMass,dbkg_kin,weight); temp_1d_4mu[0]->Fill(dbkg_kin,weight); 
+		// else if(chan==2) { 
+		temp_zz_4e[0]->Fill(ZZMass,dbkg_kin,weight);  temp_1d_4e[0]->Fill(dbkg_kin,weight); 
+	        // else { 
+		temp_zz_2e2mu[0]->Fill(ZZMass,dbkg_kin,weight); temp_1d_2e2mu[0]->Fill(dbkg_kin,weight); 
 	      } else if (j==1 || j==4) {
 		tnew[j]->Fill();
 		temp_zz_4mu[j]->Fill(ZZMass,dbkg_kin,weight);  temp_1d_4mu[j]->Fill(dbkg_kin,weight);
@@ -634,7 +642,7 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1, int enriched =
 	  legend->SetTextFont(72);
 	  legend->SetTextSize(0.04);
 	  legend->AddEntry(hzx[iv],"Z+X","f");
-          legend->AddEntry(httzwzz[iv],"t#bar{t}Z, WWZ","f");
+          legend->AddEntry(httzwzz[iv],"t#bar{t}Z, WWZ, WZZ","f");
 	  legend->AddEntry(hqqzz[iv],"q#bar{q}#rightarrowZZ","f");
 	  legend->AddEntry(hsum1[iv],"gg#rightarrowZZ","f");
 	  legend->AddEntry(hsum2[iv],"VBS","f");
@@ -658,9 +666,10 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1, int enriched =
 	  pad1->cd();
 	  //top plot
 	  hs[iv]->SetMaximum(30.*lumi/35.9E3);
-          if (iv == 0 || iv > 3) hs[iv]->SetMaximum(45.*lumi/35.9E3);
-          if (enriched==1 || enriched ==2) hs[iv]->SetMaximum(7.*lumi/35.9E3);
-          if ((enriched==1 || enriched ==2) && (iv == 0 || iv > 3)) hs[iv]->SetMaximum(11.*lumi/35.9E3);
+          if (iv > 3) hs[iv]->SetMaximum(38.*lumi/35.9E3);
+          if (iv == 0) hs[iv]->SetMaximum(51.*lumi/35.9E3);
+          if (enriched==1 || enriched ==2) hs[iv]->SetMaximum(14.*lumi/35.9E3);
+          if ((enriched==1 || enriched ==2) && iv > 3) hs[iv]->SetMaximum(22.*lumi/35.9E3);
 	  hs[iv]->Draw("nostack"); //old
 	  if (drawSignal[iv] && !enriched) {
 	    TH1F* h77 = (TH1F*)hvbs[iv]->Clone();
@@ -701,7 +710,7 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1, int enriched =
 	  hdatacopy->GetYaxis()->SetTitleSize(22);
 	  hdatacopy->GetXaxis()->SetTitleOffset(4.5);
 	  hdatacopy->GetYaxis()->SetTitleOffset(1.7);
-	  hdatacopy->GetYaxis()->SetRangeUser(-1.,3.);
+	  hdatacopy->GetYaxis()->SetRangeUser(-0.5,2.5);
 	  
 	  hdatacopy->Sumw2();
 	  hdatacopy->SetStats(0); //clear stat box

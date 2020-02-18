@@ -49,7 +49,7 @@ void plotterSystScale(int year = 2018, int whichSample = 1, bool isVBSenriched =
 	gStyle->SetPalette(1);
 	TFile *input_file;
   
-	float c_constant = 8.5;
+	float c_constant = 14.0;
         // if (year == 2017) c_constant = 3.5;
 	// if (year == 2018) c_constant = 3.5; 
 	TFile* f_ = TFile::Open("/afs/cern.ch/work/c/covarell/vbs2017/CMSSW_10_2_15_slc7/src/ZZAnalysis/AnalysisStep/data/cconstants/SmoothKDConstant_m4l_DjjVBF13TeV.root");
@@ -59,7 +59,7 @@ void plotterSystScale(int year = 2018, int whichSample = 1, bool isVBSenriched =
         // find available samples  
 	int nSamp = 0;  
 	TString rootname[40];
- 	sprintf(filename,"newsamples%d_withMGggZZandVBS.txt",year);
+ 	sprintf(filename,"cutbased_samples%d.txt",year);
 
 	ifstream parInput(filename);
         
@@ -233,7 +233,7 @@ void plotterSystScale(int year = 2018, int whichSample = 1, bool isVBSenriched =
 		weight= (xsec*overallEventWeight*prefiringWeight*lumi)/(resum);
 		if (j==0) weight= (xsec*KFactorEWKqqZZ*overallEventWeight*KFactorQCDqqZZ_M*prefiringWeight*lumi)/(resum);
 		// correct k-factor for NNLO/NLO?
-		if (j==1) weight= (xsec*overallEventWeight*1.3*prefiringWeight*lumi)/(resum);
+		if (j==1) weight= (xsec*overallEventWeight*1.53*1.64*prefiringWeight*lumi)/(resum);
 		//if (j==1) weight /=1.7;
 		if (j==2 && year==2016) weight= (xsec*overallEventWeight*prefiringWeight*lumi)/(resum);
 		if (j==2 && year>2016) weight= (xsec*overallEventWeight*prefiringWeight*lumi)/(genHEPMCweight*resum);             

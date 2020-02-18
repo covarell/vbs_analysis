@@ -45,7 +45,7 @@ void plotterSystJER(int year = 2018, int whichSample = 1){
 	gStyle->SetPalette(1);
 	TFile *input_file;
   
-	float c_constant = 8.5;
+	float c_constant = 14.0;
         // if (year == 2017) c_constant = 3.5;
 	// if (year == 2018) c_constant = 3.5; 
 	TFile* f_ = TFile::Open("/afs/cern.ch/work/c/covarell/vbs2017/CMSSW_10_2_15_slc7/src/ZZAnalysis/AnalysisStep/data/cconstants/SmoothKDConstant_m4l_DjjVBF13TeV.root");
@@ -55,7 +55,7 @@ void plotterSystJER(int year = 2018, int whichSample = 1){
         // find available samples  
 	int nSamp = 0;  
 	TString rootname[40];
- 	sprintf(filename,"badsamples%d_withMGggZZandVBS.txt",year);
+ 	sprintf(filename,"cutbased_samples%d.txt",year);
 
 	ifstream parInput(filename);
         
