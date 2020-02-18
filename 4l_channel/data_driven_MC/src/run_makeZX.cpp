@@ -14,7 +14,15 @@ int FindFinalStateZX(short Z1Flav, short Z2Flav);
 
 int main( int argc, char *argv[] ){
 	
-        int year = 2016;
+       int year = atoi(argv[1]);
+       int enriched = atoi(argv[2]);
+
+	string theExtra = "";
+        if (enriched == 1) theExtra = "_VBSenr";
+        if (enriched == 2) theExtra = "_superVBSenr";
+        if (enriched == 3) theExtra = "_bkgdEnr";
+        if (enriched == 4) theExtra = "_ptjet50";
+        
         int passtot = 0;
         int n2e2mu = 0;
         int n2mu2e = 0;
@@ -33,19 +41,19 @@ int main( int argc, char *argv[] ){
         // 2016
  
         char name[200];
-	if (year == 2016) sprintf(name,"~/work/vbs2017/CMSSW_10_2_15_slc7/src/ZZAnalysis/AnalysisStep/data/FakeRates/FakeRates_SS_2016_Legacy.root");
-	if (year == 2017) sprintf(name,"~/work/vbs2017/CMSSW_10_2_15_slc7/src/ZZAnalysis/AnalysisStep/data/FakeRates/FakeRates_SS_2017_Legacy.root"); 
-        if (year == 2018) sprintf(name,"~/work/vbs2017/CMSSW_10_2_15_slc7/src/ZZAnalysis/AnalysisStep/data/FakeRates/FakeRates_SS_2018_Legacy.root");
+	if (year == 2016) sprintf(name,"/eos/cms/store/group/phys_higgs/cmshzz4l/cjlst/RunIILegacy/200205_CutBased/FRfiles/FakeRates_SS_2016.root");
+	if (year == 2017) sprintf(name,"/eos/cms/store/group/phys_higgs/cmshzz4l/cjlst/RunIILegacy/200205_CutBased/FRfiles/FakeRates_SS_2017.root"); 
+        if (year == 2018) sprintf(name,"/eos/cms/store/group/phys_higgs/cmshzz4l/cjlst/RunIILegacy/200205_CutBased/FRfiles/FakeRates_SS_2018.root");
 
 	FakeRates *FR = new FakeRates(name);
     
 	TChain *t = new TChain("CRZLLTree/candTree");
         //2016
-	if (year == 2016) t->Add("/eos/home-h/hroskes/CJLST/190821_fixjetid/Data_2016/AllData/ZZ4lAnalysis.root");
+	if (year == 2016) t->Add("/eos/cms/store/group/phys_higgs/cmshzz4l/cjlst/RunIILegacy/200205_CutBased/Data_2016/AllData/ZZ4lAnalysis.root");
 	//2017
-        if (year == 2017) t->Add("/eos/home-h/hroskes/CJLST/190821_fixjetid/Data_2017/AllData/ZZ4lAnalysis.root");
+        if (year == 2017) t->Add("/eos/cms/store/group/phys_higgs/cmshzz4l/cjlst/RunIILegacy/200205_CutBased/Data_2017/AllData/ZZ4lAnalysis.root");
 	//2018
-        if (year == 2018) t->Add("/eos/home-h/hroskes/CJLST/190821_fixjetid/Data_2018/AllData/ZZ4lAnalysis.root");
+        if (year == 2018) t->Add("/eos/cms/store/group/phys_higgs/cmshzz4l/cjlst/RunIILegacy/200205_CutBased/Data_2018/AllData/ZZ4lAnalysis.root");
 
 	float c_constant = 8.5;
         //if (year == 2017) c_constant = 2.3;
@@ -63,9 +71,9 @@ int main( int argc, char *argv[] ){
         data.fChain->SetBranchStatus("DiJetDEta", 1);
 	data.fChain->SetBranchStatus("ZZMass", 1);
 	data.fChain->SetBranchStatus("ZZMassErrCorr", 1);
-	data.fChain->SetBranchStatus("p_JJQCD_SIG_ghg4_1_JHUGen_JECNominal", 1);
-	data.fChain->SetBranchStatus("p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal", 1);
-	data.fChain->SetBranchStatus("p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal", 1);
+	//data.fChain->SetBranchStatus("p_JJQCD_SIG_ghg4_1_JHUGen_JECNominal", 1);
+	//data.fChain->SetBranchStatus("p_JJQCD_SIG_ghg2_1_JHUGen_JECNominal", 1);
+	//data.fChain->SetBranchStatus("p_JJVBF_SIG_ghv1_1_JHUGen_JECNominal", 1);
 	data.fChain->SetBranchStatus("p_m4l_SIG", 1);
 	data.fChain->SetBranchStatus("p_m4l_BKG", 1);
 	data.fChain->SetBranchStatus("CRflag", 1);
@@ -79,8 +87,8 @@ int main( int argc, char *argv[] ){
         data.fChain->SetBranchStatus("JetEta", 1);
 	data.fChain->SetBranchStatus("JetPt", 1);      
 	data.fChain->SetBranchStatus("LepLepId", 1);
-	data.fChain->SetBranchStatus("p_QQB_BKG_MCFM", 1);
-	data.fChain->SetBranchStatus("p_GG_SIG_ghg2_1_ghz1_1_JHUGen", 1);
+	//data.fChain->SetBranchStatus("p_QQB_BKG_MCFM", 1);
+	//data.fChain->SetBranchStatus("p_GG_SIG_ghg2_1_ghz1_1_JHUGen", 1);
 	data.fChain->SetBranchStatus("nExtraLep", 1);
 	data.fChain->SetBranchStatus("nCleanedJetsPt30BTagged_bTagSF", 1);
 
@@ -105,7 +113,7 @@ int main( int argc, char *argv[] ){
 	float ZZMassErrCorr_new;
 	short njet;
 
-        sprintf(name,"ZX%d_noCut.root",year);
+        sprintf(name,"ZX%d_noCut%s.root",year,theExtra.c_str());
 	TFile *f = new TFile(name,"recreate");
 	TTree *tnew =new TTree("candTree","");
 	tnew->Branch("dbkg_kin",&dbkg_kin,"dbkg_kin/F");
@@ -153,7 +161,12 @@ int main( int argc, char *argv[] ){
 		// no deta cut
 		// if( data.ZZMass > 160  && data.DiJetMass > 100 && data.nExtraLep==0 && (((data.nCleanedJetsPt30==2||data.nCleanedJetsPt30==3)&&data.nCleanedJetsPt30BTagged_bTagSF<=1) ||(data.nCleanedJetsPt30>=4&&data.nCleanedJetsPt30BTagged_bTagSF==0)) ){
 		// old fiducial region
-                if(data.DiJetMass>100 && data.ZZMass > 180 && data.nCleanedJetsPt30>1 && data.Z1Mass < 120 && data.Z1Mass > 60 && data.Z2Mass < 120 && data.Z2Mass > 60){
+                if(data.DiJetMass>100 && data.ZZMass > 180 && data.nCleanedJetsPt30>1 && data.Z1Mass < 120 && data.Z1Mass > 60 && data.Z2Mass < 120 && data.Z2Mass > 60) {
+
+		  if (enriched == 1 && (data.DiJetMass < 400 || fabs(data.DiJetDEta) < 2.4)) continue;
+		  if (enriched == 2 && (data.DiJetMass < 400 || fabs(data.DiJetDEta) < 5.0)) continue;
+		  if (enriched == 3 && data.DiJetMass > 400 && fabs(data.DiJetDEta) > 2.4) continue;
+		  if (enriched == 4 && (data.JetPt->at(0) < 50 || data.JetPt->at(1) < 50)) continue;
 		  passtot++;
 		  // if(data.DiJetMass>100 && data.ZZMass > 180 && data.nCleanedJetsPt30>1 && data.Z1Mass < 120 && data.Z1Mass > 60 && data.Z2Mass < 120 && data.Z2Mass > 60 && data.JetPt->at(0) > 50 && data.JetPt->at(1) > 50){
 		// bkgd enriched
