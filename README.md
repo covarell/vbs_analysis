@@ -19,7 +19,9 @@ source set_library.sh
 
 make run_makeZX
 
-./run_makeZX
+./run_makeZX &lt;year&gt; &lt;enrichment&gt;
+
+The enrichment variable refers to the selection: 0 = baseline, 1 = VBS-enriched (loose), 2 = VBS-enriched (tight), 3 = background enriched, 4 = tighter pTjet cut (50 GeV). 
 
 The necessary variables (ZZMass, dbkg_kin, weight etc.) will be stored in ZX(+suffix).root
 
@@ -30,7 +32,7 @@ plotterAndTemplateMaker.c -> The file reads 4l MC + data (from relevant reposito
 - 1D templates, selected trees and their pictures (in template/root_output_files/ divided by MC/data contributions) 
 - yields for MC and data (MC/datayields_&lt;year&gt;.txt, to be copied in the combine cards) 
 
-Run with: plotterAndTemplateMaker(&lt;year&gt;,1,&lt;VBSenriched&gt;)  <- check macro for the several enrichment options
+Run with: plotterAndTemplateMaker(&lt;year&gt;,1,&lt;&lt;enrichment&gt;)  <- check above for the several enrichment options
 
 The drawSummedHistos.c macro can be used to plot summed histos for the 3 years.
 
@@ -69,6 +71,10 @@ To run the likelihood analysis (observed significance):
 
 - combine -M Significance card_name.txt 
 - combine -M MultiDimFit card_name.txt --cl=0.68 --algo singles (may add --robustFit 1)
+
+To run the likelihood analysis (observed, with theory systematics removed to obtain cross-section rather than mu): 
+
+- combine -M MultiDimFit card_name.txt --cl=0.68 --algo singles --freezeNuisanceGroups=^theory (may add --robustFit 1)
 
 To run fits for signal strength and impacts follow instructions in the combine gitbook to install the new scripts
 combineTool.py and plotImpacts.py
