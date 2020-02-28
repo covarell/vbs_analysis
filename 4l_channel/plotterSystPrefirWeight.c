@@ -3,7 +3,7 @@
 #include <TString.h>
 #include <memory>
 
-void plotterSystPrefirWeight(int year = 2018, int whichSample = 1, bool isVBSenriched = false){
+void plotterSystPrefirWeight(int year = 2018, int whichSample = 1, int enriched = 0){
   
        //whichSample = 0 : use just qqZZ
        //whichSample = 1 : use just ggZZ
@@ -13,6 +13,16 @@ void plotterSystPrefirWeight(int year = 2018, int whichSample = 1, bool isVBSenr
         if (year == 2017) lumi = 41.5;
 	if (year == 2018) lumi = 59.7;
 
+        string theExtra = "";
+        if (enriched == 1) theExtra = "_VBSenr";
+	if (enriched == 2) theExtra = "_superVBSenr";
+	if (enriched == 3) theExtra = "_bkgdEnr";
+	if (enriched == 4) theExtra = "_ptjet50";
+
+        int nBinsTempl = 50;
+        if (enriched == 2) nBinsTempl = 20;
+        if (enriched == 3) nBinsTempl = 10;
+        
 	//scale vars
 	static const int vars = 3;
 
@@ -111,19 +121,19 @@ void plotterSystPrefirWeight(int year = 2018, int whichSample = 1, bool isVBSenr
 	TH2F *temp_zz_4mu[4];
 	TH2F *temp_zz_2e2mu[4]; */
 
-	if (whichSample==0) sprintf(filename,"template/root_output_files/qqzz_Moriond_PrefirWeight_%d.root",year); 
-	if (whichSample==1) sprintf(filename,"template/root_output_files/ggzz_Moriond_PrefirWeight_%d.root",year); 
-	if (whichSample==2) sprintf(filename,"template/root_output_files/vbs_Moriond_PrefirWeight_%d.root",year);
-	if (whichSample==4) sprintf(filename,"template/root_output_files/ttzwzz_Moriond_PrefirWeight_%d.root",year);
+	if (whichSample==0) sprintf(filename,"template/root_output_files/qqzz_Moriond_PrefirWeight_%d%s.root",year,theExtra.c_str()); 
+	if (whichSample==1) sprintf(filename,"template/root_output_files/ggzz_Moriond_PrefirWeight_%d%s.root",year,theExtra.c_str()); 
+	if (whichSample==2) sprintf(filename,"template/root_output_files/vbs_Moriond_PrefirWeight_%d%s.root",year,theExtra.c_str());
+	if (whichSample==4) sprintf(filename,"template/root_output_files/ttzwzz_Moriond_PrefirWeight_%d%s.root",year,theExtra.c_str());
 	fnew = new TFile(filename,"recreate");
 
 	for (int it=0; it < 2; it++) {
 	  sprintf(filename,"temp_1d_4e_%d",it);
-	  temp_1d_4e[it] = new TH1F(filename,"",50,0.,1.);
+	  temp_1d_4e[it] = new TH1F(filename,"",nBinsTempl,0.,1.);
 	  sprintf(filename,"temp_1d_4mu_%d",it);
-	  temp_1d_4mu[it] = new TH1F(filename,"",50,0.,1.);
+	  temp_1d_4mu[it] = new TH1F(filename,"",nBinsTempl,0.,1.);
 	  sprintf(filename,"temp_1d_2e2mu_%d",it);
-	  temp_1d_2e2mu[it] = new TH1F(filename,"",50,0.,1.);
+	  temp_1d_2e2mu[it] = new TH1F(filename,"",nBinsTempl,0.,1.);
 	}  
 	
 	//for loop for different samples
@@ -144,7 +154,7 @@ void plotterSystPrefirWeight(int year = 2018, int whichSample = 1, bool isVBSenr
           //process class
           int j = 0;   // qqzz powheg
           bool process = false;
-          process = (((rootname[is].Contains("ggTo") || rootname[is].Contains("ggZZnew")) && whichSample==1) || (rootname[is].Contains("VBFTo") && whichSample==2) || (rootname[is].Contains("amcatnlo") && whichSample==0) || ((rootname[is].Contains("WWZ") || rootname[is].Contains("TTZ")) && whichSample == 4));
+          process = (((rootname[is].Contains("ggTo") || rootname[is].Contains("ggZZnew")) && whichSample==1) || (rootname[is].Contains("VBFTo") && whichSample==2) || (rootname[is].Contains("amcatnlo") && whichSample==0) || ((rootname[is].Contains("WWZ") || rootname[is].Contains("WZZ") || rootname[is].Contains("TTZ")) && whichSample == 4));
 	  if (!process) continue;
 
           j = whichSample;
@@ -209,6 +219,10 @@ void plotterSystPrefirWeight(int year = 2018, int whichSample = 1, bool isVBSenr
 	      // if(DiJetMass>100 && nExtraLep==0 && ZZMass > 160 &&(((nCleanedJetsPt30==2||nCleanedJetsPt30==3)&&nCleanedJetsPt30BTagged_bTagSF<=1)||(nCleanedJetsPt30>=4&&nCleanedJetsPt30BTagged_bTagSF==0))){
 	      
 	      if(DiJetMass>100 && ZZMass > 180 && nCleanedJetsPt30>1 && Z1Mass < 120 && Z1Mass > 60 && Z2Mass < 120 && Z2Mass > 60){
+
+	      if (enriched == 1 && (DiJetMass < 400 || fabs(DiJetDEta) < 2.4)) continue;
+	      if (enriched == 2 && (DiJetMass < 400 || fabs(DiJetDEta) < 5.0)) continue;
+	      if (enriched == 3 && DiJetMass > 400 && fabs(DiJetDEta) > 2.4) continue;
 		
 		// if(DiJetMass>100 && ZZMass > 180 && nCleanedJetsPt30>1 && Z1Mass < 120 && Z1Mass > 60 && Z2Mass < 120 && Z2Mass > 60 && JetPt->at(0) > 50 && JetPt->at(1) > 50){
 		
@@ -249,7 +263,7 @@ void plotterSystPrefirWeight(int year = 2018, int whichSample = 1, bool isVBSenr
 		
 		// fill templates
 		if (iv == 0) {
-                  if (dbkg_kin > 0.5 && (!isVBSenriched || (DiJetMass > 400 && fabs(DiJetDEta) > 2.4))) hstat->Fill(dbkg_kin,weight);
+                  if (dbkg_kin > 0.5 && (enriched != 1 || (DiJetMass > 400 && fabs(DiJetDEta) > 2.4)) && (enriched != 2 || (DiJetMass > 400 && fabs(DiJetDEta) > 5))) hstat->Fill(dbkg_kin,weight);
 		  for (int it=0; it < 2; it++) {
 		    if (j==1 || j==4) {
 		      temp_1d_4mu[it]->Fill(dbkg_kin,weight);
@@ -333,8 +347,8 @@ void plotterSystPrefirWeight(int year = 2018, int whichSample = 1, bool isVBSenr
 	   pad1->cd();  */
 	//top plot
 	hratio[0]->GetXaxis()->SetTitle(titlex.c_str());
-	hratio[0]->SetMaximum(0.8);
-	hratio[0]->SetMinimum(-0.8);
+	hratio[0]->SetMaximum(0.25);
+	hratio[0]->SetMinimum(-0.25);
 	hratio[0]->Draw(); //old
 	hratio[vars]->Fit("pol0","","e1same");
 	hratio[vars+1]->Fit("pol0","","e1same");
@@ -356,10 +370,10 @@ void plotterSystPrefirWeight(int year = 2018, int whichSample = 1, bool isVBSenr
 	
 	//close and print on file
 	// c1->cd();
-	if (whichSample == 0) sprintf(filename,"syst/%s_qqZZ_SystPrefirWeight_%d.png",namegif.c_str(),year);      
-	if (whichSample == 1) sprintf(filename,"syst/%s_ggZZ_SystPrefirWeight_%d.png",namegif.c_str(),year);
-	if (whichSample == 2) sprintf(filename,"syst/%s_VBS_SystPrefirWeight_%d.png",namegif.c_str(),year);
-	if (whichSample == 4) sprintf(filename,"syst/%s_ttZWZZ_SystPrefirWeight_%d.png",namegif.c_str(),year);
+	if (whichSample == 0) sprintf(filename,"syst/%s_qqZZ_SystPrefirWeight_%d%s.png",namegif.c_str(),year,theExtra.c_str());      
+	if (whichSample == 1) sprintf(filename,"syst/%s_ggZZ_SystPrefirWeight_%d%s.png",namegif.c_str(),year,theExtra.c_str());
+	if (whichSample == 2) sprintf(filename,"syst/%s_VBS_SystPrefirWeight_%d%s.png",namegif.c_str(),year,theExtra.c_str());
+	if (whichSample == 4) sprintf(filename,"syst/%s_ttZWZZ_SystPrefirWeight_%d%s.png",namegif.c_str(),year,theExtra.c_str());
 	c1->Print(filename);
 	
 }

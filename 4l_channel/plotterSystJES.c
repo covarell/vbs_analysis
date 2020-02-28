@@ -3,7 +3,7 @@
 #include <TString.h>
 #include <memory>
 
-void plotterSystJES(int year = 2018, int whichSample = 1, bool isVBSenriched = false){
+void plotterSystJES(int year = 2018, int whichSample = 1, int enriched = 0){
   
        //whichSample = 0 : use just qqZZ
        //whichSample = 1 : use just ggZZ
@@ -13,8 +13,15 @@ void plotterSystJES(int year = 2018, int whichSample = 1, bool isVBSenriched = f
         if (year == 2017) lumi = 41.5;
 	if (year == 2018) lumi = 59.7;
 
-	string theExtra = "";
-        if (isVBSenriched) theExtra = "_VBSenr";
+        string theExtra = "";
+        if (enriched == 1) theExtra = "_VBSenr";
+	if (enriched == 2) theExtra = "_superVBSenr";
+	if (enriched == 3) theExtra = "_bkgdEnr";
+	if (enriched == 4) theExtra = "_ptjet50";
+
+        int nBinsTempl = 50;
+        if (enriched == 2) nBinsTempl = 20;
+        if (enriched == 3) nBinsTempl = 10;
 
 	//scale vars
 	static const int vars = 3;
@@ -131,11 +138,11 @@ void plotterSystJES(int year = 2018, int whichSample = 1, bool isVBSenriched = f
 
 	for (int it=0; it < 2; it++) {
 	  sprintf(filename,"temp_1d_4e_%d",it);
-	  temp_1d_4e[it] = new TH1F(filename,"",50,0.,1.);
+	  temp_1d_4e[it] = new TH1F(filename,"",nBinsTempl,0.,1.);
 	  sprintf(filename,"temp_1d_4mu_%d",it);
-	  temp_1d_4mu[it] = new TH1F(filename,"",50,0.,1.);
+	  temp_1d_4mu[it] = new TH1F(filename,"",nBinsTempl,0.,1.);
 	  sprintf(filename,"temp_1d_2e2mu_%d",it);
-	  temp_1d_2e2mu[it] = new TH1F(filename,"",50,0.,1.);
+	  temp_1d_2e2mu[it] = new TH1F(filename,"",nBinsTempl,0.,1.);
 	}  
 	
 	//for loop for different samples
@@ -230,7 +237,11 @@ void plotterSystJES(int year = 2018, int whichSample = 1, bool isVBSenriched = f
 	      //unique selection condition (see paper page 8) & DiJetMass condition
 	      // if(DiJetMass>100 && nExtraLep==0 && ZZMass > 160 &&(((nCleanedJetsPt30==2||nCleanedJetsPt30==3)&&nCleanedJetsPt30BTagged_bTagSF<=1)||(nCleanedJetsPt30>=4&&nCleanedJetsPt30BTagged_bTagSF==0))){
 	      
-	      if(ZZMass > 180 && Z1Mass < 120 && Z1Mass > 60 && Z2Mass < 120 && Z2Mass > 60 && (!isVBSenriched || fabs(DiJetDEta) > 2.4)){
+	      if(ZZMass > 180 && Z1Mass < 120 && Z1Mass > 60 && Z2Mass < 120 && Z2Mass > 60){
+
+	      if (enriched == 1 && fabs(DiJetDEta) < 2.4) continue;
+	      if (enriched == 2 && fabs(DiJetDEta) < 5.0) continue;
+	      if (enriched == 3 && fabs(DiJetDEta) > 2.4) continue;
 
 		if (iv == 0 && nCleanedJetsPt30<2) continue; 
 		if (iv == 1 && nCleanedJetsPt30_jesUp<2) continue; 
@@ -261,7 +272,7 @@ void plotterSystJES(int year = 2018, int whichSample = 1, bool isVBSenriched = f
 		// if (iv==0 || i%10000 == 0) cout << "Check!" << (j1+j2).M() << " " << DiJetMass << endl;
 	
 		if ((j1+j2).M() < 100.) continue;
-                if (isVBSenriched && (j1+j2).M() < 400.) continue;		
+                if ((enriched == 1 || enriched == 2) && (j1+j2).M() < 400.) continue;		
 		
 		//set vbf_category
 		vbfcate=1;
@@ -277,7 +288,7 @@ void plotterSystJES(int year = 2018, int whichSample = 1, bool isVBSenriched = f
 		weight= (xsec*overallEventWeight*prefiringWeight*lumi)/(resum);
 		if (j==0) weight= (xsec*KFactorEWKqqZZ*overallEventWeight*KFactorQCDqqZZ_M*prefiringWeight*lumi)/(resum);
 		// correct k-factor for NNLO/NLO?
-		if (j==1) weight= (xsec*overallEventWeight*KFactorQCDggzz_Nominal*prefiringWeight*lumi)/(resum);
+		if (j==1) weight= (xsec*overallEventWeight*1.53*1.64*prefiringWeight*lumi)/(resum);
 		//if (j==1) weight /=1.7;
 		if (j==2 && year==2016) weight= (xsec*overallEventWeight*prefiringWeight*lumi)/(resum);
 		if (j==2 && year>2016) weight= (xsec*overallEventWeight*prefiringWeight*lumi)/(genHEPMCweight*resum);             
@@ -294,11 +305,11 @@ void plotterSystJES(int year = 2018, int whichSample = 1, bool isVBSenriched = f
 		// fill templates
 		if (iv == 0) {
 		  for (int it=0; it < 2; it++) {
-		    if (j==1 || j==4) {
+		    if (j==1 || j==4 || j==0) {
 		      temp_1d_4mu[it]->Fill(dbkg_kin,weight);
 		      temp_1d_4e[it]->Fill(dbkg_kin,weight);
 		      temp_1d_2e2mu[it]->Fill(dbkg_kin,weight);
-		    } else if (j==0 || j==2) {
+		    } else if (j==2) {
 		      if(chan==1) temp_1d_4mu[it]->Fill(dbkg_kin,weight); 
 		      else if(chan==2) temp_1d_4e[it]->Fill(dbkg_kin,weight);  
 		      else temp_1d_2e2mu[it]->Fill(dbkg_kin,weight); 
@@ -377,8 +388,8 @@ void plotterSystJES(int year = 2018, int whichSample = 1, bool isVBSenriched = f
 	   pad1->cd();  */
 	//top plot
 	hratio[0]->GetXaxis()->SetTitle(titlex.c_str());
-	hratio[0]->SetMaximum(0.8);
-	hratio[0]->SetMinimum(-0.8);
+	hratio[0]->SetMaximum(0.45);
+	hratio[0]->SetMinimum(-0.45);
 	/* h1[0]->SetLineColor(1);
 	h1[1]->SetLineColor(2);
 	h1[2]->SetLineColor(4);

@@ -118,11 +118,11 @@ void plotterSystPDF(int year = 2018, int whichSample = 1){
 
 	for (int it=0; it < 2; it++) {
 	  sprintf(filename,"temp_1d_4e_%d",it);
-	  temp_1d_4e[it] = new TH1F(filename,"",50,0.,1.);
+	  temp_1d_4e[it] = new TH1F(filename,"",nBinsTempl,0.,1.);
 	  sprintf(filename,"temp_1d_4mu_%d",it);
-	  temp_1d_4mu[it] = new TH1F(filename,"",50,0.,1.);
+	  temp_1d_4mu[it] = new TH1F(filename,"",nBinsTempl,0.,1.);
 	  sprintf(filename,"temp_1d_2e2mu_%d",it);
-	  temp_1d_2e2mu[it] = new TH1F(filename,"",50,0.,1.);
+	  temp_1d_2e2mu[it] = new TH1F(filename,"",nBinsTempl,0.,1.);
 	}  
 	
 	//for loop for different samples
@@ -330,8 +330,8 @@ void plotterSystPDF(int year = 2018, int whichSample = 1){
 	   pad1->cd();  */
 	//top plot
 	hratio[0]->GetXaxis()->SetTitle(titlex.c_str());
-	hratio[0]->SetMaximum(0.8);
-	hratio[0]->SetMinimum(-0.8);
+	hratio[0]->SetMaximum(0.45);
+	hratio[0]->SetMinimum(-0.45);
 	hratio[0]->Draw(); //old
 	hratio[vars]->Fit("pol0","","e1same");
 	hratio[vars+1]->Fit("pol0","","e1same");

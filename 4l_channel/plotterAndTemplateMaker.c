@@ -61,6 +61,10 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1, int enriched =
 	if (enriched == 2) theExtra = "_superVBSenr";
 	if (enriched == 3) theExtra = "_bkgdEnr";
 	if (enriched == 4) theExtra = "_ptjet50";
+
+        int nBinsTempl = 50;
+        if (enriched == 2) nBinsTempl = 20;
+        if (enriched == 3) nBinsTempl = 10;
 	
 	static const int vars = 6;
         string titlex[vars] = {"K_{D}","M_{4l} [GeV]","M_{jj} [GeV]","#Delta #eta_{jj}","p_{T,j}","#eta_{j}"};        
@@ -231,9 +235,9 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1, int enriched =
 	  temp_zz_4e[it] = new TH2F("temp_zz_4e","",nbins,xbin,40,0.,1.);
 	  temp_zz_4mu[it] = new TH2F("temp_zz_4mu","",nbins,xbin,40,0.,1.);
 	  temp_zz_2e2mu[it] = new TH2F("temp_zz_2e2mu","",nbins,xbin,40,0.,1.);
-	  temp_1d_4e[it] = new TH1F("temp_1d_4e","",50,0.,1.);
-	  temp_1d_4mu[it] = new TH1F("temp_1d_4mu","",50,0.,1.);
-	  temp_1d_2e2mu[it] = new TH1F("temp_1d_2e2mu","",50,0.,1.);
+	  temp_1d_4e[it] = new TH1F("temp_1d_4e","",nBinsTempl,0.,1.);
+	  temp_1d_4mu[it] = new TH1F("temp_1d_4mu","",nBinsTempl,0.,1.);
+	  temp_1d_2e2mu[it] = new TH1F("temp_1d_2e2mu","",nBinsTempl,0.,1.);
 	}
 	
 	//for loop for different samples

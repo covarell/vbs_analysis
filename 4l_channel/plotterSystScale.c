@@ -3,7 +3,7 @@
 #include <TString.h>
 #include <memory>
 
-void plotterSystScale(int year = 2018, int whichSample = 1, bool isVBSenriched = false){
+void plotterSystScale(int year = 2018, int whichSample = 1, int enriched = 0){
   
        //whichSample = 0 : use just qqZZ
        //whichSample = 1 : use just ggZZ
@@ -14,9 +14,14 @@ void plotterSystScale(int year = 2018, int whichSample = 1, bool isVBSenriched =
         if (year == 2017) lumi = 41.5;
 	if (year == 2018) lumi = 59.7;
 
-	string theExtra = "";
-        if (isVBSenriched) theExtra = "_VBSenr";
+        string theExtra = "";
+        if (enriched == 1) theExtra = "_VBSenr";
+	if (enriched == 2) theExtra = "_superVBSenr";
+	if (enriched == 3) theExtra = "_bkgdEnr";
 
+        int nBinsTempl = 50;
+        if (enriched == 2) nBinsTempl = 20;
+        if (enriched == 3) nBinsTempl = 10;
 	//scale vars
 	static const int vars = 7;
 
@@ -122,11 +127,11 @@ void plotterSystScale(int year = 2018, int whichSample = 1, bool isVBSenriched =
 
 	for (int it=0; it < 2; it++) {
 	  sprintf(filename,"temp_1d_4e_%d",it);
-	  temp_1d_4e[it] = new TH1F(filename,"",50,0.,1.);
+	  temp_1d_4e[it] = new TH1F(filename,"",nBinsTempl,0.,1.);
 	  sprintf(filename,"temp_1d_4mu_%d",it);
-	  temp_1d_4mu[it] = new TH1F(filename,"",50,0.,1.);
+	  temp_1d_4mu[it] = new TH1F(filename,"",nBinsTempl,0.,1.);
 	  sprintf(filename,"temp_1d_2e2mu_%d",it);
-	  temp_1d_2e2mu[it] = new TH1F(filename,"",50,0.,1.);
+	  temp_1d_2e2mu[it] = new TH1F(filename,"",nBinsTempl,0.,1.);
 	}  
 	
 	//for loop for different samples
@@ -215,10 +220,14 @@ void plotterSystScale(int year = 2018, int whichSample = 1, bool isVBSenriched =
 	   	    //unique selection condition (see paper page 8) & DiJetMass condition
 	    // if(DiJetMass>100 && nExtraLep==0 && ZZMass > 160 &&(((nCleanedJetsPt30==2||nCleanedJetsPt30==3)&&nCleanedJetsPt30BTagged_bTagSF<=1)||(nCleanedJetsPt30>=4&&nCleanedJetsPt30BTagged_bTagSF==0))){
 	    
-	      if(DiJetMass>100 && ZZMass > 180 && nCleanedJetsPt30>1 && Z1Mass < 120 && Z1Mass > 60 && Z2Mass < 120 && Z2Mass > 60 && (!isVBSenriched || (DiJetMass > 400 && fabs(DiJetDEta) > 2.4))){
+	      if(DiJetMass>100 && ZZMass > 180 && nCleanedJetsPt30>1 && Z1Mass < 120 && Z1Mass > 60 && Z2Mass < 120 && Z2Mass > 60){
 		
 		// if(DiJetMass>100 && ZZMass > 180 && nCleanedJetsPt30>1 && Z1Mass < 120 && Z1Mass > 60 && Z2Mass < 120 && Z2Mass > 60 && JetPt->at(0) > 50 && JetPt->at(1) > 50){
 	      
+	      if (enriched == 1 && (DiJetMass < 400 || fabs(DiJetDEta) < 2.4)) continue;
+	      if (enriched == 2 && (DiJetMass < 400 || fabs(DiJetDEta) < 5.0)) continue;
+	      if (enriched == 3 && DiJetMass > 400 && fabs(DiJetDEta) > 2.4) continue;
+
 	      //set vbf_category
 		vbfcate=1;
 	      //weight definition
