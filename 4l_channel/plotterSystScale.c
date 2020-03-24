@@ -270,11 +270,11 @@ void plotterSystScale(int year = 2018, int whichSample = 1, int enriched = 0){
 		// fill templates
 		if (iv == 0) {
 		  for (int it=0; it < 2; it++) {
-		    if (j==1 || j==4) {
+		    if (j==1 || j==4 || j==0) {
 		      temp_1d_4mu[it]->Fill(dbkg_kin,weight);
 		      temp_1d_4e[it]->Fill(dbkg_kin,weight);
 		      temp_1d_2e2mu[it]->Fill(dbkg_kin,weight);
-		    } else if (j==0 || j==2) {
+		    } else if (j==2) {
 		      if(chan==1) temp_1d_4mu[it]->Fill(dbkg_kin,weight); 
 		      else if(chan==2) temp_1d_4e[it]->Fill(dbkg_kin,weight);  
 		      else temp_1d_2e2mu[it]->Fill(dbkg_kin,weight); 

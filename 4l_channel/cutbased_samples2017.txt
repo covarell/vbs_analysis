@@ -5,4 +5,5 @@
 /eos/cms/store/group/phys_higgs/cmshzz4l/cjlst/RunIILegacy/200205_CutBased/MC_2017/TTZToLLNuNu_M10/ZZ4lAnalysis.root
 /eos/cms/store/group/phys_higgs/cmshzz4l/cjlst/RunIILegacy/200205_CutBased/MC_2017/WWZ/ZZ4lAnalysis.root
 /eos/cms/store/group/phys_higgs/cmshzz4l/cjlst/RunIILegacy/200205_CutBased/MC_2017/WZZ/ZZ4lAnalysis.root
+/eos/cms/store/group/phys_higgs/cmshzz4l/cjlst/RunIILegacy/200205_CutBased/MC_2017/ZZZ/ZZ4lAnalysis.root
 

@@ -34,7 +34,7 @@ void dosomething(TString chan="2e2mu", int year=2016, int enriched = 0){
         string namesyst[systs] = {"scale","PDF","JES","JER","PrefirWeight"};	
 	bool hasShape[samples][systs] = {{true,false,true,false,true},
 					 {false,false,false,false,false},
-					 {false,false,true,false,false},
+					 {true,false,true,false,false},
 					 {false,false,true,false,false},
 					 {false,false,false,false,false}};
 	string newnamesyst[systs] = {"ShapeQCDscale","ShapePDF","ShapeJES","ShapeJER","ShapePrefiring"};
@@ -103,7 +103,8 @@ void dosomething(TString chan="2e2mu", int year=2016, int enriched = 0){
 		  temp_1d_jup[is][isy]->SetBinContent(bx+1,temp_1d_jup[is][isy]->GetBinContent(bx+1)+0.00001);  
 		}
 	      }
-	      if (isy < 2) sprintf(filename,"bkg_%s_%sUp",namesamp[is].c_str(),newnamesyst[isy].c_str());  // years corr.	      
+	      if (isy == 0) sprintf(filename,"bkg_%s_%s_%sUp",namesamp[is].c_str(),newnamesyst[isy].c_str(),namesamp[is].c_str());  // scale - years corr.  
+	      else if (isy < 2) sprintf(filename,"bkg_%s_%sUp",namesamp[is].c_str(),newnamesyst[isy].c_str());  // years corr.	      
 	      else sprintf(filename,"bkg_%s_%s_%dUp",namesamp[is].c_str(),newnamesyst[isy].c_str(),year);  // years uncorr.
 	      temp_1d_jup[is][isy]->SetNameTitle(filename,filename);
 	      
@@ -118,7 +119,8 @@ void dosomething(TString chan="2e2mu", int year=2016, int enriched = 0){
 		  temp_1d_jdown[is][isy]->SetBinContent(bx+1,temp_1d_jdown[is][isy]->GetBinContent(bx+1)+0.00001);  
 		}
 	      }
-	      if (isy < 2) sprintf(filename,"bkg_%s_%sDown",namesamp[is].c_str(),newnamesyst[isy].c_str());  // years corr.	      
+	      if (isy == 0) sprintf(filename,"bkg_%s_%s_%sDown",namesamp[is].c_str(),newnamesyst[isy].c_str(),namesamp[is].c_str());  // scale - years corr.  
+	      else if (isy < 2) sprintf(filename,"bkg_%s_%sDown",namesamp[is].c_str(),newnamesyst[isy].c_str());  // years corr.	      
 	      else sprintf(filename,"bkg_%s_%s_%dDown",namesamp[is].c_str(),newnamesyst[isy].c_str(),year);  // years uncorr.
 	      temp_1d_jdown[is][isy]->SetNameTitle(filename,filename);
 	      cout << "Check normalizations before scaling: " << namesamp[is] << " " << namesyst[isy] << " " << normalizations[is][channum-1] << " " << temp_1d[is]->Integral() << " " << temp_1d_jup[is][isy]->Integral() << " " << temp_1d_jdown[is][isy]->Integral() << endl;
@@ -151,15 +153,16 @@ void dosomething(TString chan="2e2mu", int year=2016, int enriched = 0){
 	for (int is = 0; is < samples; is++) {
 	  if (is==1) continue;    // zx later!
 	  theIntegral = temp_1d[is]->Integral();
-          theScale = 1;
+          theScale = 1.;
  	  if (is > 1) theScale = normalizations[is][channum-1]/theIntegral;
 	  temp_1d[is]->Scale(theScale);
 	  temp_1d[is]->Write();
 	  for (int isy = 0; isy < systs; isy++) {
 	    if (year == 2018 && isy == 4) continue;   // no prefiring for 2018
 	    if (hasShape[is][isy]) {
-	      if (is > 1) theScale = normalizations[is][channum-1]/(normalizations[is][0]+normalizations[is][1]+normalizations[is][2]);
-	      if (isy == 4) theScale = 2.*theIntegral/(temp_1d_jup[is][isy]->Integral()+temp_1d_jdown[is][isy]->Integral());
+              theScale = 1.;
+	      if (is > 1) theScale *= normalizations[is][channum-1]/(normalizations[is][0]+normalizations[is][1]+normalizations[is][2]);
+	      if (isy > 2) theScale *= 2.*theIntegral/(temp_1d_jup[is][isy]->Integral()+temp_1d_jdown[is][isy]->Integral());
 	      temp_1d_jup[is][isy]->Scale(theScale);
 	      temp_1d_jup[is][isy]->Write();
 	      // theScale = normalizations[is][channum-1]/theIntegral;

@@ -261,7 +261,7 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1, int enriched =
 	  if (rootname[is].Contains("ggTo") || rootname[is].Contains("ggZZnew")) j = 1;      
           if (rootname[is].Contains("VBFTo")) j = 2;
 	  if (rootname[is].Contains("amcatnlo")) j = 5;
-	  if (rootname[is].Contains("WWZ") || rootname[is].Contains("TTZ") || rootname[is].Contains("WZZ")) j = 4;   
+	  if (rootname[is].Contains("WWZ") || rootname[is].Contains("TTZ") || rootname[is].Contains("WZZ") ||  rootname[is].Contains("ZZZ")) j = 4;   
 	  //histogram declaration
 	  //TH1F *kin_zz = new TH1F("kin_zz","",bins,xmin,xmax); //was 100 bins
 	  
@@ -646,7 +646,7 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1, int enriched =
 	  legend->SetTextFont(72);
 	  legend->SetTextSize(0.04);
 	  legend->AddEntry(hzx[iv],"Z+X","f");
-          legend->AddEntry(httzwzz[iv],"t#bar{t}Z, WWZ, WZZ","f");
+          legend->AddEntry(httzwzz[iv],"t#bar{t}Z, VVZ","f");
 	  legend->AddEntry(hqqzz[iv],"q#bar{q}#rightarrowZZ","f");
 	  legend->AddEntry(hsum1[iv],"gg#rightarrowZZ","f");
 	  legend->AddEntry(hsum2[iv],"VBS","f");

@@ -235,7 +235,7 @@ void plotterSystPrefirWeight(int year = 2018, int whichSample = 1, int enriched 
 		
 		// make sure prefiring weight is 1 for real data
 		float prefiringWeight = L1prefiringWeight;
-		// if (j==2) prefiringWeight = 1.; 
+		if (j==2) prefiringWeight = 1.; 
 		
 		weight= (xsec*overallEventWeight*prefiringWeight*lumi)/(resum);
 		if (j==0) weight= (xsec*KFactorEWKqqZZ*overallEventWeight*KFactorQCDqqZZ_M*prefiringWeight*lumi)/(resum);
@@ -245,8 +245,8 @@ void plotterSystPrefirWeight(int year = 2018, int whichSample = 1, int enriched 
 		if (j==2 && year==2016) weight= (xsec*overallEventWeight*prefiringWeight*lumi)/(resum);
 		if (j==2 && year>2016) weight= (xsec*overallEventWeight*prefiringWeight*lumi)/(genHEPMCweight*resum);             
 		
-		if (iv == 1) weight *= L1prefiringWeightUp/prefiringWeight;
-		if (iv == 2) weight *= L1prefiringWeightDn/prefiringWeight;
+		if (iv == 1) weight *= L1prefiringWeightUp/L1prefiringWeight;
+		if (iv == 2) weight *= L1prefiringWeightDn/L1prefiringWeight;
 		
 		//TEMPORARY FOR MISSING 2e2mu SAMPLE
 		//if (j==2 && year==2017) weight *= 2.;

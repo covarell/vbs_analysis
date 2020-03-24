@@ -8,13 +8,13 @@ void drawSummedHistos(){
         float lumi = 137.1;
 
 	static const int vars = 6;
-        string titlex[vars] = {"K_{D}","M_{4l} [GeV]","M_{jj} [GeV]","#Delta #eta_{jj}","p_{T,j}","#eta_{j}"};        
-        string titley[vars] = {"Events/0.025","Events/16 GeV","Events/22.5 GeV","Events/0.175","Events/5 GeV","Events/0.25"};     
-	string namegif[vars] = {"Dbkgkin","m4l","mjj","detajj","ptj","etaj"};
-        int bins[vars] = {20,20,20,20,30,20};
+        string titlex[vars] = {"K_{D}","M_{4l} [GeV]","M_{jj} [GeV]","#Delta #eta_{jj}","p_{T,j}","#eta_{j}"};
+        string titley[vars] = {"Events/0.025","Events/16 GeV","Events/40 GeV","Events/0.175","Events/5 GeV","Events/0.33"};
+        string namegif[vars] = {"Dbkgkin","m4l","mjj","detajj","ptj","etaj"};
+        int bins[vars] = {20,20,30,20,40,30};
         float xmin[vars] = {0.,160.,100.,0.,0.,-5.};
-	float xmax[vars] = {1.,800.,1000.,8.,300.,5.};	
-	bool drawSignal[vars] = {false,false,true,true,true,true};
+        float xmax[vars] = {1.,800.,1300.,8.,400.,5.};
+        bool drawSignal[vars] = {false,false,true,true,true,true};
 
 	TH1F *hdata[vars]; //data, because we are hiding higher energies in this phase
 	TH1F *hqqzz[vars]; //ew+zx -> real ew
@@ -22,12 +22,13 @@ void drawSummedHistos(){
 	TH1F *hvbs[vars]; //vbs
 	TH1F *hsum1[vars]; //gg+ew -> real gg
 	TH1F *hsum2[vars]; //gg+ew+vbs
-	TH1F *httzwwz[vars];//ttz + wwz
+	TH1F *httzwzz[vars];//ttz + wwz
 	TH1F *hzx[vars]; 
 
 	//histogram stack
         char filename[300]; char filetitle[300];
 	THStack *hs[vars];
+
         for(int iv = 0; iv < vars; iv++){
 	  sprintf(filename,"hs%d",iv);   
 	  sprintf(filetitle,"CMS Preliminary                %2.1f fb^{-1};%s;%s",lumi,titlex[iv].c_str(),titley[iv].c_str());  
@@ -43,8 +44,10 @@ void drawSummedHistos(){
 	  TFile fqqzz("template/root_output_files/qqzz_Moriond.root");
 	  sprintf(filename,"hqqzz_%d",iv); 
 	  hqqzz[iv] = (TH1F*)((fqqzz.Get(filename))->Clone());
-	  sprintf(filename,"httzwwz_%d",iv); 
-	  httzwwz[iv] = (TH1F*)((fqqzz.Get(filename))->Clone());
+
+	  TFile fttzwzz("template/root_output_files/ttzwzz_Moriond.root");
+	  sprintf(filename,"httzwzz_%d",iv); 
+	  httzwzz[iv] = (TH1F*)((fttzwzz.Get(filename))->Clone());
 	  
 	  TFile fggzz("template/root_output_files/ggzz_Moriond.root");
 	  sprintf(filename,"hggzz_%d",iv); 
@@ -60,10 +63,10 @@ void drawSummedHistos(){
 	  
 	  //HISTOGRAMS ADDED TO STACK
 	  hzx[iv]->SetFillColor(kGreen);
-          httzwwz[iv]->Add(httzwwz[iv],hzx[iv],1,1);    //tt
-	  httzwwz[iv]->SetFillColor(kYellow);
-	  // if (useMCatNLO == 0) hqqzz[iv]->Add(httzwwz[iv],hqqzz_powheg[iv],1,1); //real ew
-	  hqqzz[iv]->Add(httzwwz[iv],hqqzz[iv],1,1); //real ew
+          httzwzz[iv]->Add(httzwzz[iv],hzx[iv],1,1);    //tt
+	  httzwzz[iv]->SetFillColor(kYellow);
+	  // if (useMCatNLO == 0) hqqzz[iv]->Add(httzwzz[iv],hqqzz_powheg[iv],1,1); //real ew
+	  hqqzz[iv]->Add(httzwzz[iv],hqqzz[iv],1,1); //real ew
 	  hqqzz[iv]->SetFillColor(kCyan);
 	  hsum1[iv]->Add(hqqzz[iv],hggzz[iv],1,1); //real gg
 	  hsum1[iv]->SetFillColor(kBlue);
@@ -74,7 +77,7 @@ void drawSummedHistos(){
 	  hs[iv]->Add(hsum2[iv],"hist");
 	  hs[iv]->Add(hsum1[iv],"hist");
 	  hs[iv]->Add(hqqzz[iv],"hist");
-          hs[iv]->Add(httzwwz[iv],"hist");
+          hs[iv]->Add(httzwzz[iv],"hist");
 	  hs[iv]->Add(hzx[iv],"hist");
 	  TH1F *hdatadivide = (TH1F*)hdata[iv]->Clone();
 	  hs[iv]->Add(hdata[iv],"E1");
@@ -84,7 +87,7 @@ void drawSummedHistos(){
 	  legend->SetTextFont(72);
 	  legend->SetTextSize(0.04);
 	  legend->AddEntry(hzx[iv],"Z+X","f");
-          legend->AddEntry(httzwwz[iv],"t#bar{t}Z, WWZ","f");
+          legend->AddEntry(httzwzz[iv],"t#bar{t}Z, VVZ","f");
 	  legend->AddEntry(hqqzz[iv],"q#bar{q}#rightarrowZZ","f");
 	  legend->AddEntry(hsum1[iv],"gg#rightarrowZZ","f");
 	  legend->AddEntry(hsum2[iv],"VBS","f");
@@ -108,7 +111,7 @@ void drawSummedHistos(){
 	  pad1->cd();
 	  //top plot
 	  hs[iv]->SetMaximum(25.*lumi/35.9);
-          if (iv == 0 || iv > 3) hs[iv]->SetMaximum(35.*lumi/35.9);
+          if (iv == 0 || iv > 3) hs[iv]->SetMaximum(45.*lumi/35.9);
 	  hs[iv]->Draw("nostack"); //old
 	  if (drawSignal[iv]) {
 	    TH1F* h77 = (TH1F*)hvbs[iv]->Clone();
