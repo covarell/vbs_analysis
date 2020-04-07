@@ -4,15 +4,15 @@
 
 $workdir = ".";
 
-open(INFILE,"../../../../../CMSSW_8_0_26_patch1/src/vbs_analysis/4l_channel/MCyields_2016.txt") or die "cannot open file 2016";;
+open(INFILE,"../../../../../CMSSW_8_0_26_patch1/src/vbs_analysis/4l_channel/MCyields_2016_superVBSenr.txt") or die "cannot open file 2016";;
 @log=<INFILE>;
 close(INFILE);
 
-open(INFILE2,"../../../../../CMSSW_8_0_26_patch1/src/vbs_analysis/4l_channel/MCyields_2017.txt") or die "cannot open file 2017";;
+open(INFILE2,"../../../../../CMSSW_8_0_26_patch1/src/vbs_analysis/4l_channel/MCyields_2017_superVBSenr.txt") or die "cannot open file 2017";;
 @log2=<INFILE2>;
 close(INFILE2);
 
-open(INFILE3,"../../../../../CMSSW_8_0_26_patch1/src/vbs_analysis/4l_channel/MCyields_2018.txt") or die "cannot open file 2018";;
+open(INFILE3,"../../../../../CMSSW_8_0_26_patch1/src/vbs_analysis/4l_channel/MCyields_2018_superVBSenr.txt") or die "cannot open file 2018";;
 @log3=<INFILE3>;
 close(INFILE3);
 
@@ -32,7 +32,7 @@ my $systCorrggzz = 0.137;
 my $systCorrttz = 0.112;
 my $systCorrzx = 0.;
 
-my $filename = 'MCyields_tot.txt';
+my $filename = 'MCyields_tot_superVBSenr.txt';
 open(my $fh, '>', $filename) or die "Could not open file '$filename' $!";
 
 # Calculate the rates
@@ -52,13 +52,13 @@ foreach $line (@log) {
 	print $fh " \& ";
 	my $temp = $splitline[1]+$splitline[6]+$splitline[11];
         my $temp2 = $temp2+$splitline[1]+$splitline[6]+$splitline[11];
-	print $fh &restrict_num_decimal_digits($temp,2);
+	print $fh &restrict_num_decimal_digits($temp,3);
 	print $fh " \$\\pm\$ ";
         my $errtemp = $systTotzx*$temp;
         my $corrtemp = $systCorrzx*$temp;        
         my $errtemp2 = &quadrature_sum($errtemp2,$systTotzx*$temp);        
         my $corrtemp2 = $corrtemp2+$systCorrzx*$temp;        
-        print $fh &restrict_num_decimal_digits(&quadrature_sum($errtemp,$corrtemp),2);
+        print $fh &restrict_num_decimal_digits(&quadrature_sum($errtemp,$corrtemp),3);
 	print $fh " \& ";
 	my $temp = $splitline[2]+$splitline[7]+$splitline[12];
         my $temp2 = $temp2+$splitline[2]+$splitline[7]+$splitline[12];
@@ -82,13 +82,13 @@ foreach $line (@log) {
 	print $fh " \& ";
 	my $temp = 1.1*($splitline[4]+$splitline[9]+$splitline[14]);
         my $temp2 = $temp2+1.1*($splitline[4]+$splitline[9]+$splitline[14]);
-	print $fh &restrict_num_decimal_digits($temp,2);
+	print $fh &restrict_num_decimal_digits($temp,3);
 	print $fh " \$\\pm\$ ";
         my $errtemp = $systTotttz*$temp;
         my $corrtemp = $systCorrttz*$temp;        
         my $errtemp2 = &quadrature_sum($errtemp2,$systTotttz*$temp);        
         my $corrtemp2 = $corrtemp2+$systCorrttz*$temp;        
-        print $fh &restrict_num_decimal_digits(&quadrature_sum($errtemp,$corrtemp),2);
+        print $fh &restrict_num_decimal_digits(&quadrature_sum($errtemp,$corrtemp),3);
 	print $fh " \& ";
 	print $fh &restrict_num_decimal_digits($temp2,2);
 	print $fh " \$\\pm\$ ";
@@ -116,13 +116,13 @@ foreach $line (@log2) {
 	print $fh " \& ";
 	my $temp = $splitline[1]+$splitline[6]+$splitline[11];
         my $temp2 = $temp2+$splitline[1]+$splitline[6]+$splitline[11];
-	print $fh &restrict_num_decimal_digits($temp,2);
+	print $fh &restrict_num_decimal_digits($temp,3);
 	print $fh " \$\\pm\$ ";
         my $errtemp = $systTotzx*$temp;
         my $corrtemp = $systCorrzx*$temp;        
         my $errtemp2 = &quadrature_sum($errtemp2,$systTotzx*$temp);        
         my $corrtemp2 = $corrtemp2+$systCorrzx*$temp;        
-        print $fh &restrict_num_decimal_digits(&quadrature_sum($errtemp,$corrtemp),2);
+        print $fh &restrict_num_decimal_digits(&quadrature_sum($errtemp,$corrtemp),3);
 	print $fh " \& ";
 	my $temp = $splitline[2]+$splitline[7]+$splitline[12];
         my $temp2 = $temp2+$splitline[2]+$splitline[7]+$splitline[12];
@@ -146,13 +146,13 @@ foreach $line (@log2) {
 	print $fh " \& ";
 	my $temp = $splitline[4]+$splitline[9]+$splitline[14];
         my $temp2 = $temp2+$splitline[4]+$splitline[9]+$splitline[14];
-	print $fh &restrict_num_decimal_digits($temp,2);
+	print $fh &restrict_num_decimal_digits($temp,3);
 	print $fh " \$\\pm\$ ";
         my $errtemp = $systTotttz*$temp;
         my $corrtemp = $systCorrttz*$temp;        
         my $errtemp2 = &quadrature_sum($errtemp2,$systTotttz*$temp);        
         my $corrtemp2 = $corrtemp2+$systCorrttz*$temp;        
-        print $fh &restrict_num_decimal_digits(&quadrature_sum($errtemp,$corrtemp),2);
+        print $fh &restrict_num_decimal_digits(&quadrature_sum($errtemp,$corrtemp),3);
 	print $fh " \& ";
 	print $fh &restrict_num_decimal_digits($temp2,2);
 	print $fh " \$\\pm\$ ";
@@ -180,13 +180,13 @@ foreach $line (@log3) {
 	print $fh " \& ";
 	my $temp = $splitline[1]+$splitline[6]+$splitline[11];
         my $temp2 = $temp2+$splitline[1]+$splitline[6]+$splitline[11];
-	print $fh &restrict_num_decimal_digits($temp,2);
+	print $fh &restrict_num_decimal_digits($temp,3);
 	print $fh " \$\\pm\$ ";
         my $errtemp = $systTotzx*$temp;
         my $corrtemp = $systCorrzx*$temp;        
         my $errtemp2 = &quadrature_sum($errtemp2,$systTotzx*$temp);        
         my $corrtemp2 = $corrtemp2+$systCorrzx*$temp;        
-        print $fh &restrict_num_decimal_digits(&quadrature_sum($errtemp,$corrtemp),2);
+        print $fh &restrict_num_decimal_digits(&quadrature_sum($errtemp,$corrtemp),3);
 	print $fh " \& ";
 	my $temp = $splitline[2]+$splitline[7]+$splitline[12];
         my $temp2 = $temp2+$splitline[2]+$splitline[7]+$splitline[12];
@@ -210,13 +210,13 @@ foreach $line (@log3) {
 	print $fh " \& ";
 	my $temp = $splitline[4]+$splitline[9]+$splitline[14];
         my $temp2 = $temp2+$splitline[4]+$splitline[9]+$splitline[14];
-	print $fh &restrict_num_decimal_digits($temp,2);
+	print $fh &restrict_num_decimal_digits($temp,3);
 	print $fh " \$\\pm\$ ";
         my $errtemp = $systTotttz*$temp;
         my $corrtemp = $systCorrttz*$temp;        
         my $errtemp2 = &quadrature_sum($errtemp2,$systTotttz*$temp);        
         my $corrtemp2 = $corrtemp2+$systCorrttz*$temp;        
-        print $fh &restrict_num_decimal_digits(&quadrature_sum($errtemp,$corrtemp),2);
+        print $fh &restrict_num_decimal_digits(&quadrature_sum($errtemp,$corrtemp),3);
 	print $fh " \& ";
 	print $fh &restrict_num_decimal_digits($temp2,2);
 	print $fh " \$\\pm\$ ";
@@ -252,13 +252,13 @@ foreach $line (@log) {
 	print $fh " \& ";
 	my $temp = $splitline[1]+$splitline[6]+$splitline[11]+$splitline2[1]+$splitline2[6]+$splitline2[11]+$splitline3[1]+$splitline3[6]+$splitline3[11];
         my $temp2 = $temp2+$splitline[1]+$splitline[6]+$splitline[11]+$splitline2[1]+$splitline2[6]+$splitline2[11]+$splitline3[1]+$splitline3[6]+$splitline3[11];
-	print $fh &restrict_num_decimal_digits($temp,2);
+	print $fh &restrict_num_decimal_digits($temp,3);
 	print $fh " \$\\pm\$ ";
         my $errtemp = $systTotzx*$temp;
         my $corrtemp = $systCorrzx*$temp;        
         my $errtemp2 = &quadrature_sum($errtemp2,$systTotzx*$temp);        
         my $corrtemp2 = $corrtemp2+$systCorrzx*$temp;        
-        print $fh &restrict_num_decimal_digits(&quadrature_sum($errtemp,$corrtemp),2);
+        print $fh &restrict_num_decimal_digits(&quadrature_sum($errtemp,$corrtemp),3);
 	print $fh " \& ";
 	my $temp = $splitline[2]+$splitline[7]+$splitline[12]+$splitline2[2]+$splitline2[7]+$splitline2[12]+$splitline3[2]+$splitline3[7]+$splitline3[12];
         my $temp2 = $temp2+$splitline[2]+$splitline[7]+$splitline[12]+$splitline2[2]+$splitline2[7]+$splitline2[12]+$splitline3[2]+$splitline3[7]+$splitline3[12];
@@ -282,13 +282,13 @@ foreach $line (@log) {
 	print $fh " \& ";
 	my $temp = 1.1*($splitline[4]+$splitline[9]+$splitline[14])+$splitline2[4]+$splitline2[9]+$splitline2[14]+$splitline3[4]+$splitline3[9]+$splitline3[14];
         my $temp2 = 1.1*($temp2+$splitline[4]+$splitline[9]+$splitline[14])+$splitline2[4]+$splitline2[9]+$splitline2[14]+$splitline3[4]+$splitline3[9]+$splitline3[14];
-	print $fh &restrict_num_decimal_digits($temp,2);
+	print $fh &restrict_num_decimal_digits($temp,3);
 	print $fh " \$\\pm\$ ";
         my $errtemp = $systTotttz*$temp;
         my $corrtemp = $systCorrttz*$temp;        
         my $errtemp2 = &quadrature_sum($errtemp2,$systTotttz*$temp);        
         my $corrtemp2 = $corrtemp2+$systCorrttz*$temp;        
-        print $fh &restrict_num_decimal_digits(&quadrature_sum($errtemp,$corrtemp),2);
+        print $fh &restrict_num_decimal_digits(&quadrature_sum($errtemp,$corrtemp),3);
 	print $fh " \& ";
 	print $fh &restrict_num_decimal_digits($temp2,2);
 	print $fh " \$\\pm\$ ";
