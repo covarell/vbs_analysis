@@ -64,7 +64,6 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1, int enriched =
 
         int nBinsTempl = 50;
         if (enriched == 2) nBinsTempl = 20;
-        if (enriched == 3) nBinsTempl = 10;
 	
 	static const int vars = 6;
         string titlex[vars] = {"K_{D}","M_{4l} [GeV]","M_{jj} [GeV]","#Delta #eta_{jj}","p_{T,j}","#eta_{j}"};        
@@ -111,6 +110,10 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1, int enriched =
 	TH1F *hdata_mm[vars];//vbs mu
 	TH1F *hdata_em[vars];//vbs e mu
 	TH1F *httzwzz[vars];//ttz + wwz
+	TH1F *httz[vars];//ttz + wwz
+	TH1F *hwzz[vars];//ttz + wwz
+	TH1F *hwwz[vars];//ttz + wwz
+	TH1F *hzzz[vars];//ttz + wwz
 	TH1F *httzwzz_ee[vars];//ttz + wwz e
 	TH1F *httzwzz_mm[vars];//ttz + wwz mu
 	TH1F *httzwzz_em[vars];//ttz + wwz e mu
@@ -140,7 +143,11 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1, int enriched =
 	  sprintf(filename,"hdatamm_%d",iv); hdata_mm[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);//vbs mu
 	  sprintf(filename,"hdataem_%d",iv); hdata_em[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);//vbs e mu
 	  // sprintf(filename,"h2bis_%d",iv); h2bis[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);//for 2018 rescale
-	  sprintf(filename,"httzwzz_%d",iv); httzwzz[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);//for 2018 rescale
+	  sprintf(filename,"httzwzz_%d",iv); httzwzz[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);
+	  sprintf(filename,"httz_%d",iv); httz[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);
+	  sprintf(filename,"hwzz_%d",iv); hwzz[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);
+	  sprintf(filename,"hwwz_%d",iv); hwwz[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);
+	  sprintf(filename,"hzzz_%d",iv); hzzz[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);
 	  sprintf(filename,"httzwzz_ee_%d",iv); httzwzz_ee[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);//ttzwzz e
 	  sprintf(filename,"httzwzz_mm_%d",iv); httzwzz_mm[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);//ttzwzz mu
 	  sprintf(filename,"httzwzz_em_%d",iv); httzwzz_em[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]);//ttzwzz e mu
@@ -260,13 +267,12 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1, int enriched =
 	  if (rootname[is].Contains("AllData")) j = 3;   
 	  if (rootname[is].Contains("ggTo") || rootname[is].Contains("ggZZnew")) j = 1;      
           if (rootname[is].Contains("VBFTo")) j = 2;
-	  if (rootname[is].Contains("amcatnlo")) j = 5;
-	  if (rootname[is].Contains("WWZ") || rootname[is].Contains("TTZ") || rootname[is].Contains("WZZ") ||  rootname[is].Contains("ZZZ")) j = 4;   
-	  //histogram declaration
-	  //TH1F *kin_zz = new TH1F("kin_zz","",bins,xmin,xmax); //was 100 bins
-	  
-	
-	  //	float lumi = 35.9E03;
+	  if (rootname[is].Contains("amcatnlo") || rootname[is].Contains("ZZ4l_inter")) j = 5;
+	  if (rootname[is].Contains("WWZ")) j = 11; 
+	  if (rootname[is].Contains("TTZ")) j = 12; 
+	  if (rootname[is].Contains("WZZ")) j = 13; 
+	  if (rootname[is].Contains("ZZZ")) j = 14;  
+ 
 	  float my_sum = 0;
 	  float mc_integral;
 	  float data_integral;
@@ -333,15 +339,14 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1, int enriched =
 	      float prefiringWeight = L1prefiringWeight;
 	      if (j==2) prefiringWeight = 1.; 
 	      
-	      weight= (xsec*KFactorEWKqqZZ*overallEventWeight*KFactorQCDqqZZ_M*prefiringWeight*lumi)/(resum);
+	      weight= (xsec*overallEventWeight*prefiringWeight*lumi)/(resum);
+	      if (j==0 || j==5) weight= (xsec*KFactorEWKqqZZ*overallEventWeight*KFactorQCDqqZZ_M*prefiringWeight*lumi)/(resum);
 	      // correct k-factor for NNLO/NLO?
 	      // if (j==1) weight= (xsec*overallEventWeight*KFactorQCDggzz_Nominal*prefiringWeight*lumi)/(resum);
 	      // if (j==1 && useMCatNLO==1) weight /=1.7;
 	      if (j==1) weight= (xsec*overallEventWeight*1.53*1.64*prefiringWeight*lumi)/(resum);
               // LO weight from dynamic to fixed scale + NLO k-factor
-              if (j==2 && year==2016) weight= (xsec*overallEventWeight*prefiringWeight*lumi)/(resum);
-              if (j==2 && year>2016) weight= (xsec*overallEventWeight*prefiringWeight*lumi)/(genHEPMCweight*resum);             
-	      if (j==5) weight= (xsec*overallEventWeight*prefiringWeight*lumi)/(resum);
+	      if (j==2 && year>2016) weight= (xsec*overallEventWeight*prefiringWeight*lumi)/(genHEPMCweight*resum);             
 	      if (j==3) weight=prefiringWeight; 
 
 	      //TEMPORARY FOR MISSING 2e2mu SAMPLE
@@ -374,11 +379,16 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1, int enriched =
 		temp_zz_4e[0]->Fill(ZZMass,dbkg_kin,weight);  temp_1d_4e[0]->Fill(dbkg_kin,weight); 
 	        // else { 
 		temp_zz_2e2mu[0]->Fill(ZZMass,dbkg_kin,weight); temp_1d_2e2mu[0]->Fill(dbkg_kin,weight); 
-	      } else if (j==1 || j==4) {
+	      } else if (j==1) {
 		tnew[j]->Fill();
 		temp_zz_4mu[j]->Fill(ZZMass,dbkg_kin,weight);  temp_1d_4mu[j]->Fill(dbkg_kin,weight);
 		temp_zz_4e[j]->Fill(ZZMass,dbkg_kin,weight);  temp_1d_4e[j]->Fill(dbkg_kin,weight);
 	        temp_zz_2e2mu[j]->Fill(ZZMass,dbkg_kin,weight);  temp_1d_2e2mu[j]->Fill(dbkg_kin,weight);
+	      } else if (j>9) {
+		tnew[4]->Fill();
+		temp_zz_4mu[4]->Fill(ZZMass,dbkg_kin,weight);  temp_1d_4mu[4]->Fill(dbkg_kin,weight);
+		temp_zz_4e[4]->Fill(ZZMass,dbkg_kin,weight);  temp_1d_4e[4]->Fill(dbkg_kin,weight);
+	        temp_zz_2e2mu[4]->Fill(ZZMass,dbkg_kin,weight);  temp_1d_2e2mu[4]->Fill(dbkg_kin,weight);
 	      } else {
 		tnew[j]->Fill();
 		if(chan==1) { temp_zz_4mu[j]->Fill(ZZMass,dbkg_kin,weight);  temp_1d_4mu[j]->Fill(dbkg_kin,weight); }
@@ -445,9 +455,13 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1, int enriched =
 		  if (chan == 2) hqqzz_ee[iv]->Fill(theVar,weight); //e
 		  if (chan == 3)  hqqzz_em[iv]->Fill(theVar,weight);
 		}
-		if (j==4) {
+		if (j>9) {
 		  httzwzz[iv]->Fill(theVar,weight);
-
+		  if (j==11) hwwz[iv]->Fill(theVar,weight);
+		  if (j==12) httz[iv]->Fill(theVar,weight);
+		  if (j==13) hwzz[iv]->Fill(theVar,weight);
+		  if (j==14) hzzz[iv]->Fill(theVar,weight);
+                  
 		  if (chan == 1) httzwzz_mm[iv]->Fill(theVar,weight); //mu
 		  if (chan == 2) httzwzz_ee[iv]->Fill(theVar,weight); //e
 		  if (chan == 3) httzwzz_em[iv]->Fill(theVar,weight);          //mu+e
@@ -572,6 +586,11 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1, int enriched =
 	  cout <<"vbs (4e),     integral is " << hvbs_ee[iv]->Integral() << endl;
 	  cout <<"vbs (4mu),    integral is " << hvbs_mm[iv]->Integral() << endl;
 	  cout <<"vbs (2e2mu),  integral is " << hvbs_em[iv]->Integral() << endl;
+	  cout <<"rare bkg,     integral is " << httzwzz[iv]->Integral() << endl;
+	  cout <<"ttz,          integral is " << httz[iv]->Integral() << endl;
+	  cout <<"wwz,          integral is " << hwwz[iv]->Integral() << endl;
+	  cout <<"wzz,          integral is " << hwzz[iv]->Integral() << endl;
+	  cout <<"zzz,          integral is " << hzzz[iv]->Integral() << endl;
 	  cout <<"zx,          integral is " << hzx[iv]->Integral() << endl;
 	  cout <<"zx (4e),     integral is " << hzx_ee[iv]->Integral() << endl;
 	  cout <<"zx (4mu),    integral is " << hzx_mm[iv]->Integral() << endl;

@@ -72,7 +72,7 @@ void dosomething(TString chan="2e2mu", int year=2016, int enriched = 0){
 	  sprintf(filename,"./template/root_output_files/%s_Moriond_%d%s.root",namesamp[is].c_str(),year,theExtra.c_str());
 	  TFile *ff = new TFile(filename);
 	  temp_1d[is]=(TH1F*)ff->Get("temp_1d_"+chan);
-          if (enriched == 1) temp_1d[is]->Rebin(2);
+          if (enriched == 1 || enriched == 2) temp_1d[is]->Rebin(2);
 	  
 	  for(int bx=0;bx<temp_1d[is]->GetNbinsX();bx++){
 	    if(temp_1d[is]->GetBinContent(bx+1)<=0.){
@@ -93,7 +93,7 @@ void dosomething(TString chan="2e2mu", int year=2016, int enriched = 0){
 
 	      TFile *ffj = new TFile(filename);
 	      temp_1d_jup[is][isy]=(TH1F*)ffj->Get("temp_1d_"+chan+"_0");
-              if (enriched == 1) temp_1d_jup[is][isy]->Rebin(2);
+              if (enriched == 1 || enriched == 2) temp_1d_jup[is][isy]->Rebin(2);
 	
 	      for(int bx=0;bx<temp_1d_jup[is][isy]->GetNbinsX();bx++){
 		if(temp_1d_jup[is][isy]->GetBinContent(bx+1)<=0.){
@@ -109,7 +109,7 @@ void dosomething(TString chan="2e2mu", int year=2016, int enriched = 0){
 	      temp_1d_jup[is][isy]->SetNameTitle(filename,filename);
 	      
 	      temp_1d_jdown[is][isy]=(TH1F*)ffj->Get("temp_1d_"+chan+"_1");
-              if (enriched == 1) temp_1d_jdown[is][isy]->Rebin(2);
+              if (enriched == 1 || enriched == 2) temp_1d_jdown[is][isy]->Rebin(2);
 	      
 	      for(int bx=0;bx<temp_1d_jdown[is][isy]->GetNbinsX();bx++){
 		if(temp_1d_jdown[is][isy]->GetBinContent(bx+1)<=0.){
