@@ -21,7 +21,7 @@ void plotterSystScale(int year = 2018, int whichSample = 1, int enriched = 0){
 
         int nBinsTempl = 50;
         if (enriched == 2) nBinsTempl = 20;
-        if (enriched == 3) nBinsTempl = 10;
+
 	//scale vars
 	static const int vars = 7;
 
@@ -45,7 +45,7 @@ void plotterSystScale(int year = 2018, int whichSample = 1, int enriched = 0){
 	  sprintf(filetitle,"CMS Preliminary                %2.1f fb^{-1};%s;%s",lumi,titlex.c_str(),titley.c_str()); 
 	  h1[iv] = new TH1F(filename,filetitle,bins,xmin,xmax); //ew
 	  h1[iv]->Sumw2();
-	  sprintf(filename,"hratio_%d",iv);
+	  sprintf(filename,"hratio_%d",iv-vars);
 	  hratio[iv] = new TH1F(filename,filetitle,bins,xmin,xmax); //ew
 	  hratio[iv]->Sumw2();
 	}
@@ -152,10 +152,11 @@ void plotterSystScale(int year = 2018, int whichSample = 1, int enriched = 0){
           //process class
           int j = 0;   // qqzz powheg
           bool process = false;
-          process = (((rootname[is].Contains("ggTo") || rootname[is].Contains("ggZZnew")) && whichSample==1) || (rootname[is].Contains("VBFTo") && whichSample==2) || (rootname[is].Contains("amcatnlo") && whichSample==0) || ((rootname[is].Contains("WWZ") || rootname[is].Contains("TTZ")) && whichSample == 4) );
+          process = (((rootname[is].Contains("ggTo") || rootname[is].Contains("ggZZnew")) && whichSample==1) || ((rootname[is].Contains("VBFTo") || rootname[is].Contains("ZZ4l_inter")) && whichSample==2) || ((rootname[is].Contains("amcatnlo") || rootname[is].Contains("ZZ4l_inter")) && whichSample==0) || ((rootname[is].Contains("WWZ") || rootname[is].Contains("TTZ") || rootname[is].Contains("ZZZ") || rootname[is].Contains("WZZ")) && whichSample == 4) );
 	  if (!process) continue;
 
           j = whichSample;
+          if (rootname[is].Contains("ZZ4l_inter")) j = 5;
 	  //histogram declaration
 	  //TH1F *kin_zz = new TH1F("kin_zz","",bins,xmin,xmax); //was 100 bins
 	  
@@ -245,15 +246,16 @@ void plotterSystScale(int year = 2018, int whichSample = 1, int enriched = 0){
 		if (j==1) weight= (xsec*overallEventWeight*1.53*1.64*prefiringWeight*lumi)/(resum);
 		//if (j==1) weight /=1.7;
 		if (j==2 && year==2016) weight= (xsec*overallEventWeight*prefiringWeight*lumi)/(resum);
-		if (j==2 && year>2016) weight= (xsec*overallEventWeight*prefiringWeight*lumi)/(genHEPMCweight*resum);             
-		
-		if (iv == 1) weight *= LHEweight_QCDscale_muR1_muF2;
-		if (iv == 2) weight *= LHEweight_QCDscale_muR1_muF0p5;
-		if (iv == 3) weight *= LHEweight_QCDscale_muR2_muF1;
-		if (iv == 4) weight *= LHEweight_QCDscale_muR0p5_muF1;
-		if (iv == 5) weight *= LHEweight_QCDscale_muR2_muF2;
-		if (iv == 6) weight *= LHEweight_QCDscale_muR0p5_muF0p5;
-		
+		if (j==2 && year>2016) weight= (xsec*overallEventWeight*prefiringWeight*lumi)/(genHEPMCweight*resum);
+		if (j==5) weight *= 0.5;
+		else {
+		  if (iv == 1) weight *= LHEweight_QCDscale_muR1_muF2;
+		  if (iv == 2) weight *= LHEweight_QCDscale_muR1_muF0p5;
+		  if (iv == 3) weight *= LHEweight_QCDscale_muR2_muF1;
+		  if (iv == 4) weight *= LHEweight_QCDscale_muR0p5_muF1;
+		  if (iv == 5) weight *= LHEweight_QCDscale_muR2_muF2;
+		  if (iv == 6) weight *= LHEweight_QCDscale_muR0p5_muF0p5;
+		}
 		//TEMPORARY FOR MISSING 2e2mu SAMPLE
 		//if (j==2 && year==2017) weight *= 2.;
 		
@@ -277,8 +279,15 @@ void plotterSystScale(int year = 2018, int whichSample = 1, int enriched = 0){
 		    } else if (j==2) {
 		      if(chan==1) temp_1d_4mu[it]->Fill(dbkg_kin,weight); 
 		      else if(chan==2) temp_1d_4e[it]->Fill(dbkg_kin,weight);  
-		      else temp_1d_2e2mu[it]->Fill(dbkg_kin,weight); 
-		    }  
+		      else temp_1d_2e2mu[it]->Fill(dbkg_kin,weight);   
+		    } else if (j== 5) {
+		      if(chan==1) temp_1d_4mu[2]->Fill(dbkg_kin,weight); 
+		      else if(chan==2) temp_1d_4e[2]->Fill(dbkg_kin,weight);  
+		      else temp_1d_2e2mu[2]->Fill(dbkg_kin,weight);
+ 		      temp_1d_4mu[0]->Fill(dbkg_kin,weight);
+		      temp_1d_4e[0]->Fill(dbkg_kin,weight);
+		      temp_1d_2e2mu[0]->Fill(dbkg_kin,weight);
+		    }
 		  }
 		}
 		
@@ -369,7 +378,9 @@ void plotterSystScale(int year = 2018, int whichSample = 1, int enriched = 0){
 	  temp_1d_4e[it]->Write();
 	  temp_1d_4mu[it]->Write();
 	  temp_1d_2e2mu[it]->Write();
-	}	 	 
+      	}
+	hratio[vars]->Write();
+	hratio[vars+1]->Write();
 	fnew->Close();
 	
 	//close and print on file

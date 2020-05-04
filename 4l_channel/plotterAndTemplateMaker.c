@@ -65,14 +65,14 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1, int enriched =
         int nBinsTempl = 50;
         if (enriched == 2) nBinsTempl = 20;
 	
-	static const int vars = 6;
-        string titlex[vars] = {"K_{D}","M_{4l} [GeV]","M_{jj} [GeV]","#Delta #eta_{jj}","p_{T,j}","#eta_{j}"};        
-        string titley[vars] = {"Events/0.025","Events/16 GeV","Events/40 GeV","Events/0.175","Events/5 GeV","Events/0.33"};     
-	string namegif[vars] = {"Dbkgkin","m4l","mjj","detajj","ptj","etaj"};
-        int bins[vars] = {20,20,30,20,40,30};
-        float xmin[vars] = {0.,160.,100.,0.,0.,-5.};
-	float xmax[vars] = {1.,800.,1300.,8.,400.,5.};	
-	bool drawSignal[vars] = {false,false,true,true,true,true};
+	static const int vars = 7;
+        string titlex[vars] = {"K_{D}","M_{4l} [GeV]","M_{jj} [GeV]","#Delta #eta_{jj}","p_{T,j}","#eta_{j}","Nvtx"};        
+        string titley[vars] = {"Events/0.025","Events/16 GeV","Events/40 GeV","Events/0.175","Events/5 GeV","Events/0.33","Events/2"};     
+	string namegif[vars] = {"Dbkgkin","m4l","mjj","detajj","ptj","etaj","Nvtx"};
+        int bins[vars] = {20,25,30,20,40,30,35};
+        float xmin[vars] = {0.,150.,100.,0.,0.,-5.,0.};
+	float xmax[vars] = {1.,1400.,1300.,8.,400.,5.,70.};	
+	bool drawSignal[vars] = {false,false,true,true,true,true,false};
 
 	//histogram stack
         char filename[300]; char filetitle[300];
@@ -184,7 +184,7 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1, int enriched =
 	} 
 
 	//original variable declarations
-	float ZZPt,ZZMass,Z1Mass,Z2Mass,DiJetMass,DiJetDEta;
+	float ZZPt,ZZMass,Z1Mass,Z2Mass,DiJetMass,DiJetMassLHE,DiJetDEta;
 	float xsec,KFactorEWKqqZZ,overallEventWeight,L1prefiringWeight,genHEPMCweight,KFactorQCDqqZZ_M;
 	vector<float> *LepPt=new vector<float>;
 	vector<float> *JetPt=new vector<float>;
@@ -208,7 +208,7 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1, int enriched =
 	//additional and output variable declarations
 	float weight, weight_up, weight_dn;
 	float weight_vbf, weight_vbf_up, weight_vbf_dn;
-	int chan;
+	int chan,Nvtx;
 	int vbfcate = 0;
 	float dbkg_kin, theVar; 
 	
@@ -267,7 +267,8 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1, int enriched =
 	  if (rootname[is].Contains("AllData")) j = 3;   
 	  if (rootname[is].Contains("ggTo") || rootname[is].Contains("ggZZnew")) j = 1;      
           if (rootname[is].Contains("VBFTo")) j = 2;
-	  if (rootname[is].Contains("amcatnlo") || rootname[is].Contains("ZZ4l_inter")) j = 5;
+	  if (rootname[is].Contains("amcatnlo")) j = 5; 
+	  if (rootname[is].Contains("ZZ4l_inter")) j = 4;
 	  if (rootname[is].Contains("WWZ")) j = 11; 
 	  if (rootname[is].Contains("TTZ")) j = 12; 
 	  if (rootname[is].Contains("WZZ")) j = 13; 
@@ -301,12 +302,14 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1, int enriched =
 	  tqqzz->SetBranchAddress("L1prefiringWeight",&L1prefiringWeight);
 	  tqqzz->SetBranchAddress("KFactor_QCD_qqZZ_M",&KFactorQCDqqZZ_M);
 	  tqqzz->SetBranchAddress("nCleanedJetsPt30",&nCleanedJetsPt30);
+	  tqqzz->SetBranchAddress("Nvtx",&Nvtx);
 	  
 	  //new branch addresses
 	  tqqzz->SetBranchAddress("p_JJEW_BKG_MCFM_JECNominal",&p_JJEW_BKG_MCFM_JECNominal);
 	  tqqzz->SetBranchAddress("p_JJVBF_BKG_MCFM_JECNominal",&p_JJVBF_BKG_MCFM_JECNominal);
 	  tqqzz->SetBranchAddress("p_JJQCD_BKG_MCFM_JECNominal",&p_JJQCD_BKG_MCFM_JECNominal);
 	  tqqzz->SetBranchAddress("DiJetMass",&DiJetMass);
+	  tqqzz->SetBranchAddress("DiJetMassLHE",&DiJetMassLHE);
           tqqzz->SetBranchAddress("DiJetDEta",&DiJetDEta);
 	  tqqzz->SetBranchAddress("KFactor_QCD_ggZZ_Nominal",&KFactorQCDggzz_Nominal);
 
@@ -323,6 +326,7 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1, int enriched =
 	   	    //unique selection condition (see paper page 8) & DiJetMass condition
 		    
 	    if(DiJetMass>100 && ZZMass > 180 && nCleanedJetsPt30>1 && Z1Mass < 120 && Z1Mass > 60 && Z2Mass < 120 && Z2Mass > 60) { 
+	      if (j>12 && DiJetMassLHE > 100) continue; 
 	      if (enriched == 1 && (DiJetMass < 400 || fabs(DiJetDEta) < 2.4)) continue;
 	      if (enriched == 2 && (DiJetMass < 400 || fabs(DiJetDEta) < 5.0)) continue;
 	      if (enriched == 3 && DiJetMass > 400 && fabs(DiJetDEta) > 2.4) continue;
@@ -341,6 +345,7 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1, int enriched =
 	      
 	      weight= (xsec*overallEventWeight*prefiringWeight*lumi)/(resum);
 	      if (j==0 || j==5) weight= (xsec*KFactorEWKqqZZ*overallEventWeight*KFactorQCDqqZZ_M*prefiringWeight*lumi)/(resum);
+	      if (j==4) weight *= 0.5;
 	      // correct k-factor for NNLO/NLO?
 	      // if (j==1) weight= (xsec*overallEventWeight*KFactorQCDggzz_Nominal*prefiringWeight*lumi)/(resum);
 	      // if (j==1 && useMCatNLO==1) weight /=1.7;
@@ -384,6 +389,14 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1, int enriched =
 		temp_zz_4mu[j]->Fill(ZZMass,dbkg_kin,weight);  temp_1d_4mu[j]->Fill(dbkg_kin,weight);
 		temp_zz_4e[j]->Fill(ZZMass,dbkg_kin,weight);  temp_1d_4e[j]->Fill(dbkg_kin,weight);
 	        temp_zz_2e2mu[j]->Fill(ZZMass,dbkg_kin,weight);  temp_1d_2e2mu[j]->Fill(dbkg_kin,weight);
+	      } else if (j==4) {
+		tnew[0]->Fill();     tnew[2]->Fill();
+		temp_zz_4mu[0]->Fill(ZZMass,dbkg_kin,weight);  temp_1d_4mu[0]->Fill(dbkg_kin,weight);
+		temp_zz_4e[0]->Fill(ZZMass,dbkg_kin,weight);  temp_1d_4e[0]->Fill(dbkg_kin,weight);
+	        temp_zz_2e2mu[0]->Fill(ZZMass,dbkg_kin,weight);  temp_1d_2e2mu[0]->Fill(dbkg_kin,weight);
+		if(chan==1) { temp_zz_4mu[2]->Fill(ZZMass,dbkg_kin,weight);  temp_1d_4mu[2]->Fill(dbkg_kin,weight); }
+		else if(chan==2) { temp_zz_4e[2]->Fill(ZZMass,dbkg_kin,weight); temp_1d_4e[2]->Fill(dbkg_kin,weight); } 
+	        else { temp_zz_2e2mu[2]->Fill(ZZMass,dbkg_kin,weight);  temp_1d_2e2mu[2]->Fill(dbkg_kin,weight); }
 	      } else if (j>9) {
 		tnew[4]->Fill();
 		temp_zz_4mu[4]->Fill(ZZMass,dbkg_kin,weight);  temp_1d_4mu[4]->Fill(dbkg_kin,weight);
@@ -407,6 +420,7 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1, int enriched =
                 if (il == 5) theVar = JetEta->at(0);
                 if (il == 6) {theVar = JetPt->at(1);   iv = 4;}
 		if (il == 7) {theVar = JetEta->at(1);   iv = 5;}
+		if (il == 8) {theVar = Nvtx;   iv = 6;}
    	      
 		//1D kin var hist fill
 		//this is the normalization histogram
@@ -416,8 +430,9 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1, int enriched =
 		//}
 		
 		if (j==3){
-		  if (iv > 0 || theVar < 0.75 || year == 2016) hdata[iv]->Fill(theVar);
-		  else cout << "Blinded event!" << endl;
+		  // if (iv > 0 || theVar < 0.75 || year == 2016) 
+		  hdata[iv]->Fill(theVar);
+		  //else cout << "Blinded event!" << endl;
 		  hdata[iv]->SetMarkerStyle(20);
 		  if (chan == 2) hdata_ee[iv]->Fill(theVar);
 		  if (chan == 1) hdata_mm[iv]->Fill(theVar);
@@ -439,7 +454,7 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1, int enriched =
 		  if (chan == 3)  hggzz_em[iv]->Fill(theVar,weight);          //mu+e
 		  
 		}
-		if (j==2){                              //vbs
+		if (j==2 || j==4){                              //vbs
 		  hvbs[iv]->Fill(theVar,weight);
 		  hvbs[iv]->SetFillColor(kMagenta);
 
@@ -448,7 +463,7 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1, int enriched =
 		  if (chan == 3) hvbs_em[iv]->Fill(theVar,weight);          //mu+e
 		  
 		}
-		if (j==5) {
+		if (j==5 || j==4) {
 		  hqqzz[iv]->Fill(theVar,weight);
 
 		  if (chan == 1) hqqzz_mm[iv]->Fill(theVar,weight); //mu
@@ -478,7 +493,7 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1, int enriched =
 	//ZX CONTRIBUTION
 	  
 	TChain *tqqzz_zx= new TChain("candTree");
-	sprintf(filename,"/afs/cern.ch/work/c/covarell/vbs2017/CMSSW_8_0_26_patch1/src/data_driven_MC/ZX%d_noCut%s.root",year,theExtra.c_str()); 
+	sprintf(filename,"/afs/cern.ch/work/c/covarell/vbs2017/CMSSW_8_0_26_patch1new/src/data_driven_MC/ZX%d_noCut%s.root",year,theExtra.c_str()); 
 	tqqzz_zx->Add(filename);
 	
 	//histogram declaration
@@ -526,6 +541,7 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1, int enriched =
 	    if (il == 5) var_zx = etajet1_zx;
 	    if (il == 6) {var_zx = ptjet2_zx;   iv = 4;}
 	    if (il == 7) {var_zx = etajet2_zx;   iv = 5;}
+	    if (il == 8) {var_zx = ptjet1_zx/5.;   iv = 6;}
 	    if (fabs(weight_zx) < 100000.) {
 	      hzx[iv]->Fill(var_zx,weight_zx);
 	      if (chan_zx == 2) hzx_ee[iv]->Fill(var_zx,weight_zx);

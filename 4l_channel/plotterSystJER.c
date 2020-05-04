@@ -36,7 +36,7 @@ void plotterSystJER(int year = 2018, int whichSample = 1){
 	  sprintf(filetitle,"CMS Preliminary                %2.1f fb^{-1};%s;%s",lumi,titlex.c_str(),titley.c_str()); 
 	  h1[iv] = new TH1F(filename,filetitle,bins,xmin,xmax); //ew
 	  h1[iv]->Sumw2();
-	  sprintf(filename,"hratio_%d",iv);
+	  sprintf(filename,"hratio_%d",iv-vars);
 	  hratio[iv] = new TH1F(filename,filetitle,bins,xmin,xmax); //ew
 	  hratio[iv]->Sumw2();
 	}
@@ -153,15 +153,13 @@ void plotterSystJER(int year = 2018, int whichSample = 1){
           //process class
           int j = 0;   // qqzz powheg
           bool process = false;
-	  process = (((rootname[is].Contains("ggTo") || rootname[is].Contains("ggZZnew")) && whichSample==1) || (rootname[is].Contains("VBFTo") && whichSample==2) || (rootname[is].Contains("amcatnlo") && whichSample==0) || ((rootname[is].Contains("WWZ") || rootname[is].Contains("TTZ")) && whichSample == 4));
-	  // process = ((rootname[is].Contains("ZZTo4l") && !(rootname[is].Contains("amcatnlo"))));
+	
+          process = (((rootname[is].Contains("ggTo") || rootname[is].Contains("ggZZnew")) && whichSample==1) || ((rootname[is].Contains("VBFTo") || rootname[is].Contains("ZZ4l_inter")) && whichSample==2) || ((rootname[is].Contains("amcatnlo") || rootname[is].Contains("ZZ4l_inter")) && whichSample==0) || ((rootname[is].Contains("WWZ") || rootname[is].Contains("TTZ") || rootname[is].Contains("ZZZ") || rootname[is].Contains("WZZ")) && whichSample == 4) );
 	  if (!process) continue;
 	  
-	  j = whichSample;
-	  //histogram declaration
-	  //TH1F *kin_zz = new TH1F("kin_zz","",bins,xmin,xmax); //was 100 bins
+          j = whichSample;
+          if (rootname[is].Contains("ZZ4l_inter")) j = 5;  
 	  
-	
 	  //	float lumi = 35.9E03;
 	  float my_sum = 0;
 	  float mc_integral;
@@ -275,7 +273,8 @@ void plotterSystJER(int year = 2018, int whichSample = 1){
 		if (j==1) weight= (xsec*overallEventWeight*KFactorQCDggzz_Nominal*prefiringWeight*lumi)/(resum);
 		//if (j==1) weight /=1.7;
 		if (j==2 && year==2016) weight= (xsec*overallEventWeight*prefiringWeight*lumi)/(resum);
-		if (j==2 && year>2016) weight= (xsec*overallEventWeight*prefiringWeight*lumi)/(genHEPMCweight*resum);             
+		if (j==2 && year>2016) weight= (xsec*overallEventWeight*prefiringWeight*lumi)/(genHEPMCweight*resum); 
+		if (j==5) weight *= 0.5;
 		
 	 	
 		//TEMPORARY FOR MISSING 2e2mu SAMPLE
@@ -289,14 +288,21 @@ void plotterSystJER(int year = 2018, int whichSample = 1){
 		// fill templates
 		if (iv == 0) {
 		  for (int it=0; it < 2; it++) {
-		    if (j==1 || j==4) {
+		    if (j==1 || j== 0 || j==4) {
 		      temp_1d_4mu[it]->Fill(dbkg_kin,weight);
 		      temp_1d_4e[it]->Fill(dbkg_kin,weight);
 		      temp_1d_2e2mu[it]->Fill(dbkg_kin,weight);
-		    } else if (j==0 || j==2) {
+		    } else if (j==2) {
 		      if(chan==1) temp_1d_4mu[it]->Fill(dbkg_kin,weight); 
 		      else if(chan==2) temp_1d_4e[it]->Fill(dbkg_kin,weight);  
-		      else temp_1d_2e2mu[it]->Fill(dbkg_kin,weight); 
+		      else temp_1d_2e2mu[it]->Fill(dbkg_kin,weight);
+		    } else if (j==5) {
+		      if(chan==1) temp_1d_4mu[2]->Fill(dbkg_kin,weight); 
+		      else if(chan==2) temp_1d_4e[2]->Fill(dbkg_kin,weight);  
+		      else temp_1d_2e2mu[2]->Fill(dbkg_kin,weight);
+ 		      temp_1d_4mu[0]->Fill(dbkg_kin,weight);
+		      temp_1d_4e[0]->Fill(dbkg_kin,weight);
+		      temp_1d_2e2mu[0]->Fill(dbkg_kin,weight); 
 		    }  
 		  }
 		}
@@ -305,22 +311,23 @@ void plotterSystJER(int year = 2018, int whichSample = 1){
 	      }
 	    }//entries loop  end
 	  }//file loop  end
-	}
 	  
+	}
+
 	for(int iv=0;iv<vars;iv++){
 	  hratio[iv]->Add(h1[iv],h1[0],1,-1);
 	  hratio[iv]->Divide(hratio[iv],h1[0]);
 	} 
 	
 	/* for(int binx=1;binx<hratio[0]->GetXaxis()->GetNbins()+1;binx++){
-	   float theMax = 0;   float theMin = 0;
-	   for(int iv=1;iv<vars;iv++){  
-	   if (hratio[iv]->GetBinContent(binx) > theMax) {
-	   hratio[vars]->SetBinContent(binx, hratio[iv]->GetBinContent(binx));  
-	   hratio[vars]->SetBinError(binx, hratio[iv]->GetBinError(binx));
-	   theMax = hratio[iv]->GetBinContent(binx); 
-	   }
-	   if (hratio[iv]->GetBinContent(binx) < theMin) {
+	     float theMax = 0;   float theMin = 0;
+	     for(int iv=1;iv<vars;iv++){  
+	     if (hratio[iv]->GetBinContent(binx) > theMax) {
+	     hratio[vars]->SetBinContent(binx, hratio[iv]->GetBinContent(binx));  
+	     hratio[vars]->SetBinError(binx, hratio[iv]->GetBinError(binx));
+	     theMax = hratio[iv]->GetBinContent(binx); 
+	     }
+	     if (hratio[iv]->GetBinContent(binx) < theMin) {
 	   hratio[vars+1]->SetBinContent(binx, hratio[iv]->GetBinContent(binx));  
 	   hratio[vars+1]->SetBinError(binx, hratio[iv]->GetBinError(binx));
 	   theMin = hratio[iv]->GetBinContent(binx);
@@ -393,7 +400,10 @@ void plotterSystJER(int year = 2018, int whichSample = 1){
 	  temp_1d_4e[it]->Write();
 	  temp_1d_4mu[it]->Write();
 	  temp_1d_2e2mu[it]->Write();
-	}	 	 
+	}	 
+	hratio[1]->Write();
+	hratio[2]->Write();
+	 
 	fnew->Close();
 	
 	//close and print on file
