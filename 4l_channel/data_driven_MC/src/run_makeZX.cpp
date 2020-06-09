@@ -22,6 +22,7 @@ int main( int argc, char *argv[] ){
         if (enriched == 2) theExtra = "_superVBSenr";
         if (enriched == 3) theExtra = "_bkgdEnr";
         if (enriched == 4) theExtra = "_ptjet50";
+        if (enriched == 5) theExtra = "_superVBSenrMjj";
         
         int passtot = 0;
         int n2e2mu = 0;
@@ -167,6 +168,7 @@ int main( int argc, char *argv[] ){
 		  if (enriched == 2 && (data.DiJetMass < 400 || fabs(data.DiJetDEta) < 5.0)) continue;
 		  if (enriched == 3 && data.DiJetMass > 400 && fabs(data.DiJetDEta) > 2.4) continue;
 		  if (enriched == 4 && (data.JetPt->at(0) < 50 || data.JetPt->at(1) < 50)) continue;
+		  if (enriched == 5 && (data.DiJetMass < 1000 || fabs(data.DiJetDEta) < 2.4)) continue;
 		  passtot++;
 		  // if(data.DiJetMass>100 && data.ZZMass > 180 && data.nCleanedJetsPt30>1 && data.Z1Mass < 120 && data.Z1Mass > 60 && data.Z2Mass < 120 && data.Z2Mass > 60 && data.JetPt->at(0) > 50 && data.JetPt->at(1) > 50){
 		// bkgd enriched

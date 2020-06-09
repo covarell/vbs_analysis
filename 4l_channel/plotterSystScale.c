@@ -18,9 +18,10 @@ void plotterSystScale(int year = 2018, int whichSample = 1, int enriched = 0){
         if (enriched == 1) theExtra = "_VBSenr";
 	if (enriched == 2) theExtra = "_superVBSenr";
 	if (enriched == 3) theExtra = "_bkgdEnr";
+        if (enriched == 5) theExtra = "_superVBSenrMjj"; 
 
         int nBinsTempl = 50;
-        if (enriched == 2) nBinsTempl = 20;
+        if ((enriched == 2 || enriched == 5)) nBinsTempl = 20;
 
 	//scale vars
 	static const int vars = 7;
@@ -228,6 +229,7 @@ void plotterSystScale(int year = 2018, int whichSample = 1, int enriched = 0){
 	      if (enriched == 1 && (DiJetMass < 400 || fabs(DiJetDEta) < 2.4)) continue;
 	      if (enriched == 2 && (DiJetMass < 400 || fabs(DiJetDEta) < 5.0)) continue;
 	      if (enriched == 3 && DiJetMass > 400 && fabs(DiJetDEta) > 2.4) continue;
+	      if (enriched == 5 && (DiJetMass < 1000 || fabs(DiJetDEta) < 2.4)) continue;
 
 	      //set vbf_category
 		vbfcate=1;
@@ -272,21 +274,14 @@ void plotterSystScale(int year = 2018, int whichSample = 1, int enriched = 0){
 		// fill templates
 		if (iv == 0) {
 		  for (int it=0; it < 2; it++) {
-		    if (j==1 || j==4 || j==0) {
+		    if (j==1 || j==4 || j==0 || (j==5 && whichSample==0)) {
 		      temp_1d_4mu[it]->Fill(dbkg_kin,weight);
 		      temp_1d_4e[it]->Fill(dbkg_kin,weight);
 		      temp_1d_2e2mu[it]->Fill(dbkg_kin,weight);
-		    } else if (j==2) {
+		    } else if (j==2 || (j==5 && whichSample==2)) {
 		      if(chan==1) temp_1d_4mu[it]->Fill(dbkg_kin,weight); 
 		      else if(chan==2) temp_1d_4e[it]->Fill(dbkg_kin,weight);  
 		      else temp_1d_2e2mu[it]->Fill(dbkg_kin,weight);   
-		    } else if (j== 5) {
-		      if(chan==1) temp_1d_4mu[2]->Fill(dbkg_kin,weight); 
-		      else if(chan==2) temp_1d_4e[2]->Fill(dbkg_kin,weight);  
-		      else temp_1d_2e2mu[2]->Fill(dbkg_kin,weight);
- 		      temp_1d_4mu[0]->Fill(dbkg_kin,weight);
-		      temp_1d_4e[0]->Fill(dbkg_kin,weight);
-		      temp_1d_2e2mu[0]->Fill(dbkg_kin,weight);
 		    }
 		  }
 		}

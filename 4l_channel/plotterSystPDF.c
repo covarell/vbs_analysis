@@ -3,7 +3,7 @@
 #include <TString.h>
 #include <memory>
 
-void plotterSystPDF(int year = 2018, int whichSample = 1){
+void plotterSystPDF(int year = 2018, int whichSample = 1, int enriched = 0){
   
        //whichSample = 0 : use just qqZZ
        //whichSample = 1 : use just ggZZ
@@ -23,6 +23,9 @@ void plotterSystPDF(int year = 2018, int whichSample = 1){
         float xmin = 0.;
 	float xmax = 1.;
 	float variations[vars];
+
+	int nBinsTempl = 50;
+        if ((enriched == 2 || enriched == 5)) nBinsTempl = 20;
 
 	//histogram stack
         char filename[300]; char filetitle[300]; 
@@ -248,21 +251,14 @@ void plotterSystPDF(int year = 2018, int whichSample = 1){
 		// fill templates
 		if (iv == 0) {
 		  for (int it=0; it < 2; it++) {
-		    if (j==1 || j==4) {
+		    if (j==1 || j==4 || j==0 || (j==5 && whichSample==0)) {
 		      temp_1d_4mu[it]->Fill(dbkg_kin,weight);
 		      temp_1d_4e[it]->Fill(dbkg_kin,weight);
 		      temp_1d_2e2mu[it]->Fill(dbkg_kin,weight);
-		    } else if (j==0 || j==2) {
+		    } else if (j==2 || (j==5 && whichSample==2)) {
 		      if(chan==1) temp_1d_4mu[it]->Fill(dbkg_kin,weight); 
 		      else if(chan==2) temp_1d_4e[it]->Fill(dbkg_kin,weight);  
 		      else temp_1d_2e2mu[it]->Fill(dbkg_kin,weight);
-		    } else if (j==5) {
-		      if(chan==1) temp_1d_4mu[2]->Fill(dbkg_kin,weight); 
-		      else if(chan==2) temp_1d_4e[2]->Fill(dbkg_kin,weight);  
-		      else temp_1d_2e2mu[2]->Fill(dbkg_kin,weight);
- 		      temp_1d_4mu[0]->Fill(dbkg_kin,weight);
-		      temp_1d_4e[0]->Fill(dbkg_kin,weight);
-		      temp_1d_2e2mu[0]->Fill(dbkg_kin,weight); 
 		    }  
 		  }
 		}

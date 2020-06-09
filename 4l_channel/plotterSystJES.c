@@ -18,9 +18,10 @@ void plotterSystJES(int year = 2018, int whichSample = 1, int enriched = 0){
 	if (enriched == 2) theExtra = "_superVBSenr";
 	if (enriched == 3) theExtra = "_bkgdEnr";
 	if (enriched == 4) theExtra = "_ptjet50";
+	if (enriched == 5) theExtra = "_superVBSenrMjj";
 
         int nBinsTempl = 50;
-        if (enriched == 2) nBinsTempl = 20;
+        if ((enriched == 2 || enriched == 5)) nBinsTempl = 20;
 
 	//scale vars
 	static const int vars = 3;
@@ -236,9 +237,10 @@ void plotterSystJES(int year = 2018, int whichSample = 1, int enriched = 0){
 	      
 	      if(ZZMass > 180 && Z1Mass < 120 && Z1Mass > 60 && Z2Mass < 120 && Z2Mass > 60){
 
-	      if (enriched == 1 && fabs(DiJetDEta) < 2.4) continue;
-	      if (enriched == 2 && fabs(DiJetDEta) < 5.0) continue;
-	      if (enriched == 3 && fabs(DiJetDEta) > 2.4) continue;
+		if ((enriched == 1 || enriched == 5) && fabs(DiJetDEta) < 2.4) continue;
+		if (enriched == 2 && fabs(DiJetDEta) < 5.0) continue;
+		if (enriched == 3 && fabs(DiJetDEta) > 2.4) continue;
+	    
 
 		if (iv == 0 && nCleanedJetsPt30<2) continue; 
 		if (iv == 1 && nCleanedJetsPt30_jesUp<2) continue; 
@@ -269,8 +271,9 @@ void plotterSystJES(int year = 2018, int whichSample = 1, int enriched = 0){
 		// if (iv==0 || i%10000 == 0) cout << "Check!" << (j1+j2).M() << " " << DiJetMass << endl;
 	
 		if ((j1+j2).M() < 100.) continue;
-                if ((enriched == 1 || enriched == 2) && (j1+j2).M() < 400.) continue;		
-		
+                if ((enriched == 1 || enriched == 2) && (j1+j2).M() < 400.) continue;
+		if (enriched == 5 && (j1+j2).M() < 1000.) continue;
+				
 		//set vbf_category
 		vbfcate=1;
 		//weight definition
@@ -302,21 +305,14 @@ void plotterSystJES(int year = 2018, int whichSample = 1, int enriched = 0){
 		// fill templates
 		if (iv == 0) {
 		  for (int it=0; it < 2; it++) {
-		    if (j==1 || j==4 || j==0) {
+		    if (j==1 || j==4 || j==0 || (j==5 && whichSample==0)) {
 		      temp_1d_4mu[it]->Fill(dbkg_kin,weight);
 		      temp_1d_4e[it]->Fill(dbkg_kin,weight);
 		      temp_1d_2e2mu[it]->Fill(dbkg_kin,weight);
-		    } else if (j==2) {
+		    } else if (j==2 || (j==5 && whichSample==2)) {
 		      if(chan==1) temp_1d_4mu[it]->Fill(dbkg_kin,weight); 
 		      else if(chan==2) temp_1d_4e[it]->Fill(dbkg_kin,weight);  
 		      else temp_1d_2e2mu[it]->Fill(dbkg_kin,weight); 
-		    } else if (j==5) {
-		      if(chan==1) temp_1d_4mu[2]->Fill(dbkg_kin,weight); 
-		      else if(chan==2) temp_1d_4e[2]->Fill(dbkg_kin,weight);  
-		      else temp_1d_2e2mu[2]->Fill(dbkg_kin,weight);
- 		      temp_1d_4mu[0]->Fill(dbkg_kin,weight);
-		      temp_1d_4e[0]->Fill(dbkg_kin,weight);
-		      temp_1d_2e2mu[0]->Fill(dbkg_kin,weight);
 		    } 		    
 		  }
 		}
@@ -351,17 +347,17 @@ void plotterSystJES(int year = 2018, int whichSample = 1, int enriched = 0){
 	} 
 	
 	hratio[0]->SetLineColor(1);
-	hratio[vars]->SetLineColor(2);
-	hratio[vars+1]->SetLineColor(4);
+	hratio[1]->SetLineColor(2);
+	hratio[2]->SetLineColor(4);
 	
 	for(int binx=1;binx<temp_1d_4e[0]->GetXaxis()->GetNbins()+1;binx++){
 	  int theOtherBin = hratio[vars]->FindBin(temp_1d_4e[0]->GetBinCenter(binx));  
-	  temp_1d_4e[0]->SetBinContent(binx,temp_1d_4e[0]->GetBinContent(binx)*(1.+hratio[vars]->GetBinContent(theOtherBin)));
-	  temp_1d_4mu[0]->SetBinContent(binx,temp_1d_4mu[0]->GetBinContent(binx)*(1.+hratio[vars]->GetBinContent(theOtherBin)));
-	  temp_1d_2e2mu[0]->SetBinContent(binx,temp_1d_2e2mu[0]->GetBinContent(binx)*(1.+hratio[vars]->GetBinContent(theOtherBin)));
-	  temp_1d_4e[1]->SetBinContent(binx,temp_1d_4e[1]->GetBinContent(binx)*(1.+hratio[vars+1]->GetBinContent(theOtherBin)));
-	  temp_1d_4mu[1]->SetBinContent(binx,temp_1d_4mu[1]->GetBinContent(binx)*(1.+hratio[vars+1]->GetBinContent(theOtherBin)));
-	  temp_1d_2e2mu[1]->SetBinContent(binx,temp_1d_2e2mu[1]->GetBinContent(binx)*(1.+hratio[vars+1]->GetBinContent(theOtherBin)));
+	  temp_1d_4e[0]->SetBinContent(binx,temp_1d_4e[0]->GetBinContent(binx)*(1.+hratio[1]->GetBinContent(theOtherBin)));
+	  temp_1d_4mu[0]->SetBinContent(binx,temp_1d_4mu[0]->GetBinContent(binx)*(1.+hratio[1]->GetBinContent(theOtherBin)));
+	  temp_1d_2e2mu[0]->SetBinContent(binx,temp_1d_2e2mu[0]->GetBinContent(binx)*(1.+hratio[1]->GetBinContent(theOtherBin)));
+	  temp_1d_4e[1]->SetBinContent(binx,temp_1d_4e[1]->GetBinContent(binx)*(1.+hratio[2]->GetBinContent(theOtherBin)));
+	  temp_1d_4mu[1]->SetBinContent(binx,temp_1d_4mu[1]->GetBinContent(binx)*(1.+hratio[2]->GetBinContent(theOtherBin)));
+	  temp_1d_2e2mu[1]->SetBinContent(binx,temp_1d_2e2mu[1]->GetBinContent(binx)*(1.+hratio[2]->GetBinContent(theOtherBin)));
 	  
 	} 
 	
@@ -371,8 +367,8 @@ void plotterSystJES(int year = 2018, int whichSample = 1, int enriched = 0){
 	legend->SetTextSize(0.04);
 	
 	legend->AddEntry(hratio[0],"nominal","lep");
-	legend->AddEntry(hratio[vars],"up","lep");
-	legend->AddEntry(hratio[vars+1],"down","lep");
+	legend->AddEntry(hratio[1],"up","lep");
+	legend->AddEntry(hratio[2],"down","lep");
 	legend->SetBorderSize(0);
 	
 	//GRAPHICS
@@ -392,8 +388,8 @@ void plotterSystJES(int year = 2018, int whichSample = 1, int enriched = 0){
 	   pad1->cd();  */
 	//top plot
 	hratio[0]->GetXaxis()->SetTitle(titlex.c_str());
-	hratio[0]->SetMaximum(0.45);
-	hratio[0]->SetMinimum(-0.45);
+	hratio[0]->SetMaximum(0.15);
+	hratio[0]->SetMinimum(-0.15);
 	/* h1[0]->SetLineColor(1);
 	h1[1]->SetLineColor(2);
 	h1[2]->SetLineColor(4);
@@ -401,8 +397,8 @@ void plotterSystJES(int year = 2018, int whichSample = 1, int enriched = 0){
 	h1[1]->Draw("same");
 	h1[2]->Draw("same");  */  
 	hratio[0]->Draw(); //old
-	hratio[vars]->Fit("pol0","","e1same");
-	hratio[vars+1]->Fit("pol0","","e1same"); 
+	hratio[1]->Fit("pol0","","e1same");
+	hratio[2]->Fit("pol0","","e1same"); 
 	legend->Draw("same");
 	TLine *line = new TLine(xmin,0.,xmax,0.);
 	line->SetLineColor(kBlack);

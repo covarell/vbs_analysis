@@ -61,9 +61,10 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1, int enriched =
 	if (enriched == 2) theExtra = "_superVBSenr";
 	if (enriched == 3) theExtra = "_bkgdEnr";
 	if (enriched == 4) theExtra = "_ptjet50";
+	if (enriched == 5) theExtra = "_superVBSenrMjj";
 
         int nBinsTempl = 50;
-        if (enriched == 2) nBinsTempl = 20;
+        if (enriched == 2 || enriched == 5) nBinsTempl = 20;
 	
 	static const int vars = 7;
         string titlex[vars] = {"K_{D}","M_{4l} [GeV]","M_{jj} [GeV]","#Delta #eta_{jj}","p_{T,j}","#eta_{j}","Nvtx"};        
@@ -119,7 +120,7 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1, int enriched =
 	TH1F *httzwzz_em[vars];//ttz + wwz e mu
 
 	for(int iv = 0; iv < vars; iv++){
-	  if (enriched == 1 || enriched == 2) bins[iv] /= 2; 
+	  if (enriched == 1 || enriched == 2 || enriched == 5) bins[iv] /= 2; 
 	  // sprintf(filename,"hcd%d",iv);   h_complete_data[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]); //all data
 	  // sprintf(filename,"h00_%d",iv);   h00[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]); //bkg_kin<0.7 cut full background plot
 	  sprintf(filename,"hdata_%d",iv);   hdata[iv] = new TH1F(filename,"",bins[iv],xmin[iv],xmax[iv]); //data, because we are hiding higher energies in this phase
@@ -331,7 +332,8 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1, int enriched =
 	      if (enriched == 2 && (DiJetMass < 400 || fabs(DiJetDEta) < 5.0)) continue;
 	      if (enriched == 3 && DiJetMass > 400 && fabs(DiJetDEta) > 2.4) continue;
 	      if (enriched == 4 && (JetPt->at(0) < 50 || JetPt->at(1) < 50)) continue;
-	      
+	      if (enriched == 5 && (DiJetMass < 1000 || fabs(DiJetDEta) < 2.4)) continue;
+
 	      //set vbf_category
 	      vbfcate=1;
 	      //weight definition
@@ -707,8 +709,8 @@ void plotterAndTemplateMaker(int year = 2018, int useMCatNLO = 1, int enriched =
 	  hs[iv]->SetMaximum(30.*lumi/35.9E3);
           if (iv > 3) hs[iv]->SetMaximum(38.*lumi/35.9E3);
           if (iv == 0) hs[iv]->SetMaximum(51.*lumi/35.9E3);
-          if (enriched==1 || enriched ==2) hs[iv]->SetMaximum(14.*lumi/35.9E3);
-          if ((enriched==1 || enriched ==2) && iv > 3) hs[iv]->SetMaximum(22.*lumi/35.9E3);
+          if (enriched==1 || enriched ==2 || enriched == 5) hs[iv]->SetMaximum(14.*lumi/35.9E3);
+          if ((enriched==1 || enriched ==2 || enriched == 5) && iv > 3) hs[iv]->SetMaximum(22.*lumi/35.9E3);
 	  hs[iv]->Draw("nostack"); //old
 	  if (drawSignal[iv] && !enriched) {
 	    TH1F* h77 = (TH1F*)hvbs[iv]->Clone();
