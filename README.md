@@ -9,7 +9,7 @@ and all changes must be done in this file.
 
 The following instructions are necessary to run:
 
-cd ext/
+cd ext
 
 sh compile_ext.sh
 
@@ -21,18 +21,18 @@ make run_makeZX
 
 ./run_makeZX &lt;year&gt; &lt;enrichment&gt;
 
-The enrichment variable refers to the selection: 0 = baseline, 1 = VBS-enriched (loose), 2 = VBS-enriched (tight), 3 = background enriched, 4 = tighter pTjet cut (50 GeV). 
+The enrichment variable refers to the selection: 0 = baseline, 1 = VBS-enriched (loose), 2 = VBS-enriched (tight with DeltaEta), 3 = background enriched, 4 = tighter pTjet cut (50 GeV), 5 = VBS-enriched (tight with mjj). 
 
-The necessary variables (ZZMass, dbkg_kin, weight etc.) will be stored in ZX(+suffix).root
+The necessary variables (ZZMass, dbkg_kin, weight etc.) will be stored in the file ZX(+suffix).root
 
 <b> Main analysis </b>
 
 plotterAndTemplateMaker.c -> The file reads 4l MC + data (from relevant repositories), together with the data driven zx component, contained in the ZX(+suffix).root file. It performs relevant selection, mela cuts, kin_variable generation. The output is:
-- 1D pictures portraying all contributions (&lt;directory&gt;/&lt;variable&gt;_allaMCatNLO_&lt;year&gt;.png)
+- 1D pictures portraying all contributions (&lt;directory&gt;/&lt;variable&gt;-allaMCatNLO-&lt;year&gt;.png)
 - 1D templates, selected trees and their pictures (in template/root_output_files/ divided by MC/data contributions) 
-- yields for MC and data (MC/datayields_&lt;year&gt;.txt, to be copied in the combine cards) 
+- event yields for MC and data (MC/datayields_&lt;year&gt;.txt, to be copied in the combine cards) 
 
-Run with: plotterAndTemplateMaker(&lt;year&gt;,1,&lt;&lt;enrichment&gt;)  <- check above for the several enrichment options
+Run with: plotterAndTemplateMaker(&lt;year&gt;,1,&lt;enrichment&gt;)  <- check above for the several enrichment options
 
 The drawSummedHistos.c macro can be used to plot summed histos for the 3 years.
 
